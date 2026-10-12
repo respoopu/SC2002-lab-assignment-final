@@ -1,8 +1,8 @@
 # Restaurant Rush component contract
 
-**Status:** Game rules, component responsibilities, and the implementation decisions in Section 6 are agreed by the team. The shared Java API described in Section 7 still needs to be specified before parallel implementation issues are assigned.
+**Status:** Game rules, component responsibilities, the decisions in Section 6, and the shared Java API in Section 7 are agreed by the team. Workstream issues reference Section 7 instead of inventing types. Any PR that changes Section 7 updates it in the same PR.
 
-The [assignment brief](../SC2002_Restaurant_Rush_Group_Assignment.docx.pdf) takes precedence over this document. This contract defines the boundaries between workstreams so that independently developed parts can be integrated. The behavioral decisions are binding; public Java names and method signatures remain to be specified.
+The [assignment brief](../SC2002_Restaurant_Rush_Group_Assignment.docx.pdf) takes precedence over this document. This contract defines the boundaries between workstreams so that independently developed parts can be integrated. The behavioral decisions and the public Java surface in Section 7 are binding.
 
 ## 1. Shared game rules
 
@@ -40,13 +40,15 @@ The snapshot must provide the turn number, revenue, paid-customer average, waiti
 
 ### Action boundary
 
-The precise Java types will be recorded in the shared API before parallel implementation begins, but every staff action follows this behavior:
+The Java types are `Action` and `ActionResult` in Section 7.4; every staff action follows this behavior:
 
 | Input | Output | Invalid-choice guarantee |
 | --- | --- | --- |
-| An action kind and stable target ID where needed; for example, `SEAT C2`, `ORDER C1`, `SERVE O1`, or `PREPARE O1` | An accepted/rejected result, a clear reason on rejection, events on success, and an updated read-only snapshot | Rejection changes no game state, does not consume that staff member's task, and allows another choice in the same turn. |
+| An action kind and stable target ID where needed; for example, `SEAT C2`, `ORDER C1`, `SERVE O1`, or `PREPARE O1` | An accepted/rejected result with a message, events on success, and a fresh read-only snapshot on request | Rejection changes no game state, does not consume that staff member's task, and allows another choice in the same turn. |
 
 `WAIT` is a valid choice that ends that staff member's opportunity for the turn. The controller rejects actions in the wrong phase or a second accepted task from the same staff member. CLI parse errors follow the same retry behavior as invalid domain actions.
+
+Every role is prompted every turn, even when `WAIT` is its only legal action, so a Stage 1 turn always consumes exactly two accepted choices (Waiter, then Chef); a rejected or unparseable line is retried and consumes an extra line. In Stage 3 the Host prompt precedes the Waiter prompt, and a `Manager> ` prompt for Happy Hour precedes the arrival on every turn until Happy Hour has been used. The CLI loop that produces these prompts is fixed in Section 7.
 
 ## 3. Component responsibilities and interfaces
 
@@ -86,7 +88,7 @@ Stage extensions should change registration/setup and the few components that ge
 
 Before merging a PR, its owner and reviewer should check the relevant behavior against this contract and the brief. In particular:
 
-- The brief's Pasta example must be reproducible: seat on turn 1; order and prepare unit 1 on turn 2; finish preparation on turn 3; serve on turn 4; become ready to pay on turn 5; pay on turn 6; record satisfaction 76 and revenue $18.00.
+- The brief's Pasta example must be reproducible. In the base game C3 orders Pasta, so the sequence is: seat on turn 7; order and prepare unit 1 on turn 8; finish preparation on turn 9; serve on turn 10; become ready to pay on turn 11; pay on turn 12; record satisfaction 76 and revenue $18.00.
 - Invalid input or an illegal target explains the problem and allows another choice without consuming the staff action.
 - A customer served on turn `t` cannot become ready to pay on turn `t`; one becoming ready to pay on turn `t` cannot pay on turn `t`.
 - Revenue never includes an unpaid or abandoned order. The customer arriving on turn 16 cannot pay by turn 18 in the base flow.
@@ -94,13 +96,15 @@ Before merging a PR, its owner and reviewer should check the relevant behavior a
 - At least one pair of runs uses the same setting and arrival/meal rules but different manager choices to demonstrate how prioritization changes the outcome.
 - The class diagram matches the final code, and the sequence diagram traces real method responsibilities and timing. README stage comparisons identify added and changed files, reasons, and commit or compare links.
 
-### Reproducible runs are fixtures
+### Self-checks and fixtures
 
-There is no unit test framework. Every reproducible run is a fixture that `scripts/replay.sh` replays and diffs, and fixture replay plus the stage gate below are the project's only checks.
+There is no unit test framework. Each workstream ships one self-check class, every reproducible run is a fixture, and `scripts/replay.sh` runs both. Self-checks, fixture replay, and the stage gate below are the project's only checks.
+
+- **Self-check class:** one per workstream in package `restaurantrush.check`, named `CustomerCheck`, `MenuCheck`, `StaffCheck`, `GameCheck`, or `CliCheck`, with a `public static void main`. It builds its own objects through the public API in Section 7, uses Java `assert` statements, throws if assertions are not enabled, and prints one `OK <name>` line at the end. The replay script runs every class in that package with `java -ea` after compiling and before replaying fixtures. A collaborator from another workstream that is still a stub makes the check fail, which is why Section 7 sequences the issues in waves.
 
 - **Location:** `fixtures/stage-<n>/<scenario>.in` with its transcript in `fixtures/stage-<n>/<scenario>.expected`. Stage 1 needs at least `victory` and `defeat`. Stage 2 needs at least `vip-critic`. Stage 3 needs at least `host-combo-happy-hour`. The pair of runs that differ only in manager choices uses the suffixes `-a` and `-b` on the same scenario name.
 - **Input format:** one manager command per line, exactly as typed at the prompt, in the order the game asks for them. Blank lines and lines starting with `#` are comments; the script strips them before piping the file to the game's standard input.
-- **Expected transcript:** the game's complete standard output for that input. Output must be byte-identical across runs and machines: no timestamps, no random values, no locale-dependent formatting, `\n` line endings (`.gitattributes` forces LF on these files).
+- **Expected transcript:** the game's complete standard output for that input. Output must be byte-identical across runs and machines: ASCII only, no timestamps, no random values, no locale-dependent formatting, and `\n` written explicitly (never `println` or `%n`, which emit CRLF on Windows). `.gitattributes` forces LF on fixture files.
 - **End of input:** if standard input ends before turn 18 completes, the game prints a short message and exits with a non-zero status, so a short fixture fails instead of hanging.
 - **Commands:** `scripts/replay.sh` builds the game, replays every fixture, prints `PASS` or `FAIL` per fixture, and exits non-zero on any failure. `scripts/replay.sh fixtures/stage-1/victory.in` replays one fixture. `scripts/replay.sh --update <fixture.in>` rewrites that expected transcript; use it only for an intended output change, and the PR reviewer reads the regenerated diff.
 - **Before every PR:** run `scripts/replay.sh`. Every fixture from the current and earlier stages must pass. Add or update a fixture whenever the PR changes observable behavior.
@@ -119,25 +123,298 @@ The brief leaves these choices to the group. The team has accepted the following
 
 | Decision | Agreed rule | Reason / effect |
 | --- | --- | --- |
-| Java/build baseline | Java 17, standard library only, no test framework. Sources live under `src/` in root package `restaurantrush` with entry point `restaurantrush.Main`. Build: `javac -d out $(find src -name '*.java')`. Run: `java -cp out restaurantrush.Main` | Keeps a fresh offline build straightforward and consistent across contributors. |
-| Verification | Fixture replay with `scripts/replay.sh` before every PR, then the stage gate in Section 5; no JUnit | The brief's required reproducible runs double as the regression check, and the build stays plain `javac`. |
-| Food choice | Cycle Salad, Burger, Pasta by arrival index for Regular and VIP customers; Critic always chooses Pasta | Deterministic, demonstrates the Critic's distinct preference, and needs no manager food choice. |
-| Customer types at arrivals in Stage 2/3 | Regular, VIP, Regular, Critic, Regular, Regular at turns 1, 4, 7, 10, 13, 16 | Ensures both new types appear while preserving six arrivals. |
-| Stage 3 combo choice | A Regular customer with arrival index divisible by 3 chooses Salad + Pasta when the combo is available; otherwise use the base food cycle | Produces a visible, reproducible combo without adding a manager food choice. |
+| Java/build baseline | Java 17 language level, standard library only, no test framework. Sources live under `src/restaurantrush`, entry point `restaurantrush.game.Main`. Build: `javac --release 17 -d out $(find src -name '*.java')`. Run: `java -cp out restaurantrush.game.Main` | Keeps a fresh offline build straightforward and consistent across contributors, whatever JDK is installed. |
+| Verification | Self-checks and fixture replay with `scripts/replay.sh` before every PR, then the stage gate in Section 5; no JUnit | The brief's required reproducible runs double as the regression check, and the build stays plain `javac`. |
+| Arrivals, types, and meals | The arrival table below. Arrival index is 1-based. Regular and VIP customers cycle Salad, Burger, Pasta by arrival index; the Critic always chooses Pasta; in Stage 3 a Regular customer whose index is divisible by 3 chooses the Salad + Pasta combo | One table replaces three prose rules and removes the 0-based versus 1-based ambiguity. |
+| IDs | Plain strings: customers `C1`..`C6` in arrival order, orders `O1`.. in the order taken, tables `T1` and `T2`; input is uppercased before parsing | Stable targets for actions and fixtures without wrapper types. |
+| Prompting | Every role is prompted every turn even when only `WAIT` is legal; Stage 3 adds the `Manager> ` Happy Hour prompt before `beginTurn` on each turn until used, answered `HAPPY_HOUR` or `SKIP`; remaining duration shows 2 on the activation turn and 1 on the next | Fixture shapes are predictable and the sequence diagram has a fixed form. |
+| Display | Money as dollars with two decimals; satisfaction as an integer; paid-customer average with one decimal in `Locale.ROOT`, or `N/A` | Transcripts are byte-identical across machines. |
+| Branches and PRs | Branch `<issue-number>-<short-slug>`, one PR per issue, PR body is the filled template, commits authored by the teammate only with no agent co-author trailers | Every PR links to its issue and the contributor list shows the team. |
+| Skeleton depth | The API skeleton fully implements enums, records, `MenuItem`, `Menu`, `Money`, `Table`, and `GameState`; rule-bearing classes are stubs that throw `UnsupportedOperationException` naming the owning workstream | Wave 1 self-checks run against real collaborators instead of stubs. |
 | Host/Waiter order | Host acts before Waiter, so the Waiter may take the order of a customer seated by the Host that turn | Makes their separate capacities useful and gives a deterministic turn sequence. |
 | Happy Hour at turn start | Activate and recover before the scheduled arrival, then display the actionable snapshot | Customers arriving that turn already have 100 satisfaction; the order does not change their recovery. |
 | Percentage rounding | Round half up to the nearest cent after combo pricing, after personal discount, and after Happy Hour discount | Maintains integer cents and a consistent order of operations. |
 | Cashier tie-break | Earliest `READY_TO_PAY` turn, then earliest arrival | Makes "oldest first" deterministic if two customers qualify together. |
 
-## 7. Shared Java API before parallel implementation
+### Arrival table
 
-The responsibilities above tell each workstream **what** it owns. Before multiple agents implement those workstreams independently, record the cross-component Java surface in this contract or a linked API document:
+| Turn | ID | Stage 1 type | Stage 2 and 3 type | Meal Stage 1 | Meal Stage 2 | Meal Stage 3 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | C1 | Regular | Regular | Salad | Salad | Salad |
+| 4 | C2 | Regular | VIP | Burger | Burger | Burger |
+| 7 | C3 | Regular | Regular | Pasta | Pasta | Salad + Pasta combo |
+| 10 | C4 | Regular | Critic | Salad | Pasta | Pasta |
+| 13 | C5 | Regular | Regular | Burger | Burger | Burger |
+| 16 | C6 | Regular | Regular | Pasta | Pasta | Salad + Pasta combo |
 
-- Sub-package layout under `restaurantrush`. The root package, entry point, and build/run commands are fixed in Section 6.
-- Public class, enum, and value-type names; their source paths; and which workstream owns each one.
-- Constructors and public methods called across workstreams, including parameter types, return types, and who creates the objects.
-- The exact action request/result, read-only snapshot, and event shapes used between the CLI, controller, and domain.
-- Which component may mutate each state field, and how illegal transitions or invalid choices are reported without consuming a staff task.
-- Stage 1 extension points needed for customer variants and later policies, with shared API changes documented before Stage 2 or 3 work is split across agents.
+## 7. Shared Java API
 
-This shared surface belongs in the contract because several issues depend on it. An individual issue should specify its own acceptance cases, files to change, and any private helper classes or algorithms; it should reference the agreed public API rather than inventing a competing one. A single setup/design issue may establish a compiling API skeleton before the independent implementation issues are assigned. Any PR that changes a shared contract must update the contract and explain the impact on other workstreams.
+This section is the complete cross-workstream surface. An issue references these types and signatures; it does not invent competing ones. Private helpers, fields, and algorithms inside a package belong to that package's owner and are described in the issue, not here. A PR that changes anything in this section updates this section in the same PR and names the affected workstreams.
+
+### 7.1 Packages and owners
+
+| Package under `src/restaurantrush` | Owner | Stage 1 types |
+| --- | --- | --- |
+| `game` | Turn control and game state | `Main`, `GameSetup`, `GameConfig`, `GameState`, `TurnController`, `Phase`, `Action`, `ActionKind`, `StaffRole`, `ActionResult`, `GameEvent`, `Snapshot`, `CustomerView`, `TableView`, `OrderView`, `TurnStart`, `TurnEnd`, `TurnSummary`, `GameResult` |
+| `customer` | Customers and waiting queue | `Customer`, `RegularCustomer`, `CustomerStatus`, `WaitingQueue` |
+| `menu` | Menu, orders, and pricing | `MenuItem`, `Menu`, `Order`, `OrderStatus`, `Money` |
+| `staff` | Staff and tables | `Table`, `Waiter`, `Chef`, `Cashier` |
+| `cli` | CLI and reproducibility | `ConsoleUI`, `CommandParser`; also `fixtures/` and `scripts/replay.sh` |
+| `check` | One class per workstream | `CustomerCheck`, `MenuCheck`, `StaffCheck`, `GameCheck`, `CliCheck` |
+
+Allowed dependencies: `game` calls `staff`, `customer`, and `menu`. `staff` reads `GameState` and returns `ActionResult` and `GameEvent`, so `game` and `staff` depend on each other by design. `customer` holds an `Order` reference but never calls a method on it. `cli` imports only `game` records and enums, `customer.CustomerStatus`, `menu.OrderStatus`, and `menu.Money.format`; it never imports a concrete customer class and never does its own money arithmetic.
+
+`Main` and `GameSetup` are the composition root where later stages register new types. Later stages also make the recorded changes in 7.8 to existing classes; those are expected and are listed in the README stage comparison with reasons.
+
+### 7.2 Enums and IDs
+
+IDs are plain strings. Customers are `C1` to `C6` in arrival order, orders `O1` onward in the order taken, tables `T1` and `T2`. `GameSetup.arrival` builds the customer ID from the arrival index. Lookups are by ID, never by list position.
+
+| Enum | Package | Stage 1 constants | Later additions |
+| --- | --- | --- | --- |
+| `CustomerStatus` | `customer` | `WAITING`, `SEATED`, `EATING`, `READY_TO_PAY`, `PAID`, `LEFT` | none |
+| `OrderStatus` | `menu` | `PLACED` (no units done), `PREPARING` (some units done), `READY`, `SERVED`, `PAID`, `CANCELLED` | none |
+| `Phase` | `game` | `TURN_START` (awaiting `beginTurn`), `WAITER`, `CHEF`, `TURN_END` (awaiting `endTurn`), `GAME_OVER` | Stage 3 inserts `HOST` before `WAITER` |
+| `ActionKind` | `game` | `SEAT`, `ORDER`, `SERVE`, `PREPARE`, `WAIT` | none; Happy Hour is a `beginTurn` argument, see 7.8 |
+| `StaffRole` | `game` | `WAITER`, `CHEF` (roles the manager directs; the Cashier is automatic and has no role constant) | Stage 3 adds `HOST` |
+| `GameResult` | `game` | `VICTORY`, `DEFEAT` | none |
+
+The phase alone enforces one task per role per turn: an accepted action or `WAIT` moves the phase on, and `submit` rejects any action whose role is not the current phase.
+
+### 7.3 Domain types
+
+A domain object throws `IllegalStateException` on an illegal transition, because reaching one is a programming error. Staff check legality first and return a rejection, so manager mistakes never throw. A customer stores its `Order` reference but never reads it, so `CustomerCheck` can pass any `Order` instance.
+
+```java
+package restaurantrush.customer;
+
+public abstract class Customer {
+    protected Customer(String id, int arrivalTurn, int arrivalIndex);   // arrivalIndex is 1-based
+    public String id();  public int arrivalTurn();  public int arrivalIndex();
+    public abstract String typeName();                                   // "Regular", "VIP", "Critic"; used in displays
+    public CustomerStatus status();  public int satisfaction();
+    public Optional<Order> order();
+    public int servedTurn();  public int readyToPayTurn();                // 0 until set
+
+    public abstract int waitingLossPerTurn();                            // Regular 8
+    public abstract int discountPercent();                               // Regular 0
+    public abstract MenuItem chooseMeal(Menu menu);                      // Regular: menu.cycleChoice(arrivalIndex())
+
+    public boolean isWaitingForTableOrFood();                            // status is WAITING or SEATED
+    public void seat();                                                  // WAITING -> SEATED
+    public void attachOrder(Order order);                                // SEATED with no order; stores the reference only
+    public void startEating(int turn);                                   // SEATED with an order attached -> EATING, sets servedTurn
+    public void becomeReadyToPay(int turn);                              // EATING -> READY_TO_PAY, sets readyToPayTurn
+    public void pay();                                                   // READY_TO_PAY -> PAID
+    public void leave();                                                 // WAITING or SEATED -> LEFT
+    public int loseSatisfaction();                                       // subtracts waitingLossPerTurn, floor 0, returns new value
+}
+
+public final class RegularCustomer extends Customer {
+    public RegularCustomer(String id, int arrivalTurn, int arrivalIndex);
+}
+
+public final class WaitingQueue {
+    public void add(Customer customer);
+    public Optional<Customer> find(String id);
+    public Customer remove(String id);                                   // IllegalArgumentException if absent
+    public List<Customer> view();                                        // unmodifiable, arrival order
+    public boolean isEmpty();
+}
+```
+
+```java
+package restaurantrush.menu;
+
+public class MenuItem {
+    public MenuItem(String name, int priceCents, int preparationUnits);
+    public String name();  public int priceCents();  public int preparationUnits();
+}
+
+public final class Menu {
+    public Menu(List<MenuItem> items);                                   // first three items are the base cycle
+    public static Menu base();                                           // Salad 900/1, Burger 1500/1, Pasta 1800/2
+    public List<MenuItem> items();                                       // unmodifiable
+    public MenuItem item(String name);                                   // IllegalArgumentException if absent
+    public MenuItem cycleChoice(int arrivalIndex);                       // 1 Salad, 2 Burger, 3 Pasta, 4 Salad, ... over the first three items
+}
+
+public final class Order {
+    public Order(String id, String customerId, MenuItem item, int customerDiscountPercent, int placedTurn);
+                                                                         // billCents = Money.applyDiscount(item.priceCents(), customerDiscountPercent), locked
+    public String id();  public String customerId();  public MenuItem item();  public int billCents();
+    public OrderStatus status();  public int unitsDone();  public int unitsRequired();
+    public int placedTurn();  public int readyTurn();  public int servedTurn();   // 0 until set
+    public boolean isPreparable();                                       // PLACED or PREPARING
+    public void advanceOneUnit(int turn);                                // -> PREPARING, or READY when complete (sets readyTurn)
+    public void markServed(int turn);                                    // READY -> SERVED
+    public void markPaid();                                              // SERVED -> PAID
+    public void cancel();                                                // PLACED, PREPARING, or READY -> CANCELLED
+}
+
+public final class Money {
+    public static int applyDiscount(int cents, int percentOff);         // round half up to the cent; cents >= 0, 0 <= percentOff <= 100
+    public static String format(int cents);                              // "$18.00"; cents >= 0
+}
+```
+
+### 7.4 Staff, tables, and the action boundary
+
+Staff objects hold no state except their role. The controller resolves the phase and the current role, and staff resolve IDs, check legality, and perform exactly one effect, or return a rejection with a reason and no state change. Each staff method's effects happen in the listed order, after every check has passed.
+
+```java
+package restaurantrush.game;
+
+public record Action(StaffRole role, ActionKind kind, String targetId) {}       // targetId null for WAIT
+public record ActionResult(boolean accepted, String message, List<GameEvent> events) {
+    public static ActionResult accepted(String message, List<GameEvent> events);
+    public static ActionResult rejected(String reason);
+}
+public record GameEvent(int turn, String text) {}
+```
+
+```java
+package restaurantrush.staff;
+
+public final class Table {
+    public Table(String id);
+    public String id();  public boolean isFree();  public Optional<String> occupantId();
+    public void seat(String customerId);                                 // free -> occupied
+    public void release();                                               // occupied -> free
+}
+
+public final class Waiter {
+    public List<Action> legalActions(GameState state);
+    public ActionResult seat(GameState state, String customerId);
+    public ActionResult takeOrder(GameState state, String customerId);
+    public ActionResult serve(GameState state, String orderId);
+}
+
+public final class Chef {
+    public List<Action> legalActions(GameState state);
+    public ActionResult prepare(GameState state, String orderId);
+}
+
+public final class Cashier {
+    public Optional<GameEvent> collect(GameState state);
+}
+```
+
+| Method | Checks (any failure is a rejection naming the reason) | Effects in order |
+| --- | --- | --- |
+| `Waiter.legalActions` | none | `SEAT` for each queued customer in queue order if any table is free; `ORDER` for each `SEATED` customer without an order in arrival order; `SERVE` for each `READY` order with `readyTurn < state.turn()` in order-ID order; then `WAIT` |
+| `Waiter.seat` | customer is in the queue; a table is free | `queue.remove(id)`; the lowest-numbered free table `seat(id)`; `customer.seat()`; event `C2 seated at T1` |
+| `Waiter.takeOrder` | customer is `SEATED` with no order | `item = customer.chooseMeal(state.menu())`; `new Order(state.nextOrderId(), id, item, customer.discountPercent(), state.turn())`; `state.addOrder`; `customer.attachOrder`; event `C1 orders Pasta ($18.00) as O1` |
+| `Waiter.serve` | order is `READY` and `readyTurn < state.turn()` | `customer.startEating(turn)`; `order.markServed(turn)`; `state.recordServed()`; event `O1 served to C1` |
+| `Chef.legalActions` | none | `PREPARE` for each preparable order in order-ID order; then `WAIT` |
+| `Chef.prepare` | order is preparable | `order.advanceOneUnit(turn)`; event `O1 unit 1 of 2 done` or `O1 is READY` |
+| `Cashier.collect` | there is a `READY_TO_PAY` customer with `readyToPayTurn < state.turn()` | pick the earliest `readyToPayTurn`, then earliest arrival; `order.markPaid()`; `customer.pay()`; `state.tableOf(id).release()`; `state.recordPayment(bill, satisfaction)`; event `C1 paid $18.00 (satisfaction 76), T1 free`; empty when nobody qualifies |
+
+`nextOrderId()` is called only after all checks pass, so a rejection never skips an ID. Event wording above is illustrative; the CLI owner fixes the exact text in the fixtures, and staff own the content.
+
+### 7.5 Controller, state, and snapshot
+
+```java
+package restaurantrush.game;
+
+public record GameConfig(int turns, int tableCount, List<Integer> arrivalTurns) {
+    public static GameConfig base();                                     // 18, 2, [1, 4, 7, 10, 13, 16]
+}
+
+public final class GameState {                                           // shared store; no rules
+    public GameState(GameConfig config, Menu menu);
+    public GameConfig config();  public int turn();  public Phase phase();  public Menu menu();  public WaitingQueue queue();
+    public List<Customer> customers();  public List<Order> orders();  public List<Table> tables();   // unmodifiable, creation order
+    public Optional<Customer> customer(String id);  public Optional<Order> order(String id);  public Optional<Table> table(String id);
+    public Optional<Table> tableOf(String customerId);                   // the table whose occupant is this customer
+    public String nextOrderId();                                         // "O1", "O2", ...
+    public void addCustomer(Customer customer);  public void addOrder(Order order);
+    public void setTurn(int turn);  public void setPhase(Phase phase);   // controller only
+    public void recordServed();  public void recordLeft();  public void recordPayment(int cents, int satisfaction);
+    public int servedCount();  public int leftCount();  public int paidCount();  public int revenueCents();  public int satisfactionSum();
+}
+
+public final class TurnController {                                      // the only component that changes turn and phase
+    public TurnController(GameState state, Waiter waiter, Chef chef, Cashier cashier, IntFunction<Customer> arrivals);
+                                                                         // arrivals maps a 1-based arrival index to a new Customer
+    public TurnStart beginTurn();
+    public ActionResult submit(Action action);
+    public TurnEnd endTurn();
+    public Snapshot snapshot();  public Phase phase();  public Optional<StaffRole> currentRole();  public boolean isOver();
+}
+
+public record TurnStart(List<GameEvent> events, Snapshot snapshot) {}
+public record TurnEnd(List<GameEvent> events, TurnSummary summary, Optional<GameResult> result) {}
+public record TurnSummary(int turn, int servedCount, int leftCount, int revenueCents, int paidCount, int satisfactionSum) {}
+
+public record Snapshot(int turn, Phase phase, int revenueCents, int paidCount, int satisfactionSum,
+                       List<CustomerView> queue, List<TableView> tables, List<CustomerView> customers,
+                       List<OrderView> orders, Optional<StaffRole> currentRole, List<Action> legalActions) {}
+public record CustomerView(String id, String typeName, CustomerStatus status, int satisfaction, Optional<String> orderId) {}
+public record TableView(String id, Optional<String> occupantId) {}
+public record OrderView(String id, String customerId, String itemName, OrderStatus status, int unitsDone, int unitsRequired, int billCents) {}
+
+public final class GameSetup {                                           // composition root
+    public static TurnController baseGame();                             // new GameState(GameConfig.base(), Menu.base()), staff, and i -> arrival(i, arrivalTurns.get(i - 1))
+    public static Customer arrival(int arrivalIndex, int turn);          // new RegularCustomer("C" + arrivalIndex, turn, arrivalIndex); Stage 2 follows the arrival table
+}
+
+public final class Main { public static void main(String[] args); }      // GameSetup.baseGame(), ConsoleUI.run; exits 2 when run returns false
+```
+
+| Controller call | Allowed phase | Effects in order |
+| --- | --- | --- |
+| `beginTurn` | `TURN_START` | `setTurn(turn + 1)`; if the turn is in `config.arrivalTurns()`: `c = arrivals.apply(index)`, `addCustomer(c)`, `queue().add(c)`, event `C1 (Regular) arrives`; `setPhase(WAITER)`; return events and `snapshot()` |
+| `submit` | `WAITER` or `CHEF`, and `action.role()` must match | dispatch to the staff method for `action.kind()`; a rejection returns unchanged; `WAIT` returns `accepted("Waiter waits.", [])`; after any accepted result set the next phase (`WAITER` to `CHEF`, `CHEF` to `TURN_END`) |
+| `endTurn` | `TURN_END` | for each `EATING` customer with `servedTurn < turn`: `becomeReadyToPay(turn)`, event; then `cashier.collect(state)` once; then for each customer with `isWaitingForTableOrFood()`: `loseSatisfaction()`, and if it reached 0: remove from the queue if `WAITING`, `tableOf(id)` released if present, `order` cancelled if present and not served, `leave()`, `recordLeft()`, event; build the summary; if `turn == config.turns()`: compute the result and `setPhase(GAME_OVER)`, else `setPhase(TURN_START)` |
+
+The result check is integer arithmetic: `paidCount >= 4`, `revenueCents >= 4500`, and `satisfactionSum >= 60 * paidCount`. The snapshot lists every arrived customer, including those who paid or left, in arrival order; `legalActions` holds the current role's list from 7.4 and is empty outside `WAITER` and `CHEF`. Every record that holds a list copies it in its compact constructor.
+
+### 7.6 CLI loop, commands, and rendering
+
+```java
+package restaurantrush.cli;
+
+public final class CommandParser {
+    public static Optional<Action> parse(String line, StaffRole role);  // empty on error; see errorFor
+    public static String errorFor(String line, StaffRole role);          // the message printed when parse is empty
+}
+
+public final class ConsoleUI {
+    public ConsoleUI(Scanner in, PrintStream out);
+    public boolean run(TurnController controller);                       // the loop below; true when the game finished, false when input ended first
+    public static String render(Snapshot snapshot);                      // start-of-turn display, pure
+    public static String render(TurnSummary summary, Optional<GameResult> result);   // end-of-turn display, pure
+}
+```
+
+Parsing versus rejection: the parser accepts exactly `SEAT C<n>`, `ORDER C<n>`, `SERVE O<n>`, `PREPARE O<n>`, and `WAIT`, case-insensitive with any surrounding whitespace, and only the kinds that belong to the prompted role (`SEAT`, `ORDER`, `SERVE`, `WAIT` for the Waiter; `PREPARE`, `WAIT` for the Chef). Anything else is a parse error with the parser's message. Whether the ID exists and whether the action is legal now are decided by staff and reported through `ActionResult`.
+
+The loop, fixed so every fixture has the same shape:
+
+1. Call `beginTurn`. Print each event on its own line, then `render(snapshot)`.
+2. For `WAITER` then `CHEF`: print the role's legal actions from `controller.snapshot()`, print the prompt `Waiter> ` or `Chef> `, read one line, parse, and `submit`. Print the result's message, then its events one per line. On a parse error or a rejection, re-prompt. On an accepted result, move on.
+3. Call `endTurn`. Print each event, then `render(summary, result)`.
+
+Every role is prompted every turn, so a Stage 1 turn consumes exactly two accepted choices; retries after an error consume extra lines. Output is ASCII and uses `"\n"` only, never `println` or `%n`, so transcripts are identical on Windows and macOS. If standard input ends before the game finishes, `run` prints `Input ended before the game finished.` and returns false, and `Main` exits with status 2. Money prints through `Money.format`, satisfaction as an integer, and the paid-customer average with one decimal in `Locale.ROOT` or `N/A`.
+
+### 7.7 Stage 1 issue waves
+
+| Wave | Issues | Depends on |
+| --- | --- | --- |
+| 0 | API skeleton (#1) | none |
+| 1 | Customers and queue; Menu, orders, and pricing; CLI parser and rendering | #1 merged. `CustomerCheck` passes a stub `Order` reference; `CliCheck` feeds hand-built records to `render` and `parse` |
+| 2 | Staff and tables | wave 1 merged, because `StaffCheck` drives real customers and orders |
+| 3 | Turn controller and setup | wave 2 merged, because `GameCheck` plays turns through real staff |
+| 4 | Stage 1 fixtures and integration: `victory`, `defeat`, and the `-a`/`-b` pair | wave 3 merged; doubles as the stage gate run-through |
+
+Owners of later waves draft against the skeleton while earlier waves are in review, and open their PR once their dependencies have merged and their self-check passes. The brief's Pasta example is reproduced by C3, who arrives on turn 7 and orders Pasta: seat 7, order and unit 1 on 8, unit 2 on 9, serve 10, ready to pay 11, pay 12 with satisfaction 76.
+
+### 7.8 Recorded changes for later stages
+
+These edits to Stage 1 classes are expected, and the README stage comparison lists each with its reason.
+
+| Stage | Change |
+| --- | --- |
+| 2 | New `VIPCustomer` (loss 5, discount 10, `typeName` "VIP") and `CriticCustomer` (loss 12, discount 0, `chooseMeal` returns `menu.item("Pasta")`, `typeName` "Critic"); `GameSetup.arrival` follows the arrival table. No other Stage 1 file changes. |
+| 3 | `Phase.HOST` before `WAITER`; `StaffRole.HOST`; new `Host` with `legalActions` and `seat` sharing the Waiter's seating logic through a package-private helper; `TurnController` constructor overload taking a `Host`; `beginTurn(boolean activateHappyHour)` overload that activates, applies recovery through a new `Customer.recover(int amount)`, and then adds the arrival; Happy Hour fields on `GameState` and `happyHourRemaining` on `Snapshot`; `ComboMeal extends MenuItem`; `Menu.base()` unchanged and `GameSetup` adds the combo; `RegularCustomer.chooseMeal` returns the combo when the index is divisible by 3 and the combo is on the menu; `Order` constructor overload with `boolean happyHourActive`; the CLI `Manager> ` and `Host> ` prompts. |
