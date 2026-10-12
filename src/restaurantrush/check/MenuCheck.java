@@ -59,6 +59,12 @@ public final class MenuCheck {
         return order;
     }
 
+    private static Order cancelled() {
+        Order order = pasta();
+        order.cancel();
+        return order;
+    }
+
     private static void checkNewOrder() {
         Order order = pasta();
         assert order.id().equals("O1");
@@ -120,9 +126,19 @@ public final class MenuCheck {
 
     private static void checkPay() {
         assert paid().status() == OrderStatus.PAID;
+        Order placed = pasta();
+        assertIllegalState(placed::markPaid);
+        assert placed.status() == OrderStatus.PLACED;
+        Order preparing = pasta();
+        preparing.advanceOneUnit(2);
+        assertIllegalState(preparing::markPaid);
+        assert preparing.status() == OrderStatus.PREPARING;
         Order ready = ready();
         assertIllegalState(ready::markPaid);
         assert ready.status() == OrderStatus.READY;
+        Order paid = paid();
+        assertIllegalState(paid::markPaid);
+        assert paid.status() == OrderStatus.PAID;
     }
 
     private static void checkCancel() {
@@ -149,6 +165,15 @@ public final class MenuCheck {
         Order paid = paid();
         assertIllegalState(paid::cancel);
         assert paid.status() == OrderStatus.PAID;
+
+        Order cancelled = cancelled();
+        assertIllegalState(cancelled::cancel);
+        assertIllegalState(() -> cancelled.advanceOneUnit(3));
+        assertIllegalState(() -> cancelled.markServed(3));
+        assertIllegalState(cancelled::markPaid);
+        assert cancelled.status() == OrderStatus.CANCELLED;
+        assert cancelled.unitsDone() == 0;
+        assert cancelled.servedTurn() == 0;
     }
 
     private static void checkBill() {
