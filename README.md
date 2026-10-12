@@ -4,6 +4,8 @@ Java command-line restaurant management game for the SC2002 group assignment.
 
 The [assignment brief](SC2002_Restaurant_Rush_Group_Assignment.docx.pdf) is the source of truth for the game rules and submission requirements.
 
+The [draft component contract](docs/component-contract.md) proposes shared responsibilities, turn timing, and component inputs and outputs for team review before implementation issues are created.
+
 ## Project status
 
 The repository currently contains the assignment brief and project setup. The game has not been implemented yet.
@@ -20,4 +22,4 @@ Each tag will identify a tested, runnable commit. Build and run instructions, st
 
 ## Team workflow
 
-Track a coherent piece of work in each GitHub issue. Work on a branch, open a pull request linked to the issue, review and merge it, then tag the tested milestone commit when a stage is complete.
+Track a coherent piece of work in each GitHub issue using the work-item form. Work on a branch, open a pull request using the repository template and link it to the issue, review and merge it, then tag the tested milestone commit when a stage is complete. Resolve the draft contract's proposed decisions before assigning dependent implementation work.

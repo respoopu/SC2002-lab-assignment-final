@@ -1,0 +1,120 @@
+name: Work item
+description: Define a self-contained implementation, integration, or documentation task.
+title: "[Stage] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Give one teammate ownership of a reviewable piece of work. Include the rules and decisions needed to complete it without private chat context. Read the [component contract](https://github.com/respoopu/SC2002-lab-assignment-final/blob/main/docs/component-contract.md) first. Resolve any relevant decision still marked **proposed** before assigning implementation.
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Stage
+      options:
+        - Stage 1
+        - Stage 2
+        - Stage 3
+        - Documentation or integration
+    validations:
+      required: true
+
+  - type: dropdown
+    id: workstream
+    attributes:
+      label: Primary workstream
+      options:
+        - Turn control and game state
+        - Customers and waiting queue
+        - Menu, orders, and pricing
+        - Staff and tables
+        - CLI and reproducibility
+        - Cross-component or documentation
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal and user-visible outcome
+      description: State what should work when this issue is complete, not just a class name.
+      placeholder: |
+        The manager can ...
+        This is complete when ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: rules
+    attributes:
+      label: Rules and contract references
+      description: Include the relevant rule values and contract sections so this issue is usable on its own. Link approved decisions or deviations.
+      placeholder: |
+        Contract sections: ...
+        Required rules: ...
+        Approved decisions: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and ownership
+      description: Name the component, expected files or classes, and what this issue must leave to another component.
+      placeholder: |
+        Owns: ...
+        Expected files/classes: ...
+        Calls or delegates to: ...
+        Out of scope: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: interface
+    attributes:
+      label: Inputs, outputs, and shared interface
+      description: Specify caller, input and output types or fields, state changes, errors, and any agreed public method signatures. If a shared signature is undecided, resolve it before implementation begins.
+      placeholder: |
+        Called by: ...
+        Inputs: ...
+        Outputs/events: ...
+        State changed: ...
+        Invalid input behavior: ...
+        Agreed API/signature: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and assumptions
+      description: Link prerequisite issues or PRs and state any sequencing constraint. Write "None" if there are none.
+      placeholder: |
+        Depends on: ...
+        Assumes: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Give observable success cases and important edge or failure cases. Use concrete turns, IDs, cents, and statuses where relevant.
+      placeholder: |
+        - [ ] Given ..., when ..., then ...
+        - [ ] Invalid ... leaves state and staff capacity unchanged.
+        - [ ] Earlier-stage behavior still ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification and evidence
+      description: State the build/test or scripted run command, expected result, and any README, diagram, or report note to capture. Write "N/A" only when a part truly does not apply.
+      placeholder: |
+        Commands or run script: ...
+        Expected output or result: ...
+        Design/stage evidence to record: ...
+    validations:
+      required: true
