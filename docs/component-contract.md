@@ -207,7 +207,7 @@ public abstract class Customer {
     public void becomeReadyToPay(int turn);                              // EATING -> READY_TO_PAY, sets readyToPayTurn
     public void pay();                                                   // READY_TO_PAY -> PAID
     public void leave();                                                 // WAITING or SEATED -> LEFT
-    public int loseSatisfaction();                                       // subtracts waitingLossPerTurn, floor 0, returns new value
+    public int loseSatisfaction();                                       // WAITING or SEATED only; subtracts waitingLossPerTurn, floor 0, returns new value
 }
 
 public final class RegularCustomer extends Customer {

@@ -10,22 +10,16 @@ public final class RegularCustomer extends Customer {
     }
 
     @Override
-    public String typeName() {
-        throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
-    }
+    public String typeName() { return "Regular"; }
 
     @Override
-    public int waitingLossPerTurn() {
-        throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
-    }
+    public int waitingLossPerTurn() { return 8; }
 
     @Override
-    public int discountPercent() {
-        throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
-    }
+    public int discountPercent() { return 0; }
 
     @Override
     public MenuItem chooseMeal(Menu menu) {
-        throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
+        return menu.cycleChoice(arrivalIndex());
     }
 }
