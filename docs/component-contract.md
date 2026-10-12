@@ -403,10 +403,10 @@ Every role is prompted every turn, so a Stage 1 turn consumes exactly two accept
 | Wave | Issues | Depends on |
 | --- | --- | --- |
 | 0 | API skeleton (#1) | none |
-| 1 | Customers and queue; Menu, orders, and pricing; CLI parser and rendering | #1 merged. `CustomerCheck` passes a stub `Order` reference; `CliCheck` feeds hand-built records to `render` and `parse` |
-| 2 | Staff and tables | wave 1 merged, because `StaffCheck` drives real customers and orders |
-| 3 | Turn controller and setup | wave 2 merged, because `GameCheck` plays turns through real staff |
-| 4 | Stage 1 fixtures and integration: `victory`, `defeat`, and the `-a`/`-b` pair | wave 3 merged; doubles as the stage gate run-through |
+| 1 | Customers and queue (#3); Menu, orders, and pricing (#4); CLI parser and rendering (#5) | #1 merged. `CustomerCheck` passes a stub `Order` reference; `CliCheck` feeds hand-built records to `render` and `parse` |
+| 2 | Staff and tables (#6) | #3 and #4 merged, because `StaffCheck` drives real customers and orders |
+| 3 | Turn controller and setup (#7) | #6 merged, because `GameCheck` plays turns through real staff |
+| 4 | Stage 1 fixtures and integration (#8): `victory`, `defeat`, and the `-a`/`-b` pair | #7 merged; doubles as the stage gate run-through |
 
 Owners of later waves draft against the skeleton while earlier waves are in review, and open their PR once their dependencies have merged and their self-check passes. The brief's Pasta example is reproduced by C3, who arrives on turn 7 and orders Pasta: seat 7, order and unit 1 on 8, unit 2 on 9, serve 10, ready to pay 11, pay 12 with satisfaction 76.
 
