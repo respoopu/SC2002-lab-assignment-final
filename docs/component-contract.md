@@ -1,8 +1,8 @@
 # Restaurant Rush component contract
 
-**Status:** Draft for team review. No implementation issues or stage tags should be based on this until the team agrees on the proposed decisions below.
+**Status:** Game rules, component responsibilities, and the implementation decisions in Section 6 are agreed by the team. The shared Java API described in Section 7 still needs to be specified before parallel implementation issues are assigned.
 
-The [assignment brief](../SC2002_Restaurant_Rush_Group_Assignment.docx.pdf) takes precedence over this document. This contract defines the boundaries between workstreams so that independently developed parts can be integrated. Names and method signatures are provisional; behavior and ownership are the important agreements.
+The [assignment brief](../SC2002_Restaurant_Rush_Group_Assignment.docx.pdf) takes precedence over this document. This contract defines the boundaries between workstreams so that independently developed parts can be integrated. The behavioral decisions are binding; public Java names and method signatures remain to be specified.
 
 ## 1. Shared game rules
 
@@ -27,20 +27,20 @@ Each customer has a stable ID and can place at most one order. A table is occupi
 The turn controller is the only component that advances phases. It applies actions in this order:
 
 1. Start the turn, apply any Stage 3 Happy Hour activation and start-of-turn recovery, then add the scheduled arrival. Publish a read-only snapshot for the CLI to display before staff choices.
-2. In Stage 3, accept one Host choice: seat a queued customer or wait. The Host acts before the Waiter under this draft's proposed ordering.
+2. In Stage 3, accept one Host choice: seat a queued customer or wait. The Host acts before the Waiter under the team's agreed ordering.
 3. Accept one Waiter choice: seat one queued customer, take one seated customer's order, serve one `READY` order, or wait. The Waiter acts before the Chef. An order made `READY` by the Chef later in this turn cannot be served yet.
 4. Accept one Chef choice: advance one eligible order by one preparation unit or wait. An order taken by the Waiter in this turn is eligible.
 5. Move customers served on an **earlier** turn through one full turn of eating to `READY_TO_PAY`. The Cashier then pays at most one customer who was already `READY_TO_PAY` before this turn, oldest first. A customer who becomes ready to pay now cannot pay until a later turn.
 6. Deduct satisfaction from customers still waiting for a table or food and not served. Abandon those who reach 0, cancel any unserved order, and free their table if occupied. Served, eating, and ready-to-pay customers do not lose satisfaction.
 7. Publish the turn summary: cumulative served count, unhappy departures, revenue, paid-customer average, and turns used. After turn 18, publish Victory or Defeat.
 
-"Oldest first" means earliest turn becoming `READY_TO_PAY`, with arrival order breaking a tie. This tie-break is a proposed deterministic interpretation of the brief.
+"Oldest first" means earliest turn becoming `READY_TO_PAY`, with arrival order breaking a tie. This is the team's agreed deterministic interpretation of the brief.
 
 The snapshot must provide the turn number, revenue, paid-customer average, waiting queue, occupied tables, each arrived customer's satisfaction and status, each order's status, available staff tasks, and Stage 3 Happy Hour duration when relevant. The CLI displays events such as arrivals and food choices when they occur. The controller and domain determine what is legal; the CLI only parses choices and renders snapshots, events, and errors.
 
 ### Action boundary
 
-The precise Java types can be agreed when the first code skeleton is made, but every staff action follows this behavior:
+The precise Java types will be recorded in the shared API before parallel implementation begins, but every staff action follows this behavior:
 
 | Input | Output | Invalid-choice guarantee |
 | --- | --- | --- |
@@ -96,13 +96,13 @@ Before merging a PR, its owner and reviewer should check the relevant behavior a
 
 No stage tag is created until that stage builds offline, runs from a fresh checkout using the documented command, and passes its reproducible scenarios. Tags `stage-1`, `stage-2`, and `stage-3` each identify a specific tested commit.
 
-## 6. Proposed decisions for team review
+## 6. Agreed implementation decisions
 
-These choices are **not specified fully by the brief**. Resolve them before creating dependent issues; record any changes here so PRs use the same behavior.
+The brief leaves these choices to the group. The team has accepted the following rules. Changing one requires an explicit contract update and a check of affected issues and tests.
 
-| Decision | Proposed default | Reason / effect |
+| Decision | Agreed rule | Reason / effect |
 | --- | --- | --- |
-| Java/build baseline | Java 17, standard library only, with documented `javac`/`java` commands | Keeps a fresh offline build straightforward; confirm the course's supported Java version. |
+| Java/build baseline | Java 17, standard library only, with documented `javac`/`java` commands | Keeps a fresh offline build straightforward and consistent across contributors. |
 | Food choice | Cycle Salad, Burger, Pasta by arrival index for Regular and VIP customers; Critic always chooses Pasta | Deterministic, demonstrates the Critic's distinct preference, and needs no manager food choice. |
 | Customer types at arrivals in Stage 2/3 | Regular, VIP, Regular, Critic, Regular, Regular at turns 1, 4, 7, 10, 13, 16 | Ensures both new types appear while preserving six arrivals. |
 | Stage 3 combo choice | A Regular customer with arrival index divisible by 3 chooses Salad + Pasta when the combo is available; otherwise use the base food cycle | Produces a visible, reproducible combo without adding a manager food choice. |
@@ -111,4 +111,15 @@ These choices are **not specified fully by the brief**. Resolve them before crea
 | Percentage rounding | Round half up to the nearest cent after combo pricing, after personal discount, and after Happy Hour discount | Maintains integer cents and a consistent order of operations. |
 | Cashier tie-break | Earliest `READY_TO_PAY` turn, then earliest arrival | Makes "oldest first" deterministic if two customers qualify together. |
 
-Once the team agrees on these decisions, turn each workstream into small Stage 1, Stage 2, Stage 3, and evidence issues with one primary owner and one reviewer. Any PR that needs to change a shared contract should update this document and explain the impact on other workstreams.
+## 7. Shared Java API before parallel implementation
+
+The responsibilities above tell each workstream **what** it owns. Before multiple agents implement those workstreams independently, record the cross-component Java surface in this contract or a linked API document:
+
+- Package layout and the exact offline build/run command for the agreed Java 17 baseline.
+- Public class, enum, and value-type names; their source paths; and which workstream owns each one.
+- Constructors and public methods called across workstreams, including parameter types, return types, and who creates the objects.
+- The exact action request/result, read-only snapshot, and event shapes used between the CLI, controller, and domain.
+- Which component may mutate each state field, and how illegal transitions or invalid choices are reported without consuming a staff task.
+- Stage 1 extension points needed for customer variants and later policies, with shared API changes documented before Stage 2 or 3 work is split across agents.
+
+This shared surface belongs in the contract because several issues depend on it. An individual issue should specify its own acceptance cases, files to change, and any private helper classes or algorithms; it should reference the agreed public API rather than inventing a competing one. A single setup/design issue may establish a compiling API skeleton before the independent implementation issues are assigned. Any PR that changes a shared contract must update the contract and explain the impact on other workstreams.

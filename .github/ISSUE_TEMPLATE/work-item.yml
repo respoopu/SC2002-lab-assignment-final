@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Give one teammate ownership of a reviewable piece of work. Include the rules and decisions needed to complete it without private chat context. Read the [component contract](https://github.com/respoopu/SC2002-lab-assignment-final/blob/main/docs/component-contract.md) first. Resolve any relevant decision still marked **proposed** before assigning implementation.
+        Give one teammate ownership of a reviewable piece of work. Include the rules and decisions needed to complete it without private chat context. Read the [component contract](https://github.com/respoopu/SC2002-lab-assignment-final/blob/main/docs/component-contract.md) first. Shared Java types and signatures used by multiple workstreams must be agreed in the contract before assigning implementation.
 
   - type: dropdown
     id: stage
