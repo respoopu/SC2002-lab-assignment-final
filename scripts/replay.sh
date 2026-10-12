@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds the game and replays fixture transcripts.
+# Builds the game, runs the self-check classes, and replays fixture transcripts.
 #
 #   scripts/replay.sh                              build, replay every fixture under fixtures/
 #   scripts/replay.sh fixtures/stage-1/victory.in  replay one fixture
@@ -18,19 +18,30 @@ if [[ "${1:-}" == "--update" ]]; then
 fi
 
 mkdir -p out
-javac -d out $(find src -name '*.java')
+javac --release 17 -d out $(find src -name '*.java')
+
+# Self-checks: every class in restaurantrush.check, run with assertions enabled.
+fail=0
+for check in $(find src/restaurantrush/check -name '*Check.java' 2>/dev/null | sort); do
+  name="$(basename "$check" .java)"
+  if java -ea -cp out "restaurantrush.check.$name"; then
+    echo "PASS check $name"
+  else
+    echo "FAIL check $name"
+    fail=1
+  fi
+done
 
 if [[ $# -eq 0 ]]; then
   set -- $(find fixtures -name '*.in' | sort)
 fi
 
-fail=0
 for input in "$@"; do
   expected="${input%.in}.expected"
   actual="$(mktemp)"
   status=0
   sed -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' "$input" \
-    | java -cp out restaurantrush.Main > "$actual" 2>&1 || status=$?
+    | java -cp out restaurantrush.game.Main > "$actual" 2>&1 || status=$?
 
   if [[ $update -eq 1 ]]; then
     cp "$actual" "$expected"
