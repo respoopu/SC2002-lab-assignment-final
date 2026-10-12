@@ -19,7 +19,7 @@ Give commands and observed results. Include a reproducible input sequence or tra
 
 | Check | Command or scenario | Observed result |
 | --- | --- | --- |
-| Build and automated checks |  |  |
+| Build and fixture replay (`scripts/replay.sh`) |  |  |
 | Required success and edge cases from the issue |  |  |
 | Earlier-stage regression, if applicable |  |  |
 
@@ -38,5 +38,5 @@ Keep this brief. Record only principles and trade-offs that the code actually de
 - [ ] The relevant contract and assignment rules are followed; any changed contract is included in this PR.
 - [ ] Invalid choices leave game state and staff capacity unchanged, if this PR handles choices.
 - [ ] Build and checks were run from the documented commands, or the reason they could not run is stated above.
-- [ ] Reproducible run notes and documentation were updated where this PR changes observable behavior.
+- [ ] Fixtures under `fixtures/` and documentation were updated where this PR changes observable behavior, and any regenerated `.expected` file was reviewed.
 - [ ] I reviewed and understand the submitted changes, including any AI-assisted work, and can explain them in the group report or video.

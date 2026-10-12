@@ -58,7 +58,7 @@ These five workstreams match the intended team split. A workstream can own sever
 | **Customers and waiting queue** | Customer identity/status/satisfaction, queue insertion and removal rules, food preference, customer-specific waiting loss and personal discount rate | Arrival information, elapsed waiting turn, menu catalog, start-of-turn recovery request | Chosen meal, satisfaction changes, abandonment signal, personal discount rate; Stage 2 variation through customer methods rather than controller type checks |
 | **Menu, orders, and pricing** | Menu definitions, order progress/status, preparation units, all cents arithmetic, locked bill, Stage 3 combo composition and Happy Hour price rule | Customer's chosen meal and personal discount rate, whether Happy Hour is active at order time, Chef work | New order and its displayed choice, one-unit progress events, final locked bill; no change to an existing order when a promotion later starts or ends |
 | **Staff and tables** | Table occupancy and legal Waiter/Chef/Cashier operations; Stage 3 Host seating | Current phase, target IDs, customer/order/table state | One legal staff effect or a rejection reason; no double booking, premature serving, premature payment, or more than one task per role per turn |
-| **CLI and reproducibility** | Text input/output, action parsing, deterministic run fixtures, build/run instructions | Read-only snapshots, offered tasks, events, action results | Manager choice requests, readable status and errors, repeatable victory/defeat transcripts; no game rules or direct mutation of domain state |
+| **CLI and reproducibility** | Text input/output, action parsing, the `fixtures/` directory, `scripts/replay.sh`, build/run instructions | Read-only snapshots, offered tasks, events, action results | Manager choice requests, readable status and errors, repeatable victory/defeat transcripts; no game rules or direct mutation of domain state |
 
 The game state stores the shared objects; the relevant domain or staff component owns the rules for changing each object. The turn controller coordinates them; it should not contain `if`/`switch` chains on customer subtype. Customer objects supply their own waiting loss, food preference, and personal discount rate. The pricing component performs all rounding and discount arithmetic. An order owns its preparation progress and locked bill. A table owns its occupant. The CLI does not import concrete customer subtypes or calculate prices, satisfaction, or legal actions.
 
@@ -94,7 +94,24 @@ Before merging a PR, its owner and reviewer should check the relevant behavior a
 - At least one pair of runs uses the same setting and arrival/meal rules but different manager choices to demonstrate how prioritization changes the outcome.
 - The class diagram matches the final code, and the sequence diagram traces real method responsibilities and timing. README stage comparisons identify added and changed files, reasons, and commit or compare links.
 
-No stage tag is created until that stage builds offline, runs from a fresh checkout using the documented command, and passes its reproducible scenarios. Tags `stage-1`, `stage-2`, and `stage-3` each identify a specific tested commit.
+### Reproducible runs are fixtures
+
+There is no unit test framework. Every reproducible run is a fixture that `scripts/replay.sh` replays and diffs, and fixture replay plus the stage gate below are the project's only checks.
+
+- **Location:** `fixtures/stage-<n>/<scenario>.in` with its transcript in `fixtures/stage-<n>/<scenario>.expected`. Stage 1 needs at least `victory` and `defeat`. Stage 2 needs at least `vip-critic`. Stage 3 needs at least `host-combo-happy-hour`. The pair of runs that differ only in manager choices uses the suffixes `-a` and `-b` on the same scenario name.
+- **Input format:** one manager command per line, exactly as typed at the prompt, in the order the game asks for them. Blank lines and lines starting with `#` are comments; the script strips them before piping the file to the game's standard input.
+- **Expected transcript:** the game's complete standard output for that input. Output must be byte-identical across runs and machines: no timestamps, no random values, no locale-dependent formatting, `\n` line endings (`.gitattributes` forces LF on these files).
+- **End of input:** if standard input ends before turn 18 completes, the game prints a short message and exits with a non-zero status, so a short fixture fails instead of hanging.
+- **Commands:** `scripts/replay.sh` builds the game, replays every fixture, prints `PASS` or `FAIL` per fixture, and exits non-zero on any failure. `scripts/replay.sh fixtures/stage-1/victory.in` replays one fixture. `scripts/replay.sh --update <fixture.in>` rewrites that expected transcript; use it only for an intended output change, and the PR reviewer reads the regenerated diff.
+- **Before every PR:** run `scripts/replay.sh`. Every fixture from the current and earlier stages must pass. Add or update a fixture whenever the PR changes observable behavior.
+
+### Stage gate
+
+1. Every issue for the stage is closed by a merged PR.
+2. From a fresh checkout, run `scripts/replay.sh`. Then one teammate plays the game manually against Sections 1 to 4 and the brief.
+3. Each failure or deviation becomes a new work-item issue for that stage. Fix PRs merge and the replay is rerun.
+4. When everything passes, tag that commit `stage-<n>`. Tags `stage-1`, `stage-2`, and `stage-3` each identify a specific tested commit.
+5. PRs for the next stage may be opened at any time but are not merged until the `stage-<n>` tag exists. This keeps each tag free of later-stage code.
 
 ## 6. Agreed implementation decisions
 
@@ -102,7 +119,8 @@ The brief leaves these choices to the group. The team has accepted the following
 
 | Decision | Agreed rule | Reason / effect |
 | --- | --- | --- |
-| Java/build baseline | Java 17, standard library only, with documented `javac`/`java` commands | Keeps a fresh offline build straightforward and consistent across contributors. |
+| Java/build baseline | Java 17, standard library only, no test framework. Sources live under `src/` in root package `restaurantrush` with entry point `restaurantrush.Main`. Build: `javac -d out $(find src -name '*.java')`. Run: `java -cp out restaurantrush.Main` | Keeps a fresh offline build straightforward and consistent across contributors. |
+| Verification | Fixture replay with `scripts/replay.sh` before every PR, then the stage gate in Section 5; no JUnit | The brief's required reproducible runs double as the regression check, and the build stays plain `javac`. |
 | Food choice | Cycle Salad, Burger, Pasta by arrival index for Regular and VIP customers; Critic always chooses Pasta | Deterministic, demonstrates the Critic's distinct preference, and needs no manager food choice. |
 | Customer types at arrivals in Stage 2/3 | Regular, VIP, Regular, Critic, Regular, Regular at turns 1, 4, 7, 10, 13, 16 | Ensures both new types appear while preserving six arrivals. |
 | Stage 3 combo choice | A Regular customer with arrival index divisible by 3 chooses Salad + Pasta when the combo is available; otherwise use the base food cycle | Produces a visible, reproducible combo without adding a manager food choice. |
@@ -115,7 +133,7 @@ The brief leaves these choices to the group. The team has accepted the following
 
 The responsibilities above tell each workstream **what** it owns. Before multiple agents implement those workstreams independently, record the cross-component Java surface in this contract or a linked API document:
 
-- Package layout and the exact offline build/run command for the agreed Java 17 baseline.
+- Sub-package layout under `restaurantrush`. The root package, entry point, and build/run commands are fixed in Section 6.
 - Public class, enum, and value-type names; their source paths; and which workstream owns each one.
 - Constructors and public methods called across workstreams, including parameter types, return types, and who creates the objects.
 - The exact action request/result, read-only snapshot, and event shapes used between the CLI, controller, and domain.
