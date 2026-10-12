@@ -132,6 +132,26 @@ public final class CustomerCheck {
         assert c.loseSatisfaction() == 0;
         assert c.satisfaction() == 0;
         assert c.loseSatisfaction() == 0;
+
+        Customer seated = new RegularCustomer("C2", 4, 2);
+        seated.seat();
+        assert seated.loseSatisfaction() == 92;
+
+        Customer eating = new RegularCustomer("C3", 7, 3);
+        eating.seat();
+        eating.attachOrder(order());
+        eating.startEating(4);
+        assertThrows(IllegalStateException.class, eating::loseSatisfaction);
+        eating.becomeReadyToPay(5);
+        assertThrows(IllegalStateException.class, eating::loseSatisfaction);
+        eating.pay();
+        assertThrows(IllegalStateException.class, eating::loseSatisfaction);
+        assert eating.satisfaction() == 100;
+
+        Customer left = new RegularCustomer("C4", 10, 4);
+        left.leave();
+        assertThrows(IllegalStateException.class, left::loseSatisfaction);
+        assert left.satisfaction() == 100;
     }
 
     private static void queue() {

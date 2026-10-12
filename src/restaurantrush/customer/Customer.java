@@ -99,8 +99,11 @@ public abstract class Customer {
         status = CustomerStatus.LEFT;
     }
 
-    /** Subtracts waitingLossPerTurn with a floor of 0 and returns the new value. */
+    /** WAITING or SEATED only. Subtracts waitingLossPerTurn with a floor of 0 and returns the new value. */
     public int loseSatisfaction() {
+        if (!isWaitingForTableOrFood()) {
+            throw new IllegalStateException(id + " cannot lose satisfaction while " + status);
+        }
         satisfaction = Math.max(0, satisfaction - waitingLossPerTurn());
         return satisfaction;
     }
