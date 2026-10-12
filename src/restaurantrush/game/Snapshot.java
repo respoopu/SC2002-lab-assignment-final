@@ -7,4 +7,11 @@ import java.util.Optional;
 public record Snapshot(int turn, Phase phase, int revenueCents, int paidCount, int satisfactionSum,
                        List<CustomerView> queue, List<TableView> tables, List<CustomerView> customers,
                        List<OrderView> orders, Optional<StaffRole> currentRole, List<Action> legalActions) {
+    public Snapshot {
+        queue = List.copyOf(queue);
+        tables = List.copyOf(tables);
+        customers = List.copyOf(customers);
+        orders = List.copyOf(orders);
+        legalActions = List.copyOf(legalActions);
+    }
 }

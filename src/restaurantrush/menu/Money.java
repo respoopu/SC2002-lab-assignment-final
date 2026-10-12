@@ -17,6 +17,9 @@ public final class Money {
 
     /** "$18.00" */
     public static String format(int cents) {
+        if (cents < 0) {
+            throw new IllegalArgumentException("cents must be >= 0");
+        }
         return String.format(Locale.ROOT, "$%d.%02d", cents / 100, cents % 100);
     }
 }

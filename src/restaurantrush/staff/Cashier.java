@@ -6,7 +6,7 @@ import restaurantrush.game.GameState;
 
 /** Automatic: at most one payment per turn, oldest first. */
 public final class Cashier {
-    /** Pays the oldest customer with readyToPayTurn before this turn (tie-break by arrival): order PAID, customer PAID, table released, state.recordPayment. Empty when nobody qualifies. */
+    /** Pays the customer with the earliest readyToPayTurn before this turn, then earliest arrival. Effects: order.markPaid, customer.pay, state.tableOf(id).release, state.recordPayment, event. Empty when nobody qualifies. */
     public Optional<GameEvent> collect(GameState state) {
         throw new UnsupportedOperationException("Owned by workstream: Staff and tables");
     }

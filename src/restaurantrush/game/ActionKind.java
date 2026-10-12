@@ -1,4 +1,4 @@
 package restaurantrush.game;
 
-/** Manager choices for a staff role. Stage 3 adds HAPPY_HOUR. */
+/** Manager choices for a staff role. */
 public enum ActionKind { SEAT, ORDER, SERVE, PREPARE, WAIT }

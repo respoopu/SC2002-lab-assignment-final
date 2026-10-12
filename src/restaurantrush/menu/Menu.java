@@ -2,13 +2,13 @@ package restaurantrush.menu;
 
 import java.util.List;
 
-/** The menu catalog. Stage 3 adds the combo entry. */
+/** The menu catalog. The first three items are the base cycle. */
 public final class Menu {
     private final List<MenuItem> items;
 
     public Menu(List<MenuItem> items) {
-        if (items.isEmpty()) {
-            throw new IllegalArgumentException("menu needs at least one item");
+        if (items.size() < 3) {
+            throw new IllegalArgumentException("menu needs the three base items first");
         }
         this.items = List.copyOf(items);
     }
@@ -23,7 +23,13 @@ public final class Menu {
 
     public List<MenuItem> items() { return items; }
 
-    /** 1-based arrival index cycles the base items: 1 Salad, 2 Burger, 3 Pasta, 4 Salad, ... */
+    /** IllegalArgumentException if no item has this name. */
+    public MenuItem item(String name) {
+        return items.stream().filter(i -> i.name().equals(name)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("no menu item named " + name));
+    }
+
+    /** 1-based arrival index cycles the first three items: 1 Salad, 2 Burger, 3 Pasta, 4 Salad, ... */
     public MenuItem cycleChoice(int arrivalIndex) {
         if (arrivalIndex < 1) {
             throw new IllegalArgumentException("arrival index is 1-based");

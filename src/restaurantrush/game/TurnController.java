@@ -13,17 +13,17 @@ public final class TurnController {
     public TurnController(GameState state, Waiter waiter, Chef chef, Cashier cashier, IntFunction<Customer> arrivals) {
     }
 
-    /** TURN_START only: turn + 1, clear tasks, scheduled arrival, phase WAITER. */
+    /** TURN_START only. Effects in contract Section 7.5: next turn, scheduled arrival into customers and queue, phase WAITER. */
     public TurnStart beginTurn() {
         throw new UnsupportedOperationException("Owned by workstream: Turn control and game state");
     }
 
-    /** WAITER or CHEF only; role must match the phase. An accepted action or WAIT marks the role done and advances the phase. */
+    /** WAITER or CHEF only; the action's role must match the phase. An accepted action or WAIT advances the phase; a rejection changes nothing. */
     public ActionResult submit(Action action) {
         throw new UnsupportedOperationException("Owned by workstream: Turn control and game state");
     }
 
-    /** EATING_AND_PAYMENT only: eating, payment, satisfaction loss, abandonment, summary; result after the last turn. */
+    /** TURN_END only. Effects in contract Section 7.5: eating, payment, satisfaction loss, abandonment, summary; result and GAME_OVER after the last turn, else TURN_START. */
     public TurnEnd endTurn() {
         throw new UnsupportedOperationException("Owned by workstream: Turn control and game state");
     }

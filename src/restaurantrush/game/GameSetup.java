@@ -2,16 +2,17 @@ package restaurantrush.game;
 
 import restaurantrush.customer.Customer;
 
-/** Composition root. Later stages register new types here. */
+/** Composition root: builds the game and creates arrivals. */
 public final class GameSetup {
     private GameSetup() {
     }
 
+    /** new GameState(GameConfig.base(), Menu.base()), the staff, and i -> arrival(i, arrivalTurns.get(i - 1)). */
     public static TurnController baseGame() {
         throw new UnsupportedOperationException("Owned by workstream: Turn control and game state");
     }
 
-    /** Stage 1: always a RegularCustomer. Stage 2 follows the arrival table in contract Section 6. */
+    /** new RegularCustomer("C" + arrivalIndex, turn, arrivalIndex). */
     public static Customer arrival(int arrivalIndex, int turn) {
         throw new UnsupportedOperationException("Owned by workstream: Turn control and game state");
     }

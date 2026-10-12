@@ -4,7 +4,7 @@ import java.util.Optional;
 import restaurantrush.game.Action;
 import restaurantrush.game.StaffRole;
 
-/** Pure parsing of one input line for the current role. Case-insensitive: SEAT C2, ORDER C1, SERVE O1, PREPARE O1, WAIT. */
+/** Pure parsing of one input line for the current role. Accepts only SEAT C<n>, ORDER C<n>, SERVE O<n>, PREPARE O<n>, WAIT, case-insensitive, and only the kinds that belong to the role. Existence and legality are decided by staff. */
 public final class CommandParser {
     private CommandParser() {
     }

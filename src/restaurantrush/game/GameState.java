@@ -2,7 +2,6 @@ package restaurantrush.game;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import restaurantrush.customer.Customer;
@@ -19,7 +18,6 @@ public final class GameState {
     private final List<Customer> customers = new ArrayList<>();
     private final List<Order> orders = new ArrayList<>();
     private final List<Table> tables = new ArrayList<>();
-    private final EnumSet<StaffRole> tasksUsed = EnumSet.noneOf(StaffRole.class);
     private int turn = 0;
     private Phase phase = Phase.TURN_START;
     private int nextOrderNumber = 1;
@@ -59,13 +57,15 @@ public final class GameState {
         return tables.stream().filter(t -> t.id().equals(id)).findFirst();
     }
 
+    /** The table whose occupant is this customer. */
+    public Optional<Table> tableOf(String customerId) {
+        return tables.stream().filter(t -> t.occupantId().filter(customerId::equals).isPresent()).findFirst();
+    }
+
+    /** Call only after every check has passed, so a rejection never skips an ID. */
     public String nextOrderId() { return "O" + nextOrderNumber++; }
     public void addCustomer(Customer customer) { customers.add(customer); }
     public void addOrder(Order order) { orders.add(order); }
-
-    public boolean taskUsed(StaffRole role) { return tasksUsed.contains(role); }
-    public void markTaskUsed(StaffRole role) { tasksUsed.add(role); }
-    public void clearTasks() { tasksUsed.clear(); }
 
     /** Controller only. */
     public void setTurn(int turn) { this.turn = turn; }

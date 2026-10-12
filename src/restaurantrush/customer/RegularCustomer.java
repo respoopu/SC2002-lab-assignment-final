@@ -10,6 +10,11 @@ public final class RegularCustomer extends Customer {
     }
 
     @Override
+    public String typeName() {
+        throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
+    }
+
+    @Override
     public int waitingLossPerTurn() {
         throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
     }

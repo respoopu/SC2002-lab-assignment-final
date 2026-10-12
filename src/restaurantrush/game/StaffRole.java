@@ -1,4 +1,4 @@
 package restaurantrush.game;
 
-/** Staff roles. Stage 3 adds HOST. */
-public enum StaffRole { WAITER, CHEF, CASHIER }
+/** Roles the manager directs. The Cashier is automatic and has no role constant. */
+public enum StaffRole { WAITER, CHEF }

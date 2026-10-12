@@ -24,9 +24,7 @@ public abstract class Customer {
     }
 
     /** Display name such as "Regular". */
-    public String typeName() {
-        throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
-    }
+    public abstract String typeName();
 
     public CustomerStatus status() {
         throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
@@ -66,12 +64,12 @@ public abstract class Customer {
         throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
     }
 
-    /** SEATED with no order. */
+    /** SEATED with no order. Stores the reference only; a customer never calls a method on its Order. */
     public void attachOrder(Order order) {
         throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
     }
 
-    /** SEATED with a READY order to EATING; sets servedTurn. */
+    /** SEATED with an order attached to EATING; sets servedTurn. The Waiter checks that the order is READY. */
     public void startEating(int turn) {
         throw new UnsupportedOperationException("Owned by workstream: Customers and waiting queue");
     }
