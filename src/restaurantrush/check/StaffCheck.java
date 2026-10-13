@@ -44,6 +44,7 @@ public final class StaffCheck {
         checkCollectWaitsForLaterTurn();
         checkWaiterLegalActions();
         checkChefLegalActions();
+        checkRejectionsLeaveStateUnchanged();
 
         System.out.println("OK StaffCheck");
     }
@@ -424,5 +425,61 @@ public final class StaffCheck {
         assert chef.legalActions(state).equals(List.of(
                 chef(ActionKind.PREPARE, "O2"),
                 chef(ActionKind.WAIT, null)));
+    }
+
+    /** Every status, table, queue entry, order, and counter, as one comparable string. */
+    private static String fingerprint(GameState state) {
+        StringBuilder text = new StringBuilder();
+        for (Customer customer : state.customers()) {
+            text.append(customer.id()).append(' ').append(customer.status()).append(' ').append(customer.satisfaction())
+                    .append(' ').append(customer.order().map(Order::id).orElse("-")).append('\n');
+        }
+        for (Order order : state.orders()) {
+            text.append(order.id()).append(' ').append(order.status()).append(' ').append(order.unitsDone())
+                    .append(' ').append(order.readyTurn()).append(' ').append(order.servedTurn()).append('\n');
+        }
+        state.tables().forEach(table -> text.append(table.id()).append(' ').append(table.occupantId().orElse("-")).append('\n'));
+        state.queue().view().forEach(customer -> text.append("queued ").append(customer.id()).append('\n'));
+        text.append(state.servedCount()).append(' ').append(state.paidCount()).append(' ').append(state.revenueCents())
+                .append(' ').append(state.satisfactionSum());
+        return text.toString();
+    }
+
+    private static void checkRejectionsLeaveStateUnchanged() {
+        Waiter waiter = new Waiter();
+        Chef chef = new Chef();
+        GameState state = stateWithQueue(1, 4);
+        assert waiter.seat(state, "C1").accepted();
+        assert waiter.seat(state, "C3").accepted();
+        state.setTurn(2);
+        assert waiter.takeOrder(state, "C1").accepted();
+        assert waiter.takeOrder(state, "C3").accepted();
+        assert chef.prepare(state, "O1").accepted();
+        assert chef.prepare(state, "O2").accepted();
+
+        String before = fingerprint(state);
+        List<ActionResult> rejections = List.of(
+                waiter.seat(state, "C2"),
+                waiter.seat(state, "C9"),
+                waiter.takeOrder(state, "C1"),
+                waiter.takeOrder(state, "C2"),
+                waiter.takeOrder(state, "C9"),
+                waiter.serve(state, "O1"),
+                waiter.serve(state, "O2"),
+                waiter.serve(state, "O9"),
+                chef.prepare(state, "O1"),
+                chef.prepare(state, "O9"));
+        for (ActionResult result : rejections) {
+            assert !result.accepted();
+            assert !result.message().isEmpty();
+            assert result.events().isEmpty();
+        }
+        assert fingerprint(state).equals(before);
+
+        state.setTurn(3);
+        assert waiter.serve(state, "O1").accepted();
+        assert !fingerprint(state).equals(before);
+        assert state.orders().size() == 2;
+        assert state.nextOrderId().equals("O3");
     }
 }
