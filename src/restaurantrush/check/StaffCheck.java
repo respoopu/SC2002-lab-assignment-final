@@ -1,13 +1,17 @@
 package restaurantrush.check;
 
+import java.util.List;
 import java.util.Optional;
 import restaurantrush.customer.Customer;
 import restaurantrush.customer.CustomerStatus;
 import restaurantrush.customer.RegularCustomer;
+import restaurantrush.game.Action;
+import restaurantrush.game.ActionKind;
 import restaurantrush.game.ActionResult;
 import restaurantrush.game.GameConfig;
 import restaurantrush.game.GameEvent;
 import restaurantrush.game.GameState;
+import restaurantrush.game.StaffRole;
 import restaurantrush.menu.Menu;
 import restaurantrush.menu.Order;
 import restaurantrush.menu.OrderStatus;
@@ -38,6 +42,8 @@ public final class StaffCheck {
         checkServeRejections();
         checkCollect();
         checkCollectWaitsForLaterTurn();
+        checkWaiterLegalActions();
+        checkChefLegalActions();
 
         System.out.println("OK StaffCheck");
     }
@@ -349,5 +355,74 @@ public final class StaffCheck {
         assert state.revenueCents() == 0;
         assert !state.table("T1").orElseThrow().isFree();
         assert !state.table("T2").orElseThrow().isFree();
+    }
+
+    private static Action waiter(ActionKind kind, String targetId) {
+        return new Action(StaffRole.WAITER, kind, targetId);
+    }
+
+    private static Action chef(ActionKind kind, String targetId) {
+        return new Action(StaffRole.CHEF, kind, targetId);
+    }
+
+    private static void checkWaiterLegalActions() {
+        Waiter waiter = new Waiter();
+        Chef chef = new Chef();
+        assert waiter.legalActions(stateWithQueue(1, 0)).equals(List.of(waiter(ActionKind.WAIT, null)));
+
+        GameState state = new GameState(new GameConfig(18, 3, List.of(1, 4, 7, 10, 13, 16)), Menu.base());
+        state.setTurn(1);
+        for (int index = 1; index <= 4; index++) {
+            Customer customer = new RegularCustomer("C" + index, 1, index);
+            state.addCustomer(customer);
+            state.queue().add(customer);
+        }
+        assert waiter.seat(state, "C1").accepted();
+        state.setTurn(2);
+        assert waiter.takeOrder(state, "C1").accepted();
+        assert waiter.seat(state, "C3").accepted();
+        assert chef.prepare(state, "O1").accepted();
+        state.setTurn(3);
+        assert waiter.legalActions(state).equals(List.of(
+                waiter(ActionKind.SEAT, "C2"),
+                waiter(ActionKind.SEAT, "C4"),
+                waiter(ActionKind.ORDER, "C3"),
+                waiter(ActionKind.SERVE, "O1"),
+                waiter(ActionKind.WAIT, null)));
+
+        assert waiter.seat(state, "C4").accepted();
+        assert waiter.legalActions(state).equals(List.of(
+                waiter(ActionKind.ORDER, "C3"),
+                waiter(ActionKind.ORDER, "C4"),
+                waiter(ActionKind.SERVE, "O1"),
+                waiter(ActionKind.WAIT, null)));
+
+        GameState readyThisTurn = stateWithPastaOrder();
+        assert chef.prepare(readyThisTurn, "O1").accepted();
+        readyThisTurn.setTurn(3);
+        assert chef.prepare(readyThisTurn, "O1").accepted();
+        assert waiter.legalActions(readyThisTurn).equals(List.of(
+                waiter(ActionKind.SEAT, "C1"),
+                waiter(ActionKind.SEAT, "C2"),
+                waiter(ActionKind.WAIT, null)));
+    }
+
+    private static void checkChefLegalActions() {
+        Chef chef = new Chef();
+        GameState state = stateWithSeated(2);
+        assert chef.legalActions(state).equals(List.of(chef(ActionKind.WAIT, null)));
+
+        Waiter waiter = new Waiter();
+        assert waiter.takeOrder(state, "C2").accepted();
+        assert waiter.takeOrder(state, "C1").accepted();
+        assert chef.legalActions(state).equals(List.of(
+                chef(ActionKind.PREPARE, "O1"),
+                chef(ActionKind.PREPARE, "O2"),
+                chef(ActionKind.WAIT, null)));
+
+        assert chef.prepare(state, "O1").accepted();
+        assert chef.legalActions(state).equals(List.of(
+                chef(ActionKind.PREPARE, "O2"),
+                chef(ActionKind.WAIT, null)));
     }
 }

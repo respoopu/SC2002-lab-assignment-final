@@ -1,13 +1,16 @@
 package restaurantrush.staff;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import restaurantrush.customer.Customer;
 import restaurantrush.customer.CustomerStatus;
 import restaurantrush.game.Action;
+import restaurantrush.game.ActionKind;
 import restaurantrush.game.ActionResult;
 import restaurantrush.game.GameEvent;
 import restaurantrush.game.GameState;
+import restaurantrush.game.StaffRole;
 import restaurantrush.menu.MenuItem;
 import restaurantrush.menu.Money;
 import restaurantrush.menu.Order;
@@ -17,7 +20,24 @@ import restaurantrush.menu.OrderStatus;
 public final class Waiter {
     /** Contract Section 7.4: SEAT per queued customer (queue order) if a table is free, ORDER per seated customer without an order (arrival order), SERVE per READY order with readyTurn before this turn (order-ID order), then WAIT. */
     public List<Action> legalActions(GameState state) {
-        throw new UnsupportedOperationException("Owned by workstream: Staff and tables");
+        List<Action> actions = new ArrayList<>();
+        if (Seating.firstFreeTable(state).isPresent()) {
+            for (Customer customer : state.queue().view()) {
+                actions.add(new Action(StaffRole.WAITER, ActionKind.SEAT, customer.id()));
+            }
+        }
+        for (Customer customer : state.customers()) {
+            if (customer.status() == CustomerStatus.SEATED && customer.order().isEmpty()) {
+                actions.add(new Action(StaffRole.WAITER, ActionKind.ORDER, customer.id()));
+            }
+        }
+        for (Order order : state.orders()) {
+            if (order.status() == OrderStatus.READY && order.readyTurn() < state.turn()) {
+                actions.add(new Action(StaffRole.WAITER, ActionKind.SERVE, order.id()));
+            }
+        }
+        actions.add(new Action(StaffRole.WAITER, ActionKind.WAIT, null));
+        return List.copyOf(actions);
     }
 
     /** Checks: customer in queue, a table free. Effects: queue.remove, lowest-numbered free table seat, customer.seat, event. */
