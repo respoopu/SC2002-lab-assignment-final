@@ -11,6 +11,7 @@ import restaurantrush.game.GameState;
 import restaurantrush.menu.MenuItem;
 import restaurantrush.menu.Money;
 import restaurantrush.menu.Order;
+import restaurantrush.menu.OrderStatus;
 
 /** One task per turn: seat, take an order, or serve. Rejections change nothing. */
 public final class Waiter {
@@ -48,6 +49,23 @@ public final class Waiter {
 
     /** Checks: order READY and readyTurn before this turn. Effects: customer.startEating, order.markServed, state.recordServed, event. */
     public ActionResult serve(GameState state, String orderId) {
-        throw new UnsupportedOperationException("Owned by workstream: Staff and tables");
+        Optional<Order> found = state.order(orderId);
+        if (found.isEmpty()) {
+            return ActionResult.rejected(orderId + " is not an order.");
+        }
+        Order order = found.get();
+        if (order.status() != OrderStatus.READY) {
+            return ActionResult.rejected(orderId + " is not READY; it is " + order.status() + ".");
+        }
+        if (order.readyTurn() >= state.turn()) {
+            return ActionResult.rejected(orderId + " became READY this turn and can be served next turn.");
+        }
+
+        Customer customer = state.customer(order.customerId()).orElseThrow();
+        customer.startEating(state.turn());
+        order.markServed(state.turn());
+        state.recordServed();
+        String text = orderId + " served to " + customer.id();
+        return ActionResult.accepted(text + ".", List.of(new GameEvent(state.turn(), text)));
     }
 }

@@ -31,6 +31,8 @@ public final class StaffCheck {
         checkTakeOrderRejections();
         checkPrepare();
         checkPrepareRejections();
+        checkServe();
+        checkServeRejections();
 
         System.out.println("OK StaffCheck");
     }
@@ -223,5 +225,60 @@ public final class StaffCheck {
         assert !unknown.accepted();
         assert unknown.message().contains("O9");
         assert state.orders().size() == 1;
+    }
+
+    private static void checkServe() {
+        GameState state = stateWithPastaOrder();
+        Chef chef = new Chef();
+        Waiter waiter = new Waiter();
+        assert chef.prepare(state, "O1").accepted();
+        state.setTurn(3);
+        assert chef.prepare(state, "O1").accepted();
+
+        ActionResult sameTurn = waiter.serve(state, "O1");
+        assert !sameTurn.accepted();
+        assert sameTurn.message().contains("O1");
+        assert sameTurn.events().isEmpty();
+        assert state.order("O1").orElseThrow().status() == OrderStatus.READY;
+        assert customer(state, "C3").status() == CustomerStatus.SEATED;
+        assert state.servedCount() == 0;
+
+        state.setTurn(4);
+        ActionResult served = waiter.serve(state, "O1");
+        assert served.accepted();
+        assert served.events().size() == 1;
+        assert served.events().get(0).turn() == 4;
+        assert served.events().get(0).text().equals("O1 served to C3");
+        assert state.order("O1").orElseThrow().status() == OrderStatus.SERVED;
+        assert state.order("O1").orElseThrow().servedTurn() == 4;
+        assert customer(state, "C3").status() == CustomerStatus.EATING;
+        assert customer(state, "C3").servedTurn() == 4;
+        assert state.servedCount() == 1;
+        assert "C3".equals(occupant(state, "T1"));
+
+        assert !waiter.serve(state, "O1").accepted();
+        assert state.servedCount() == 1;
+    }
+
+    private static void checkServeRejections() {
+        GameState state = stateWithPastaOrder();
+        Waiter waiter = new Waiter();
+
+        ActionResult placed = waiter.serve(state, "O1");
+        assert !placed.accepted();
+        assert placed.message().contains("O1");
+        assert state.order("O1").orElseThrow().status() == OrderStatus.PLACED;
+
+        assert new Chef().prepare(state, "O1").accepted();
+        state.setTurn(5);
+        ActionResult preparing = waiter.serve(state, "O1");
+        assert !preparing.accepted();
+        assert state.order("O1").orElseThrow().status() == OrderStatus.PREPARING;
+
+        ActionResult unknown = waiter.serve(state, "O9");
+        assert !unknown.accepted();
+        assert unknown.message().contains("O9");
+        assert customer(state, "C3").status() == CustomerStatus.SEATED;
+        assert state.servedCount() == 0;
     }
 }
