@@ -17,6 +17,7 @@ import restaurantrush.menu.Order;
 import restaurantrush.menu.OrderStatus;
 import restaurantrush.staff.Cashier;
 import restaurantrush.staff.Chef;
+import restaurantrush.staff.Table;
 import restaurantrush.staff.Waiter;
 
 /** Self-check for the staff package: Waiter, Chef, and Cashier. Run with java -ea. */
@@ -71,7 +72,7 @@ public final class StaffCheck {
         assert state.customers().size() == 2;
         assert state.queue().view().size() == 2;
         assert customer(state, "C2").status() == CustomerStatus.WAITING;
-        assert state.tables().stream().allMatch(table -> table.isFree());
+        assert state.tables().stream().allMatch(Table::isFree);
         assert state.orders().isEmpty();
     }
 
@@ -131,7 +132,6 @@ public final class StaffCheck {
         assert fresh.orders().isEmpty();
     }
 
-    /** C1 (Salad) and C2 (Burger) seated on turn 1; C3 (Pasta) still queued. */
     private static GameState stateWithSeated(int turn) {
         GameState state = stateWithQueue(1, 3);
         Waiter waiter = new Waiter();
@@ -186,7 +186,6 @@ public final class StaffCheck {
         assert state.orders().size() == 2;
     }
 
-    /** C3 (Pasta) seated on turn 1 and ordered as O1 on turn 2. */
     private static GameState stateWithPastaOrder() {
         GameState state = stateWithQueue(1, 3);
         Waiter waiter = new Waiter();
@@ -294,7 +293,6 @@ public final class StaffCheck {
         assert state.servedCount() == 0;
     }
 
-    /** C2 seated at T1 and C1 (satisfaction 92) at T2 on turn 1; both order on 2, are served on 4, and become ready to pay on 5. */
     private static GameState stateWithTwoReadyToPay() {
         GameState state = stateWithQueue(1, 2);
         Waiter waiter = new Waiter();
@@ -427,7 +425,6 @@ public final class StaffCheck {
                 chef(ActionKind.WAIT, null)));
     }
 
-    /** Every status, table, queue entry, order, and counter, as one comparable string. */
     private static String fingerprint(GameState state) {
         StringBuilder text = new StringBuilder();
         for (Customer customer : state.customers()) {
