@@ -14,7 +14,7 @@ public final class Waiter {
 
     /** Checks: customer in queue, a table free. Effects: queue.remove, lowest-numbered free table seat, customer.seat, event. */
     public ActionResult seat(GameState state, String customerId) {
-        throw new UnsupportedOperationException("Owned by workstream: Staff and tables");
+        return Seating.seat(state, customerId);
     }
 
     /** Checks: customer SEATED with no order. Effects: chooseMeal, new Order with state.nextOrderId(), state.addOrder, customer.attachOrder, event naming the food. */
