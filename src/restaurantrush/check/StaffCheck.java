@@ -1,14 +1,17 @@
 package restaurantrush.check;
 
+import java.util.Optional;
 import restaurantrush.customer.Customer;
 import restaurantrush.customer.CustomerStatus;
 import restaurantrush.customer.RegularCustomer;
 import restaurantrush.game.ActionResult;
 import restaurantrush.game.GameConfig;
+import restaurantrush.game.GameEvent;
 import restaurantrush.game.GameState;
 import restaurantrush.menu.Menu;
 import restaurantrush.menu.Order;
 import restaurantrush.menu.OrderStatus;
+import restaurantrush.staff.Cashier;
 import restaurantrush.staff.Chef;
 import restaurantrush.staff.Waiter;
 
@@ -33,6 +36,8 @@ public final class StaffCheck {
         checkPrepareRejections();
         checkServe();
         checkServeRejections();
+        checkCollect();
+        checkCollectWaitsForLaterTurn();
 
         System.out.println("OK StaffCheck");
     }
@@ -280,5 +285,69 @@ public final class StaffCheck {
         assert unknown.message().contains("O9");
         assert customer(state, "C3").status() == CustomerStatus.SEATED;
         assert state.servedCount() == 0;
+    }
+
+    /** C2 seated at T1 and C1 (satisfaction 92) at T2 on turn 1; both order on 2, are served on 4, and become ready to pay on 5. */
+    private static GameState stateWithTwoReadyToPay() {
+        GameState state = stateWithQueue(1, 2);
+        Waiter waiter = new Waiter();
+        Chef chef = new Chef();
+        customer(state, "C1").loseSatisfaction();
+        assert waiter.seat(state, "C2").accepted();
+        assert waiter.seat(state, "C1").accepted();
+        state.setTurn(2);
+        assert waiter.takeOrder(state, "C2").accepted();
+        assert waiter.takeOrder(state, "C1").accepted();
+        assert chef.prepare(state, "O1").accepted();
+        assert chef.prepare(state, "O2").accepted();
+        state.setTurn(4);
+        assert waiter.serve(state, "O1").accepted();
+        assert waiter.serve(state, "O2").accepted();
+        state.setTurn(5);
+        customer(state, "C1").becomeReadyToPay(5);
+        customer(state, "C2").becomeReadyToPay(5);
+        return state;
+    }
+
+    private static void checkCollect() {
+        Cashier cashier = new Cashier();
+        assert cashier.collect(stateWithQueue(3, 2)).isEmpty();
+
+        GameState state = stateWithTwoReadyToPay();
+        state.setTurn(6);
+        Optional<GameEvent> first = cashier.collect(state);
+        assert first.isPresent();
+        assert first.get().turn() == 6;
+        assert first.get().text().equals("C1 paid $9.00 (satisfaction 92), T2 free");
+        assert customer(state, "C1").status() == CustomerStatus.PAID;
+        assert state.order("O2").orElseThrow().status() == OrderStatus.PAID;
+        assert state.table("T2").orElseThrow().isFree();
+        assert state.paidCount() == 1;
+        assert state.revenueCents() == 900;
+        assert state.satisfactionSum() == 92;
+
+        assert customer(state, "C2").status() == CustomerStatus.READY_TO_PAY;
+        assert state.order("O1").orElseThrow().status() == OrderStatus.SERVED;
+        assert "C2".equals(occupant(state, "T1"));
+
+        state.setTurn(7);
+        Optional<GameEvent> second = cashier.collect(state);
+        assert second.orElseThrow().text().equals("C2 paid $15.00 (satisfaction 100), T1 free");
+        assert state.paidCount() == 2;
+        assert state.revenueCents() == 2400;
+        assert state.satisfactionSum() == 192;
+        assert cashier.collect(state).isEmpty();
+        assert state.paidCount() == 2;
+    }
+
+    private static void checkCollectWaitsForLaterTurn() {
+        GameState state = stateWithTwoReadyToPay();
+        assert new Cashier().collect(state).isEmpty();
+        assert customer(state, "C1").status() == CustomerStatus.READY_TO_PAY;
+        assert customer(state, "C2").status() == CustomerStatus.READY_TO_PAY;
+        assert state.paidCount() == 0;
+        assert state.revenueCents() == 0;
+        assert !state.table("T1").orElseThrow().isFree();
+        assert !state.table("T2").orElseThrow().isFree();
     }
 }
