@@ -7,6 +7,8 @@ import restaurantrush.game.ActionResult;
 import restaurantrush.game.GameConfig;
 import restaurantrush.game.GameState;
 import restaurantrush.menu.Menu;
+import restaurantrush.menu.Order;
+import restaurantrush.menu.OrderStatus;
 import restaurantrush.staff.Waiter;
 
 /** Self-check for the staff package: Waiter, Chef, and Cashier. Run with java -ea. */
@@ -24,6 +26,8 @@ public final class StaffCheck {
         checkFixture();
         checkSeat();
         checkSeatRejections();
+        checkTakeOrder();
+        checkTakeOrderRejections();
 
         System.out.println("OK StaffCheck");
     }
@@ -108,5 +112,60 @@ public final class StaffCheck {
         assert fresh.table("T2").orElseThrow().isFree();
         assert fresh.queue().isEmpty();
         assert fresh.orders().isEmpty();
+    }
+
+    /** C1 (Salad) and C2 (Burger) seated on turn 1; C3 (Pasta) still queued. */
+    private static GameState stateWithSeated(int turn) {
+        GameState state = stateWithQueue(1, 3);
+        Waiter waiter = new Waiter();
+        assert waiter.seat(state, "C1").accepted();
+        assert waiter.seat(state, "C2").accepted();
+        state.setTurn(turn);
+        return state;
+    }
+
+    private static void checkTakeOrder() {
+        GameState state = stateWithSeated(2);
+        Waiter waiter = new Waiter();
+
+        ActionResult result = waiter.takeOrder(state, "C2");
+        assert result.accepted();
+        assert result.events().size() == 1;
+        assert result.events().get(0).turn() == 2;
+        assert result.events().get(0).text().equals("C2 orders Burger ($15.00) as O1");
+        assert state.orders().size() == 1;
+        Order order = state.order("O1").orElseThrow();
+        assert order.customerId().equals("C2");
+        assert order.item().name().equals("Burger");
+        assert order.billCents() == 1500;
+        assert order.placedTurn() == 2;
+        assert order.status() == OrderStatus.PLACED;
+        assert customer(state, "C2").order().orElseThrow() == order;
+        assert customer(state, "C2").status() == CustomerStatus.SEATED;
+
+        assert waiter.takeOrder(state, "C1").accepted();
+        Order salad = state.order("O2").orElseThrow();
+        assert salad.item().name().equals("Salad");
+        assert salad.billCents() == 900;
+    }
+
+    private static void checkTakeOrderRejections() {
+        GameState state = stateWithSeated(2);
+        Waiter waiter = new Waiter();
+        assert waiter.takeOrder(state, "C1").accepted();
+
+        for (String id : new String[] {"C1", "C3", "C9"}) {
+            ActionResult rejected = waiter.takeOrder(state, id);
+            assert !rejected.accepted();
+            assert rejected.message().contains(id);
+            assert rejected.events().isEmpty();
+        }
+        assert state.orders().size() == 1;
+        assert customer(state, "C3").order().isEmpty();
+        assert customer(state, "C3").status() == CustomerStatus.WAITING;
+
+        assert waiter.takeOrder(state, "C2").accepted();
+        assert state.order("O2").orElseThrow().customerId().equals("C2");
+        assert state.orders().size() == 2;
     }
 }
