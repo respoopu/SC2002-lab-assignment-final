@@ -369,30 +369,29 @@ public final class StaffCheck {
         Chef chef = new Chef();
         assert waiter.legalActions(stateWithQueue(1, 0)).equals(List.of(waiter(ActionKind.WAIT, null)));
 
-        GameState state = new GameState(new GameConfig(18, 3, List.of(1, 4, 7, 10, 13, 16)), Menu.base());
-        state.setTurn(1);
-        for (int index = 1; index <= 4; index++) {
-            Customer customer = new RegularCustomer("C" + index, 1, index);
-            state.addCustomer(customer);
-            state.queue().add(customer);
-        }
-        assert waiter.seat(state, "C1").accepted();
-        state.setTurn(2);
-        assert waiter.takeOrder(state, "C1").accepted();
+        GameState state = stateWithQueue(1, 3);
         assert waiter.seat(state, "C3").accepted();
-        assert chef.prepare(state, "O1").accepted();
-        state.setTurn(3);
         assert waiter.legalActions(state).equals(List.of(
+                waiter(ActionKind.SEAT, "C1"),
                 waiter(ActionKind.SEAT, "C2"),
-                waiter(ActionKind.SEAT, "C4"),
                 waiter(ActionKind.ORDER, "C3"),
-                waiter(ActionKind.SERVE, "O1"),
                 waiter(ActionKind.WAIT, null)));
 
-        assert waiter.seat(state, "C4").accepted();
+        assert waiter.seat(state, "C1").accepted();
         assert waiter.legalActions(state).equals(List.of(
+                waiter(ActionKind.ORDER, "C1"),
                 waiter(ActionKind.ORDER, "C3"),
-                waiter(ActionKind.ORDER, "C4"),
+                waiter(ActionKind.WAIT, null)));
+
+        GameState full = stateWithQueue(1, 4);
+        assert waiter.seat(full, "C1").accepted();
+        full.setTurn(2);
+        assert waiter.takeOrder(full, "C1").accepted();
+        assert waiter.seat(full, "C3").accepted();
+        assert chef.prepare(full, "O1").accepted();
+        full.setTurn(3);
+        assert waiter.legalActions(full).equals(List.of(
+                waiter(ActionKind.ORDER, "C3"),
                 waiter(ActionKind.SERVE, "O1"),
                 waiter(ActionKind.WAIT, null)));
 
