@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds the game, runs the self-check classes, and replays fixture transcripts.
 #
-#   scripts/replay.sh                              build, replay every fixture under fixtures/
+#   scripts/replay.sh                              build, replay every fixture of the current stage
 #   scripts/replay.sh fixtures/stage-1/victory.in  replay one fixture
 #   scripts/replay.sh --update <fixture.in> ...    rewrite the .expected file(s) from the current output
 #
@@ -36,8 +36,13 @@ for check in $(find src/restaurantrush/check -name '*Check.java' 2>/dev/null | s
   fi
 done
 
+# Default: only the current stage, the highest-numbered fixtures/stage-<n>.
+# Earlier stages are verified at their tag (contract Section 5).
 if [[ $# -eq 0 ]]; then
-  set -- $(find fixtures -name '*.in' | sort)
+  current="$(find fixtures -mindepth 1 -maxdepth 1 -type d -name 'stage-*' | sort -t- -k2 -n | tail -n 1 || true)"
+  if [[ -n "$current" ]]; then
+    set -- $(find "$current" -name '*.in' | sort)
+  fi
 fi
 
 for input in "$@"; do

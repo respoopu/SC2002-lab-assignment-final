@@ -102,12 +102,13 @@ There is no unit test framework. Each workstream ships one self-check class, eve
 
 - **Self-check class:** one per workstream in package `restaurantrush.check`, named `CustomerCheck`, `MenuCheck`, `StaffCheck`, `GameCheck`, or `CliCheck`, with a `public static void main`. It builds its own objects through the public API in Section 7, uses Java `assert` statements, throws if assertions are not enabled, and prints one `OK <name>` line at the end. The replay script runs every class in that package with `java -ea` after compiling and before replaying fixtures. A collaborator from another workstream that is still a stub makes the check fail, which is why Section 7 sequences the issues in waves.
 
-- **Location:** `fixtures/stage-<n>/<scenario>.in` with its transcript in `fixtures/stage-<n>/<scenario>.expected`. Stage 1 needs at least `victory` and `defeat`. Stage 2 needs at least `vip-critic`. Stage 3 needs at least `host-combo-happy-hour`. The pair of runs that differ only in manager choices uses the suffixes `-a` and `-b` on the same scenario name.
+- **Location:** `fixtures/stage-<n>/<scenario>.in` with its transcript in `fixtures/stage-<n>/<scenario>.expected`. Stage 1 needs at least `victory` and `defeat`. Stage 2 needs at least `vip-critic` and `defeat`. Stage 3 needs at least `host-combo-happy-hour`. The pair of runs that differ only in manager choices uses the suffixes `-a` and `-b` on the same scenario name.
 - **Input format:** one manager command per line, exactly as typed at the prompt, in the order the game asks for them. Blank lines and lines starting with `#` are comments; the script strips them before piping the file to the game's standard input.
 - **Expected transcript:** the game's complete standard output for that input. Output must be byte-identical across runs and machines: ASCII only, no timestamps, no random values, no locale-dependent formatting, and `\n` written explicitly (never `println` or `%n`, which emit CRLF on Windows). `.gitattributes` forces LF on fixture files.
 - **End of input:** if standard input ends before turn 18 completes, the game prints a short message and exits with a non-zero status, so a short fixture fails instead of hanging.
-- **Commands:** `scripts/replay.sh` builds the game, replays every fixture, prints `PASS` or `FAIL` per fixture, and exits non-zero on any failure. `scripts/replay.sh fixtures/stage-1/victory.in` replays one fixture. `scripts/replay.sh --update <fixture.in>` rewrites that expected transcript; use it only for an intended output change, and the PR reviewer reads the regenerated diff.
-- **Before every PR:** run `scripts/replay.sh`. Every fixture from the current and earlier stages must pass. Add or update a fixture whenever the PR changes observable behavior.
+- **Commands:** `scripts/replay.sh` builds the game, runs every self-check, replays every fixture of the current stage (the highest-numbered `fixtures/stage-<n>` directory), prints `PASS` or `FAIL` per fixture, and exits non-zero on any failure. `scripts/replay.sh fixtures/stage-1/victory.in` replays one fixture; an earlier stage's fixture passes only at its tag. `scripts/replay.sh --update <fixture.in>` rewrites that expected transcript; use it only for an intended output change, and the PR reviewer reads the regenerated diff.
+- **Before every PR:** run `scripts/replay.sh`. Every self-check and every fixture of the current stage must pass. Add or update a fixture whenever the PR changes observable behavior.
+- **Earlier stages:** a later stage deliberately changes earlier transcripts (Stage 2 changes the C2 and C4 customer types, Stage 3 adds the `Manager> ` and `Host> ` prompts), so earlier fixtures are not replayed at a later stage and are never regenerated. They stay in the tree unchanged as that stage's evidence and are verified at their tag: `git checkout stage-1 && scripts/replay.sh`. The PR that first changes observable behavior for a new stage adds that stage's fixture directory in the same PR, so replay passes at every merge. Earlier-stage rules stay covered by the self-checks: `GameCheck` runs each earlier stage's traces on an explicitly built `TurnController` rather than `GameSetup.baseGame()`, with an all-Regular arrivals factory for Stage 1 and `GameSetup.arrival` with `Menu.base()` for Stage 2, so they keep passing when later stages change the setup. A rule bug found in an earlier stage after its tag is fixed in the current stage and listed as a deviation in the README; a tag is never moved.
 
 ### Stage gate
 
@@ -164,7 +165,7 @@ This section is the complete cross-workstream surface. An issue references these
 
 Allowed dependencies: `game` calls `staff`, `customer`, and `menu`. `staff` reads `GameState` and returns `ActionResult` and `GameEvent`, so `game` and `staff` depend on each other by design. `customer` holds an `Order` reference but never calls a method on it. `cli` imports only `game` records and enums, `customer.CustomerStatus`, `menu.OrderStatus`, and `menu.Money.format`; it never imports a concrete customer class and never does its own money arithmetic.
 
-`Main` and `GameSetup` are the composition root where later stages register new types. Later stages also make the recorded changes in 7.8 to existing classes; those are expected and are listed in the README stage comparison with reasons.
+`Main` and `GameSetup` are the composition root where later stages register new types. Stage 2 adds `VIPCustomer` and `CriticCustomer` to `customer`; only `GameSetup` constructs them. Later stages also make the recorded changes in 7.8 to existing classes; those are expected and are listed in the README stage comparison with reasons.
 
 ### 7.2 Enums and IDs
 
@@ -416,5 +417,15 @@ These edits to Stage 1 classes are expected, and the README stage comparison lis
 
 | Stage | Change |
 | --- | --- |
-| 2 | New `VIPCustomer` (loss 5, discount 10, `typeName` "VIP") and `CriticCustomer` (loss 12, discount 0, `chooseMeal` returns `menu.item("Pasta")`, `typeName` "Critic"); `GameSetup.arrival` follows the arrival table. No other Stage 1 file changes. |
+| 2 | New `VIPCustomer` (loss 5, discount 10, `typeName` "VIP") and `CriticCustomer` (loss 12, discount 0, `chooseMeal` returns `menu.item("Pasta")`, `typeName` "Critic"); `GameSetup.arrival` follows the arrival table. No other Stage 1 source class changes. `GameCheck` keeps its Stage 1 traces on an all-Regular arrivals factory and adds the Stage 2 traces; `CustomerCheck` adds VIP and Critic cases. |
 | 3 | `Phase.HOST` before `WAITER`; `StaffRole.HOST`; new `Host` with `legalActions` and `seat` sharing the Waiter's seating logic through a package-private helper; `TurnController` constructor overload taking a `Host`; `beginTurn(boolean activateHappyHour)` overload that activates, applies recovery through a new `Customer.recover(int amount)`, and then adds the arrival; Happy Hour fields on `GameState` and `happyHourRemaining` on `Snapshot`; `ComboMeal extends MenuItem`; `Menu.base()` unchanged and `GameSetup` adds the combo; `RegularCustomer.chooseMeal` returns the combo when the index is divisible by 3 and the combo is on the menu; `Order` constructor overload with `boolean happyHourActive`; the CLI `Manager> ` and `Host> ` prompts. |
+
+### 7.9 Stage 2 issue waves
+
+| Wave | Issues | Depends on |
+| --- | --- | --- |
+| 1 | VIP and Critic customers (#13) | #3 merged. May open now; merges after the `stage-1` tag |
+| 2 | Stage 2 arrivals and fixtures (#14): `GameSetup` switch, `GameCheck`, `fixtures/stage-2/vip-critic` and `defeat` in one PR | #13 and #7 merged (#7 creates `GameCheck` and implements `GameSetup`), and the `stage-1` tag exists |
+| 3 | Stage 2 README comparison and stage gate (#15) | #14 merged; doubles as the stage gate run-through |
+
+The `vip-critic` trace shows both behaviors through payment: C2 (VIP) orders Burger for $13.50 and pays at satisfaction 90; C4 (Critic) orders Pasta although the cycle would give Salad, and pays $18.00 at satisfaction 52. With all `WAIT` inputs, C4 leaves at the end of turn 18 after nine turns of waiting (turns 10 to 18), while C3, who arrived three turns earlier, is still waiting.
