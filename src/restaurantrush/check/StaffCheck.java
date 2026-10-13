@@ -9,6 +9,7 @@ import restaurantrush.game.GameState;
 import restaurantrush.menu.Menu;
 import restaurantrush.menu.Order;
 import restaurantrush.menu.OrderStatus;
+import restaurantrush.staff.Chef;
 import restaurantrush.staff.Waiter;
 
 /** Self-check for the staff package: Waiter, Chef, and Cashier. Run with java -ea. */
@@ -28,6 +29,8 @@ public final class StaffCheck {
         checkSeatRejections();
         checkTakeOrder();
         checkTakeOrderRejections();
+        checkPrepare();
+        checkPrepareRejections();
 
         System.out.println("OK StaffCheck");
     }
@@ -167,5 +170,58 @@ public final class StaffCheck {
         assert waiter.takeOrder(state, "C2").accepted();
         assert state.order("O2").orElseThrow().customerId().equals("C2");
         assert state.orders().size() == 2;
+    }
+
+    /** C3 (Pasta) seated on turn 1 and ordered as O1 on turn 2. */
+    private static GameState stateWithPastaOrder() {
+        GameState state = stateWithQueue(1, 3);
+        Waiter waiter = new Waiter();
+        assert waiter.seat(state, "C3").accepted();
+        state.setTurn(2);
+        assert waiter.takeOrder(state, "C3").accepted();
+        return state;
+    }
+
+    private static void checkPrepare() {
+        GameState state = stateWithPastaOrder();
+        Chef chef = new Chef();
+        Order order = state.order("O1").orElseThrow();
+
+        ActionResult first = chef.prepare(state, "O1");
+        assert first.accepted();
+        assert first.events().size() == 1;
+        assert first.events().get(0).text().equals("O1 unit 1 of 2 done");
+        assert order.status() == OrderStatus.PREPARING;
+        assert order.unitsDone() == 1;
+        assert order.readyTurn() == 0;
+
+        state.setTurn(3);
+        ActionResult second = chef.prepare(state, "O1");
+        assert second.accepted();
+        assert second.events().get(0).turn() == 3;
+        assert second.events().get(0).text().equals("O1 is READY");
+        assert order.status() == OrderStatus.READY;
+        assert order.unitsDone() == 2;
+        assert order.readyTurn() == 3;
+    }
+
+    private static void checkPrepareRejections() {
+        GameState state = stateWithPastaOrder();
+        Chef chef = new Chef();
+        Order order = state.order("O1").orElseThrow();
+        assert chef.prepare(state, "O1").accepted();
+        assert chef.prepare(state, "O1").accepted();
+
+        ActionResult ready = chef.prepare(state, "O1");
+        assert !ready.accepted();
+        assert ready.message().contains("O1");
+        assert ready.events().isEmpty();
+        assert order.status() == OrderStatus.READY;
+        assert order.unitsDone() == 2;
+
+        ActionResult unknown = chef.prepare(state, "O9");
+        assert !unknown.accepted();
+        assert unknown.message().contains("O9");
+        assert state.orders().size() == 1;
     }
 }
