@@ -112,7 +112,7 @@ There is no unit test framework. Each workstream ships one self-check class, eve
 
 ### Stage gate
 
-1. Every issue for the stage is closed by a merged PR.
+1. Every issue for the stage is closed by a merged PR, except the README/stage-gate issue. Its PR uses `Refs`, not `Closes`; close that issue manually after verification and the tested tag is pushed.
 2. From a fresh checkout, run `scripts/replay.sh`. Then one teammate plays the game manually against Sections 1 to 4 and the brief.
 3. Each failure or deviation becomes a new work-item issue for that stage. Fix PRs merge and the replay is rerun.
 4. When everything passes, tag that commit `stage-<n>`. Tags `stage-1`, `stage-2`, and `stage-3` each identify a specific tested commit.
@@ -429,3 +429,85 @@ These edits to Stage 1 classes are expected, and the README stage comparison lis
 | 3 | Stage 2 README comparison and stage gate (#15) | #14 merged; doubles as the stage gate run-through |
 
 The `vip-critic` trace shows both behaviors through payment: C2 (VIP) orders Burger for $13.50 and pays at satisfaction 90; C4 (Critic) orders Pasta although the cycle would give Salad, and pays $18.00 at satisfaction 52. With all `WAIT` inputs, C4 leaves at the end of turn 18 after nine turns of waiting (turns 10 to 18), while C3, who arrived three turns earlier, is still waiting.
+
+### 7.10 Stage 3 shared interface
+
+<!-- Generated planning addition: maintain alongside the implementing work items. -->
+
+These additions make Section 7.8's Stage 3 row concrete; Sections 1 to 6 already define the game rules. Existing constructors and methods remain available. Stage 3 source changes merge only after the `stage-2` tag; contract-only planning may merge earlier. Detailed inputs, expected transcripts, checks, and diagrams belong to the linked issues in 7.12. Submission requirements remain in the assignment brief.
+
+**Menu and customers (#17, #18).** Add these signatures in the named classes/packages:
+
+```java
+// restaurantrush.menu
+public final class ComboMeal extends MenuItem {
+    public ComboMeal(String name, MenuItem first, MenuItem second);
+    public MenuItem first();
+    public MenuItem second();
+}
+// Additional Order constructor; the existing constructor delegates with false.
+// public Order(String id, String customerId, MenuItem item,
+//              int customerDiscountPercent, int placedTurn, boolean happyHourActive);
+// restaurantrush.customer.Customer:
+// public int recover(int amount);
+```
+
+ComboMeal retains both component references, sums preparation units, and uses `Money.applyDiscount` for its 10% composition discount. Null name/components throw `NullPointerException`; a blank name throws `IllegalArgumentException`. The new Order constructor applies the personal discount and then, when active, the 20% Happy Hour discount, rounding at each step and locking the bill. Existing transitions do not change.
+
+`recover` rejects negative amounts before mutation. It increases satisfaction only for WAITING/SEATED, caps at 100 without integer overflow, and returns the resulting value; other statuses remain unchanged. Regular indices divisible by 3 choose the item named `Salad + Pasta combo` if present in the catalog, otherwise keep their original cycle. Other Regular indices, VIP and Critic keep their existing choices. No customer subtype checks or Order inspection are added.
+
+**Staff, state and controller (#19).** Add the following alongside the existing surface:
+
+```java
+// restaurantrush.staff
+public final class Host {
+    public List<Action> legalActions(GameState state);
+    public ActionResult seat(GameState state, String customerId);
+}
+// restaurantrush.game.TurnController:
+// public TurnController(GameState state, Host host, Waiter waiter, Chef chef,
+//                       Cashier cashier, IntFunction<Customer> arrivals);
+// public TurnStart beginTurn(boolean activateHappyHour);
+// GameState:
+// public boolean happyHourUsed();
+// public boolean happyHourActive();
+// public int happyHourRemaining();
+// void activateHappyHour(); // package-private, controller only
+// GameSetup:
+// public static Menu stage3Menu();
+```
+
+The Host constructor overload requires a non-null Host and enables the complete Stage 3 flow. The old constructor retains the two-role flow with Happy Hour disabled; `beginTurn()` delegates to `beginTurn(false)`. Wrong-phase `beginTurn`, repeated activation, or activation in a legacy controller throws `IllegalStateException` before any mutation. Existing wrong-phase/role `submit` calls still return `ActionResult.rejected`, unchanged.
+
+Host legal actions are SEAT for queued customers in queue order when a table is free, then WAIT. Host seating delegates to the existing package-private `Seating` helper. Accepted Host actions advance HOST to WAITER; rejected actions preserve all state and capacity. Waiter retains seating and passes `state.happyHourActive()` into the new Order constructor. Chef/Cashier rules stay unchanged.
+
+Activation records the current positive turn in TURN_START, after the controller increments the turn; repeat or wrong-phase activation fails without mutation. Duration is 2 on activation, 1 next turn, then 0, with no end-turn decrement. Turn-18 activation is allowed without adding turn 19. After validating `beginTurn`, the controller increments the turn, activates if requested, recovers eligible existing customers while active, adds the scheduled arrival, and enters HOST (WAITER in the legacy flow). Add `Phase.HOST` and `StaffRole.HOST` as described in 7.8.
+
+`GameSetup.stage3Menu()` appends `new ComboMeal("Salad + Pasta combo", salad, pasta)` to the three base items, retaining those component objects. `Menu.base()` stays unchanged. Stage 3 `baseGame()` uses this menu, the Host overload and Stage 2 arrivals. Earlier GameCheck traces keep explicit legacy controllers and the base menu.
+
+**Snapshot and CLI (#19).** Append these components, in this order, to the existing Snapshot record:
+
+```java
+// ..., List<Action> legalActions, boolean happyHourAvailable, int happyHourRemaining
+```
+
+Retain its existing 11-argument constructor, delegating with false/0, and all defensive list copies. The controller computes availability: Stage 3 enabled, unused, phase TURN_START and not game-over. Legacy snapshots always use false/0. Availability is distinct from active duration. At TURN_START, the snapshot turn number is the completed turn; the CLI queries availability before starting the next turn.
+
+Add `public static Optional<Boolean> CommandParser.parseHappyHour(String line)`: trimmed case-insensitive HAPPY_HOUR returns true, SKIP returns false, anything else (including null) returns empty. The CLI prompts `Manager> ` only when available, retries invalid input without beginning a turn, then calls `beginTurn(boolean)`. It follows `currentRole()` through Host/Waiter/Chef rather than a hardcoded two-role loop. Host parsing permits SEAT and WAIT only; its prompt is `Host> `. The actionable Stage 3 start snapshot is in HOST phase and renders remaining duration, including zero; legacy rendering remains byte-identical. EOF at either prompt retains the existing false return, message and Main exit status 2. New event/display wording and exact transcript expectations are owned by #19, consistent with 7.4; the UI does not calculate eligibility, duration, recovery or prices.
+
+### 7.11 Stage 3 acceptance evidence
+
+Issue #19 specifies the complete turn-by-turn inputs, output wording and derived expected states. Its victory trace activates on turn 7, uses all three features, and is expected to finish with five payments, 7494 cents, satisfaction sum 419 and average 83.8. Its all-SKIP/all-WAIT trace ends in Defeat. Confirm the derived values through GameCheck and reviewed transcripts before merge; these are not claims of an implemented runtime. The first PR changing playable behavior adds Stage 3 fixtures in the same PR; earlier fixtures stay unchanged and are checked at their tags, as required by Section 5.
+
+### 7.12 Stage 3 issue waves
+
+| Wave | Work item | Depends on |
+| --- | --- | --- |
+| 0 | Shared contract/API (#16) | Documentation only; no source changes |
+| 1 | ComboMeal and Happy Hour pricing (#17) | #16 merged; stage-2 tag for source merge |
+| 2 | Customer recovery and combo selection (#18) | #17 merged; stage-2 tag |
+| 3 | Host, Happy Hour and playable integration (#19) | #17 and #18 merged; stage-2 tag |
+| 4 | Final UML diagrams and design evidence (#20) | #19 merged; update for design-changing fixes |
+| 5 | README comparison and stage gate (#21) | #19, #20 and any fixes merged; write comparison last |
+
+Issue #19 coordinates Host/enums, controller/state/snapshot/setup, the Waiter pricing call, parser/UI, affected self-checks and initial Stage 3 fixtures in one PR so each merge compiles and replay passes. The domain issues own only their classes and checks. Diagrams (#20) follow the brief. No task-specific instructions or duplicate handoff documents are added here.
