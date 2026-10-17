@@ -112,7 +112,7 @@ There is no unit test framework. Each workstream ships one self-check class, eve
 
 ### Stage gate
 
-1. Every implementation and diagram issue for the stage is closed by a merged PR. The README/stage-gate issue stays open through verification and tagging: its PR uses `Refs`, not `Closes`, and the issue is closed manually after the tested tag is pushed. Submission packaging is tracked separately and does not block a gameplay stage tag.
+1. Every issue for the stage is closed by a merged PR, except the README/stage-gate issue. Its PR uses `Refs`, not `Closes`; close that issue manually after verification and the tested tag is pushed.
 2. From a fresh checkout, run `scripts/replay.sh`. Then one teammate plays the game manually against Sections 1 to 4 and the brief.
 3. Each failure or deviation becomes a new work-item issue for that stage. Fix PRs merge and the replay is rerun.
 4. When everything passes, tag that commit `stage-<n>`. Tags `stage-1`, `stage-2`, and `stage-3` each identify a specific tested commit.
@@ -434,7 +434,7 @@ The `vip-critic` trace shows both behaviors through payment: C2 (VIP) orders Bur
 
 <!-- Generated planning addition: maintain alongside the implementing work items. -->
 
-These additions make Section 7.8's Stage 3 row concrete; Sections 1 to 6 already define the game rules. Existing constructors and methods remain available. Stage 3 source changes merge only after the `stage-2` tag; contract-only planning may merge earlier. Detailed inputs, expected transcripts, checks, diagrams, and submission requirements belong to the linked issues in 7.12.
+These additions make Section 7.8's Stage 3 row concrete; Sections 1 to 6 already define the game rules. Existing constructors and methods remain available. Stage 3 source changes merge only after the `stage-2` tag; contract-only planning may merge earlier. Detailed inputs, expected transcripts, checks, and diagrams belong to the linked issues in 7.12. Submission requirements remain in the assignment brief.
 
 **Menu and customers (#17, #18).** Add these signatures in the named classes/packages:
 
@@ -509,6 +509,5 @@ Issue #19 specifies the complete turn-by-turn inputs, output wording and derived
 | 3 | Host, Happy Hour and playable integration (#19) | #17 and #18 merged; stage-2 tag |
 | 4 | Final UML diagrams and design evidence (#20) | #19 merged; update for design-changing fixes |
 | 5 | README comparison and stage gate (#21) | #19, #20 and any fixes merged; write comparison last |
-| Separate | Report, video, declarations and submission package (#22) | Prepare early; final package requires #21 complete |
 
-Issue #19 coordinates Host/enums, controller/state/snapshot/setup, the Waiter pricing call, parser/UI, affected self-checks and initial Stage 3 fixtures in one PR so each merge compiles and replay passes. The domain issues own only their classes and checks. Diagrams (#20) and final submission (#22) follow the brief; submission is not a fourth game stage. No task-specific instructions or duplicate handoff documents are added here.
+Issue #19 coordinates Host/enums, controller/state/snapshot/setup, the Waiter pricing call, parser/UI, affected self-checks and initial Stage 3 fixtures in one PR so each merge compiles and replay passes. The domain issues own only their classes and checks. Diagrams (#20) follow the brief. No task-specific instructions or duplicate handoff documents are added here.
