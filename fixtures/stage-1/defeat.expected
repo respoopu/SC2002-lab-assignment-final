@@ -22,6 +22,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 1
 Turn 2
 Revenue: $0.00
 Average satisfaction: N/A
@@ -45,6 +46,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 2
 Turn 3
 Revenue: $0.00
 Average satisfaction: N/A
@@ -68,6 +70,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 3
 C2 (Regular) arrives
 Turn 4
 Revenue: $0.00
@@ -94,6 +97,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 4
 Turn 5
 Revenue: $0.00
 Average satisfaction: N/A
@@ -119,6 +123,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 5
 Turn 6
 Revenue: $0.00
 Average satisfaction: N/A
@@ -144,6 +149,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 6
 C3 (Regular) arrives
 Turn 7
 Revenue: $0.00
@@ -172,6 +178,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 7
 Turn 8
 Revenue: $0.00
 Average satisfaction: N/A
@@ -199,6 +206,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 8
 Turn 9
 Revenue: $0.00
 Average satisfaction: N/A
@@ -226,6 +234,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 9
 C4 (Regular) arrives
 Turn 10
 Revenue: $0.00
@@ -256,6 +265,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 10
 Turn 11
 Revenue: $0.00
 Average satisfaction: N/A
@@ -285,6 +295,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 11
 Turn 12
 Revenue: $0.00
 Average satisfaction: N/A
@@ -314,6 +325,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 12
 C5 (Regular) arrives
 Turn 13
 Revenue: $0.00
@@ -347,6 +359,7 @@ Served: 0
 Unhappy departures: 1
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 13
 Turn 14
 Revenue: $0.00
 Average satisfaction: N/A
@@ -377,6 +390,7 @@ Served: 0
 Unhappy departures: 1
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 14
 Turn 15
 Revenue: $0.00
 Average satisfaction: N/A
@@ -407,6 +421,7 @@ Served: 0
 Unhappy departures: 1
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 15
 C6 (Regular) arrives
 Turn 16
 Revenue: $0.00
@@ -441,6 +456,7 @@ Served: 0
 Unhappy departures: 2
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 16
 Turn 17
 Revenue: $0.00
 Average satisfaction: N/A
@@ -472,6 +488,7 @@ Served: 0
 Unhappy departures: 2
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 17
 Turn 18
 Revenue: $0.00
 Average satisfaction: N/A
@@ -503,4 +520,5 @@ Served: 0
 Unhappy departures: 2
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 18
 Result: DEFEAT

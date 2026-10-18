@@ -40,7 +40,7 @@ The game always plays 18 turns. Each turn prints any arrival, the status display
 | `Waiter> ` | `SEAT C<n>`, `ORDER C<n>`, `SERVE O<n>`, `WAIT` | `1` to the last number shown, `0` = `WAIT` |
 | `Chef> ` | `PREPARE O<n>`, `WAIT` | `1` to the last number shown, `0` = `WAIT` |
 
-For example, on turn 1 the Waiter sees `Legal actions: [1] SEAT C1, [0] WAIT`, and typing `1` seats C1. A number refers only to the list printed just above the prompt; a number that is not in it prints `Choose a number from the list, or type a command.` and asks again. The fixture `.in` files use text commands so they stay readable.
+For example, on turn 1 the Waiter sees `Legal actions: [1] SEAT C1, [0] WAIT`, and typing `1` seats C1. A number refers only to the list printed just above the prompt; a number that is not in it prints `That number is not in the list. Choose a number from the list, or type a command.` and asks again. The fixture `.in` files use text commands so they stay readable.
 
 An invalid or illegal command prints the reason and asks again without using up that staff member's task. The Cashier is automatic and collects at most one payment per turn. If input ends before the game finishes, the game prints `Input ended before the game finished.` and exits with status 2.
 
@@ -81,7 +81,7 @@ The pair shows that manager choices alone change the outcome: run B leaves T2 em
 
 ### Manual play-through for the stage gate
 
-After `scripts/replay.sh` passes on a fresh clone, one teammate plays a full game by hand and checks it against contract Sections 1 to 4 and the brief. The play-through covers the start-of-turn display, invalid commands and illegal targets being retried without using the task, the READY to SERVED to payment delays, a full table blocking seating, abandonment, and the final result. For the Stage 1 gate, two teammates each played a full game on 2026-10-18 and found no deviations; [#25](https://github.com/respoopu/SC2002-lab-assignment-final/pull/25) records the details.
+After `scripts/replay.sh` passes on a fresh clone, one teammate plays a full game by hand and checks it against contract Sections 1 to 4 and the brief. The play-through covers the start-of-turn display, invalid commands and illegal targets being retried without using the task, the READY to SERVED to payment delays, a full table blocking seating, abandonment, and the final result. For the Stage 1 gate, two teammates each played a full game on 2026-10-18 and found no deviations; [#25](https://github.com/respoopu/SC2002-lab-assignment-final/pull/25) records the details. After the numbered choices ([#27](https://github.com/respoopu/SC2002-lab-assignment-final/pull/27)), respoopu reran the gate the same day at `533490c`: an 18-turn checklist game typing numbers, text, and invalid input at both prompts, ending in VICTORY with $57.00 and average 78.0, and every line matched the expected output. A line-by-line check against the brief then found output gaps, recorded in [#29](https://github.com/respoopu/SC2002-lab-assignment-final/issues/29) and fixed in [#28](https://github.com/respoopu/SC2002-lab-assignment-final/pull/28): an out-of-range number and an empty line now say why they failed (brief 3.4), and the end-of-turn display shows turns used (brief 3.5). Replaying the same inputs on #28 gives the same game with only those lines changed; #28 lists the inputs.
 
 ## Team workflow
 

@@ -56,7 +56,7 @@ public final class CommandParser {
         if (role == null || !NUMBER.matcher(normalize(line)).matches()) {
             return errorFor(line, role);
         }
-        return parse(line, role, legalActions).isPresent() ? "" : "Choose a number from the list, or type a command.";
+        return parse(line, role, legalActions).isPresent() ? "" : "That number is not in the list. Choose a number from the list, or type a command.";
     }
 
     public static String errorFor(String line, StaffRole role) {
@@ -65,7 +65,7 @@ public final class CommandParser {
         }
         String input = normalize(line);
         if (input.isEmpty()) {
-            return "Enter a command for " + roleName(role) + ".";
+            return "Nothing was entered. Enter a command for " + roleName(role) + ".";
         }
         if (parse(line, role).isPresent()) {
             return "";

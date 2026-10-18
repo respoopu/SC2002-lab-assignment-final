@@ -123,6 +123,7 @@ public final class ConsoleUI {
         appendLine(text, "Unhappy departures: " + summary.leftCount());
         appendLine(text, "Revenue: " + Money.format(summary.revenueCents()));
         appendLine(text, "Average satisfaction: " + average(summary.paidCount(), summary.satisfactionSum()));
+        appendLine(text, "Turns used: " + summary.turn());
         result.ifPresent(value -> appendLine(text, "Result: " + value));
         return text.toString();
     }
