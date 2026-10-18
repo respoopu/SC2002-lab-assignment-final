@@ -64,6 +64,8 @@ public final class CliCheck {
         assert CommandParser.errorFor("PREPARE O1", StaffRole.WAITER).contains("PREPARE");
         assert CommandParser.errorFor("PREPARE O1", StaffRole.WAITER).contains("Waiter");
         assert CommandParser.errorFor("SEAT C1", StaffRole.CHEF).contains("Chef");
+        assert CommandParser.errorFor("", StaffRole.CHEF).equals("Nothing was entered. Enter a command for Chef.");
+        assert CommandParser.errorFor("   ", StaffRole.WAITER).equals("Nothing was entered. Enter a command for Waiter.");
     }
 
     private static void checkNumbers() {

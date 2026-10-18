@@ -65,7 +65,7 @@ public final class CommandParser {
         }
         String input = normalize(line);
         if (input.isEmpty()) {
-            return "Enter a command for " + roleName(role) + ".";
+            return "Nothing was entered. Enter a command for " + roleName(role) + ".";
         }
         if (parse(line, role).isPresent()) {
             return "";
