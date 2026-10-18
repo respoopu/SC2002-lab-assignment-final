@@ -11,10 +11,10 @@ Customers:
   C1 (Regular): WAITING, satisfaction 100, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, WAIT
+Legal actions: [1] SEAT C1, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 1
@@ -34,10 +34,10 @@ Customers:
   C1 (Regular): WAITING, satisfaction 92, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, WAIT
+Legal actions: [1] SEAT C1, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 2
@@ -57,10 +57,10 @@ Customers:
   C1 (Regular): WAITING, satisfaction 84, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, WAIT
+Legal actions: [1] SEAT C1, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 3
@@ -83,10 +83,10 @@ Customers:
   C2 (Regular): WAITING, satisfaction 100, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 4
@@ -108,10 +108,10 @@ Customers:
   C2 (Regular): WAITING, satisfaction 92, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 5
@@ -133,10 +133,10 @@ Customers:
   C2 (Regular): WAITING, satisfaction 84, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 6
@@ -161,10 +161,10 @@ Customers:
   C3 (Regular): WAITING, satisfaction 100, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, SEAT C3, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 7
@@ -188,10 +188,10 @@ Customers:
   C3 (Regular): WAITING, satisfaction 92, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, SEAT C3, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 8
@@ -215,10 +215,10 @@ Customers:
   C3 (Regular): WAITING, satisfaction 84, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, SEAT C3, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 9
@@ -245,10 +245,10 @@ Customers:
   C4 (Regular): WAITING, satisfaction 100, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, SEAT C3, SEAT C4, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 10
@@ -274,10 +274,10 @@ Customers:
   C4 (Regular): WAITING, satisfaction 92, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, SEAT C3, SEAT C4, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 11
@@ -303,10 +303,10 @@ Customers:
   C4 (Regular): WAITING, satisfaction 84, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, SEAT C3, SEAT C4, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 12
@@ -335,10 +335,10 @@ Customers:
   C5 (Regular): WAITING, satisfaction 100, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, SEAT C2, SEAT C3, SEAT C4, SEAT C5, WAIT
+Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [5] SEAT C5, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 C1 left unhappy
@@ -366,10 +366,10 @@ Customers:
   C5 (Regular): WAITING, satisfaction 92, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C2, SEAT C3, SEAT C4, SEAT C5, WAIT
+Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 14
@@ -396,10 +396,10 @@ Customers:
   C5 (Regular): WAITING, satisfaction 84, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C2, SEAT C3, SEAT C4, SEAT C5, WAIT
+Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 15
@@ -429,10 +429,10 @@ Customers:
   C6 (Regular): WAITING, satisfaction 100, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C2, SEAT C3, SEAT C4, SEAT C5, SEAT C6, WAIT
+Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [5] SEAT C6, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 C2 left unhappy
@@ -461,10 +461,10 @@ Customers:
   C6 (Regular): WAITING, satisfaction 92, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C3, SEAT C4, SEAT C5, SEAT C6, WAIT
+Legal actions: [1] SEAT C3, [2] SEAT C4, [3] SEAT C5, [4] SEAT C6, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 17
@@ -492,10 +492,10 @@ Customers:
   C6 (Regular): WAITING, satisfaction 84, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C3, SEAT C4, SEAT C5, SEAT C6, WAIT
+Legal actions: [1] SEAT C3, [2] SEAT C4, [3] SEAT C5, [4] SEAT C6, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 18

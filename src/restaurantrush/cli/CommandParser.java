@@ -1,5 +1,6 @@
 package restaurantrush.cli;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -10,6 +11,7 @@ import restaurantrush.game.StaffRole;
 
 public final class CommandParser {
     private static final Pattern COMMAND = Pattern.compile("(SEAT|ORDER|SERVE|PREPARE)\\s+([A-Z][0-9]+)");
+    private static final Pattern NUMBER = Pattern.compile("[0-9]+");
 
     private CommandParser() {
     }
@@ -34,6 +36,27 @@ public final class CommandParser {
             return Optional.empty();
         }
         return Optional.of(new Action(role, kind, targetId));
+    }
+
+    // A number picks from the legal actions printed above the prompt: 0 is WAIT, 1 to n the nth non-WAIT action.
+    public static Optional<Action> parse(String line, StaffRole role, List<Action> legalActions) {
+        String input = normalize(line);
+        if (role == null || !NUMBER.matcher(input).matches()) {
+            return parse(line, role);
+        }
+        int number = toNumber(input);
+        if (number == 0) {
+            return Optional.of(new Action(role, ActionKind.WAIT, null));
+        }
+        List<Action> numbered = numbered(legalActions);
+        return number <= numbered.size() ? Optional.of(numbered.get(number - 1)) : Optional.empty();
+    }
+
+    public static String errorFor(String line, StaffRole role, List<Action> legalActions) {
+        if (role == null || !NUMBER.matcher(normalize(line)).matches()) {
+            return errorFor(line, role);
+        }
+        return parse(line, role, legalActions).isPresent() ? "" : "Choose a number from the list, or type a command.";
     }
 
     public static String errorFor(String line, StaffRole role) {
@@ -66,6 +89,20 @@ public final class CommandParser {
 
     private static String normalize(String line) {
         return line == null ? "" : line.strip().toUpperCase(Locale.ROOT);
+    }
+
+    private static List<Action> numbered(List<Action> legalActions) {
+        return legalActions == null ? List.of()
+                : legalActions.stream().filter(action -> action.kind() != ActionKind.WAIT).toList();
+    }
+
+    // Digits only, so the one failure is a number too large for an int, which no list can reach.
+    private static int toNumber(String digits) {
+        try {
+            return Integer.parseInt(digits);
+        } catch (NumberFormatException tooLarge) {
+            return Integer.MAX_VALUE;
+        }
     }
 
     private static char expectedPrefix(ActionKind kind) {
