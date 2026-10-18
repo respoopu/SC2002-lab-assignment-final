@@ -75,7 +75,7 @@ Each fixture under `fixtures/stage-1/` is a `.in` file of manager commands with 
 | `prioritization-a` | First run of the pair: the victory choices. While one customer eats or waits to pay, the Waiter seats the next arrival (C2 to C5) at the free table. C6 is left in the queue because it cannot pay by turn 18. | VICTORY, as in `victory` |
 | `prioritization-b` | Second run of the pair: the same arrivals and meals, and the same choices up to turn 3. From turn 4 the manager serves one customer at a time, so T2 is never used and the queue backs up. It also shows two rejected commands, each followed by a retry at the same prompt: `SERVE O3` before the Pasta is ready, and `PAY C3`, which is not a command. | C1 to C3 pay, revenue $42.00, average 65.3, DEFEAT |
 
-The pair shows that manager choices alone change the outcome: run B leaves T2 empty and seats each arrival late, so it serves fewer customers within 18 turns. These transcripts are the Stage 1 reproducible runs for the report and the video.
+The pair shows that manager choices alone change the outcome: run B leaves T2 empty, so C2 to C5 wait longer for a table and fewer customers are served within 18 turns. These transcripts are the Stage 1 reproducible runs for the report and the video.
 
 ### Manual play-through for the stage gate
 
