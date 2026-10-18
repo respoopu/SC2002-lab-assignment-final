@@ -1,15 +1,17 @@
 package restaurantrush.check;
 
 import java.util.List;
+import restaurantrush.customer.CriticCustomer;
 import restaurantrush.customer.Customer;
 import restaurantrush.customer.CustomerStatus;
 import restaurantrush.customer.RegularCustomer;
 import restaurantrush.customer.VIPCustomer;
 import restaurantrush.customer.WaitingQueue;
 import restaurantrush.menu.Menu;
+import restaurantrush.menu.MenuItem;
 import restaurantrush.menu.Order;
 
-/** Self-check for the customer package: Customer transitions, RegularCustomer behavior, and WaitingQueue. */
+/** Self-check for customer transitions, Regular/VIP/Critic behavior, and WaitingQueue. */
 public final class CustomerCheck {
     public static void main(String[] args) {
         boolean enabled = false;
@@ -30,6 +32,11 @@ public final class CustomerCheck {
         vipMealChoice();
         vipSatisfaction();
         variantTransitions(new VIPCustomer("C2", 4, 2), new VIPCustomer("C5", 13, 5));
+        newCritic();
+        criticMealChoice();
+        criticSatisfaction();
+        variantTransitions(new CriticCustomer("C4", 10, 4), new CriticCustomer("C6", 16, 6));
+        polymorphicBehavior();
 
         System.out.print("OK CustomerCheck\n");
     }
@@ -218,6 +225,57 @@ public final class CustomerCheck {
         }
         assert vip.loseSatisfaction() == 0;
         assert vip.loseSatisfaction() == 0;
+    }
+
+    private static void newCritic() {
+        Customer critic = new CriticCustomer("C4", 10, 4);
+        assert critic.id().equals("C4");
+        assert critic.arrivalTurn() == 10;
+        assert critic.arrivalIndex() == 4;
+        assert critic.typeName().equals("Critic");
+        assert critic.status() == CustomerStatus.WAITING;
+        assert critic.satisfaction() == 100;
+        assert critic.order().isEmpty();
+        assert critic.servedTurn() == 0;
+        assert critic.readyToPayTurn() == 0;
+        assert critic.waitingLossPerTurn() == 12;
+        assert critic.discountPercent() == 0;
+        assert critic.isWaitingForTableOrFood();
+        Order fullPrice = new Order("O4", critic.id(), critic.chooseMeal(Menu.base()), critic.discountPercent(), 12);
+        assert fullPrice.billCents() == 1800;
+    }
+
+    private static void criticMealChoice() {
+        Menu menu = Menu.base();
+        for (int index = 1; index <= 6; index++) {
+            Customer critic = new CriticCustomer("C" + index, 1 + (index - 1) * 3, index);
+            assert critic.chooseMeal(menu) == menu.item("Pasta");
+        }
+        assert new RegularCustomer("C4", 10, 4).chooseMeal(menu).name().equals("Salad");
+        Menu withoutPasta = new Menu(List.of(menu.item("Salad"), menu.item("Burger"),
+                new MenuItem("Soup", 1000, 1)));
+        Customer critic = new CriticCustomer("C4", 10, 4);
+        assertThrows(IllegalArgumentException.class, () -> critic.chooseMeal(withoutPasta));
+    }
+
+    private static void criticSatisfaction() {
+        Customer critic = new CriticCustomer("C4", 10, 4);
+        assert critic.loseSatisfaction() == 88;
+        assert critic.loseSatisfaction() == 76;
+        for (int loss = 3; loss <= 8; loss++) {
+            assert critic.loseSatisfaction() == 100 - loss * 12;
+        }
+        assert critic.satisfaction() == 4;
+        assert critic.loseSatisfaction() == 0;
+        assert critic.loseSatisfaction() == 0;
+    }
+
+    private static void polymorphicBehavior() {
+        List<Customer> customers = List.of(new RegularCustomer("C1", 1, 1),
+                new VIPCustomer("C2", 4, 2), new CriticCustomer("C4", 10, 4));
+        assert customers.stream().map(Customer::waitingLossPerTurn).toList().equals(List.of(8, 5, 12));
+        assert customers.stream().map(Customer::discountPercent).toList().equals(List.of(0, 10, 0));
+        assert customers.get(0).loseSatisfaction() == 92;
     }
 
     private static void variantTransitions(Customer customer, Customer waiting) {
