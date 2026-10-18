@@ -1,0 +1,66 @@
+# Stage 1 prioritization pair, run B: same arrivals and meals as run A.
+# Each turn reads two lines: the Waiter's choice, then the Chef's, plus one
+# extra line for each rejected command that the prompt asks again for.
+# Strategy: one customer at a time. The Waiter seats the next customer only
+# after the previous one has paid, so T2 is never used and the queue backs up.
+# Turns 1 to 3 match run A; from turn 4 the Waiter waits instead of seating.
+# Result: only C1 to C3 pay, revenue $42.00, average 65.3, DEFEAT.
+
+# Turn 1: C1 (Salad) arrives
+SEAT C1
+WAIT
+# Turn 2
+ORDER C1
+PREPARE O1
+# Turn 3
+SERVE O1
+WAIT
+# Turn 4: C2 (Burger) arrives; run A seats C2 at T2, run B keeps C2 waiting
+WAIT
+WAIT
+# Turn 5: C1 pays
+WAIT
+WAIT
+# Turn 6: T1 is free again
+SEAT C2
+WAIT
+# Turn 7: C3 (Pasta) arrives and waits
+ORDER C2
+PREPARE O2
+# Turn 8
+SERVE O2
+WAIT
+# Turn 9
+WAIT
+WAIT
+# Turn 10: C2 pays; C4 (Salad) arrives
+WAIT
+WAIT
+# Turn 11: C3 is seated after four turns in the queue
+SEAT C3
+WAIT
+# Turn 12: Pasta unit 1 of 2
+ORDER C3
+PREPARE O3
+# Turn 13: C5 (Burger) arrives. Serving the Pasta is rejected because only one
+# unit is done; the Waiter is asked again and waits. Unit 2 makes it READY.
+SERVE O3
+WAIT
+PREPARE O3
+# Turn 14
+SERVE O3
+WAIT
+# Turn 15: C3 becomes ready to pay
+WAIT
+WAIT
+# Turn 16: C6 (Pasta) arrives. PAY is not a command (the Cashier is automatic),
+# so the Waiter is asked again and waits. C3 pays at satisfaction 44.
+PAY C3
+WAIT
+WAIT
+# Turn 17: C4 is seated after seven turns in the queue
+SEAT C4
+WAIT
+# Turn 18: C4 orders but cannot be served before the game ends
+ORDER C4
+PREPARE O4

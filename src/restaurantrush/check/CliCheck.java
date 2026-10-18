@@ -1,7 +1,11 @@
 package restaurantrush.check;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 import restaurantrush.cli.CommandParser;
 import restaurantrush.cli.ConsoleUI;
 import restaurantrush.customer.CustomerStatus;
@@ -9,6 +13,7 @@ import restaurantrush.game.Action;
 import restaurantrush.game.ActionKind;
 import restaurantrush.game.CustomerView;
 import restaurantrush.game.GameResult;
+import restaurantrush.game.GameSetup;
 import restaurantrush.game.Phase;
 import restaurantrush.game.Snapshot;
 import restaurantrush.game.StaffRole;
@@ -27,6 +32,7 @@ public final class CliCheck {
         }
         checkParsing();
         checkRendering();
+        checkRunEndsEarly();
         System.out.print("OK CliCheck\n");
     }
 
@@ -98,6 +104,19 @@ public final class CliCheck {
         assert defeat.contains("DEFEAT");
         assertOutput(victory);
         assertOutput(defeat);
+    }
+
+    private static void checkRunEndsEarly() {
+        // The first four lines of fixtures/stage-1/defeat.in, so input ends long before turn 18.
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(buffer, true, StandardCharsets.UTF_8);
+        boolean finished = new ConsoleUI(new Scanner("WAIT\nWAIT\nWAIT\nWAIT\n"), out).run(GameSetup.baseGame());
+        String transcript = buffer.toString(StandardCharsets.UTF_8);
+
+        assert !finished;
+        String[] lines = transcript.split("\n");
+        assert lines[lines.length - 1].equals("Input ended before the game finished.");
+        assertOutput(transcript);
     }
 
     private static Snapshot emptySnapshot(int turn, int paidCount, int satisfactionSum) {
