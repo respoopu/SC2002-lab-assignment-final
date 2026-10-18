@@ -107,7 +107,7 @@ public final class CliCheck {
     }
 
     private static void checkRunEndsEarly() {
-        // The first four lines of fixtures/stage-1/defeat.in, so input ends long before turn 18.
+        // The first four commands of fixtures/stage-1/defeat.in, so input ends long before turn 18.
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(buffer, true, StandardCharsets.UTF_8);
         boolean finished = new ConsoleUI(new Scanner("WAIT\nWAIT\nWAIT\nWAIT\n"), out).run(GameSetup.baseGame());

@@ -1,7 +1,9 @@
 # Stage 1 victory: the full trace from the controller issue (#7).
 # Each turn reads two lines: the Waiter's choice, then the Chef's.
-# The Waiter serves ready food first, seats each arrival at the free table,
-# and the Chef starts every order on the turn it is taken.
+# The Waiter serves ready food first and seats C2 to C5 at the free table
+# while the previous customer eats or waits to pay. C6 is left in the queue
+# because it cannot pay by turn 18. The Chef starts every order on the turn
+# it is taken.
 # Result: C1 to C5 pay, revenue $66.00, average 79.2, VICTORY.
 
 # Turn 1: C1 (Salad) arrives
@@ -52,7 +54,7 @@ PREPARE O5
 # Turn 16: C6 (Pasta) arrives; it cannot pay within 18 turns
 SERVE O5
 WAIT
-# Turn 17
+# Turn 17: C6 stays in the queue; it could not pay by turn 18 anyway
 WAIT
 WAIT
 # Turn 18: C5 pays
