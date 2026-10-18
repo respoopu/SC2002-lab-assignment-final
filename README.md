@@ -37,8 +37,8 @@ The game always plays 18 turns. Each turn prints any arrival, the status display
 
 | Prompt | Commands | Numbers |
 | --- | --- | --- |
-| `Waiter> ` | `SEAT C<n>`, `ORDER C<n>`, `SERVE O<n>`, `WAIT` | `1` to `n` from the list, `0` = `WAIT` |
-| `Chef> ` | `PREPARE O<n>`, `WAIT` | `1` to `n` from the list, `0` = `WAIT` |
+| `Waiter> ` | `SEAT C<n>`, `ORDER C<n>`, `SERVE O<n>`, `WAIT` | `1` to the last number shown, `0` = `WAIT` |
+| `Chef> ` | `PREPARE O<n>`, `WAIT` | `1` to the last number shown, `0` = `WAIT` |
 
 For example, on turn 1 the Waiter sees `Legal actions: [1] SEAT C1, [0] WAIT`, and typing `1` seats C1. A number refers only to the list printed just above the prompt; a number that is not in it prints `Choose a number from the list, or type a command.` and asks again. The fixture `.in` files use text commands so they stay readable.
 
