@@ -59,7 +59,9 @@ public final class ConsoleUI {
                     }
 
                     ActionResult result = controller.submit(action.orElseThrow());
-                    printLine(result.message());
+                    if (result.events().isEmpty()) {
+                        printLine(result.message());
+                    }
                     printEvents(result.events());
                     accepted = result.accepted();
                 }

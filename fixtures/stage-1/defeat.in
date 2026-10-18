@@ -1,0 +1,60 @@
+# Stage 1 defeat: the Waiter and the Chef wait on every turn.
+# Each turn reads two lines: the Waiter's choice, then the Chef's.
+# Nobody is seated, so nobody pays and the average stays N/A.
+# Waiting customers lose 8 satisfaction per turn, so C1 leaves at the end of
+# turn 13 and C2 at the end of turn 16. Result: DEFEAT.
+
+# Turn 1: C1 arrives
+WAIT
+WAIT
+# Turn 2
+WAIT
+WAIT
+# Turn 3
+WAIT
+WAIT
+# Turn 4: C2 arrives
+WAIT
+WAIT
+# Turn 5
+WAIT
+WAIT
+# Turn 6
+WAIT
+WAIT
+# Turn 7: C3 arrives
+WAIT
+WAIT
+# Turn 8
+WAIT
+WAIT
+# Turn 9
+WAIT
+WAIT
+# Turn 10: C4 arrives
+WAIT
+WAIT
+# Turn 11
+WAIT
+WAIT
+# Turn 12
+WAIT
+WAIT
+# Turn 13: C5 arrives; C1 leaves at turn end
+WAIT
+WAIT
+# Turn 14
+WAIT
+WAIT
+# Turn 15
+WAIT
+WAIT
+# Turn 16: C6 arrives; C2 leaves at turn end
+WAIT
+WAIT
+# Turn 17
+WAIT
+WAIT
+# Turn 18
+WAIT
+WAIT

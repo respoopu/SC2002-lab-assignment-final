@@ -1,0 +1,506 @@
+C1 (Regular) arrives
+Turn 1
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 1
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 2
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 92, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 2
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 3
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 84, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 3
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+C2 (Regular) arrives
+Turn 4
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 76, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 4
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 5
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 68, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 92, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 5
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 6
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 60, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 84, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 6
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+C3 (Regular) arrives
+Turn 7
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+  C3 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 52, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 76, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, SEAT C3, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 7
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 8
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+  C3 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 44, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 68, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 92, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, SEAT C3, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 8
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 9
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+  C3 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 36, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 60, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 84, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, SEAT C3, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 9
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+C4 (Regular) arrives
+Turn 10
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+  C3 (Regular)
+  C4 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 28, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 52, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 76, order NO_ORDER
+  C4 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, SEAT C3, SEAT C4, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 10
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 11
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+  C3 (Regular)
+  C4 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 20, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 44, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 68, order NO_ORDER
+  C4 (Regular): WAITING, satisfaction 92, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, SEAT C3, SEAT C4, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 11
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 12
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+  C3 (Regular)
+  C4 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 12, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 36, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 60, order NO_ORDER
+  C4 (Regular): WAITING, satisfaction 84, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, SEAT C3, SEAT C4, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 12
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+C5 (Regular) arrives
+Turn 13
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+  C2 (Regular)
+  C3 (Regular)
+  C4 (Regular)
+  C5 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 4, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 28, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 52, order NO_ORDER
+  C4 (Regular): WAITING, satisfaction 76, order NO_ORDER
+  C5 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C1, SEAT C2, SEAT C3, SEAT C4, SEAT C5, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+C1 left unhappy
+End of turn 13
+Served: 0
+Unhappy departures: 1
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 14
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C2 (Regular)
+  C3 (Regular)
+  C4 (Regular)
+  C5 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 20, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 44, order NO_ORDER
+  C4 (Regular): WAITING, satisfaction 68, order NO_ORDER
+  C5 (Regular): WAITING, satisfaction 92, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C2, SEAT C3, SEAT C4, SEAT C5, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 14
+Served: 0
+Unhappy departures: 1
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 15
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C2 (Regular)
+  C3 (Regular)
+  C4 (Regular)
+  C5 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 12, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 36, order NO_ORDER
+  C4 (Regular): WAITING, satisfaction 60, order NO_ORDER
+  C5 (Regular): WAITING, satisfaction 84, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C2, SEAT C3, SEAT C4, SEAT C5, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 15
+Served: 0
+Unhappy departures: 1
+Revenue: $0.00
+Average satisfaction: N/A
+C6 (Regular) arrives
+Turn 16
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C2 (Regular)
+  C3 (Regular)
+  C4 (Regular)
+  C5 (Regular)
+  C6 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
+  C2 (Regular): WAITING, satisfaction 4, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 28, order NO_ORDER
+  C4 (Regular): WAITING, satisfaction 52, order NO_ORDER
+  C5 (Regular): WAITING, satisfaction 76, order NO_ORDER
+  C6 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C2, SEAT C3, SEAT C4, SEAT C5, SEAT C6, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+C2 left unhappy
+End of turn 16
+Served: 0
+Unhappy departures: 2
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 17
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C3 (Regular)
+  C4 (Regular)
+  C5 (Regular)
+  C6 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
+  C2 (Regular): LEFT, satisfaction 0, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 20, order NO_ORDER
+  C4 (Regular): WAITING, satisfaction 44, order NO_ORDER
+  C5 (Regular): WAITING, satisfaction 68, order NO_ORDER
+  C6 (Regular): WAITING, satisfaction 92, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C3, SEAT C4, SEAT C5, SEAT C6, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 17
+Served: 0
+Unhappy departures: 2
+Revenue: $0.00
+Average satisfaction: N/A
+Turn 18
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C3 (Regular)
+  C4 (Regular)
+  C5 (Regular)
+  C6 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
+  C2 (Regular): LEFT, satisfaction 0, order NO_ORDER
+  C3 (Regular): WAITING, satisfaction 12, order NO_ORDER
+  C4 (Regular): WAITING, satisfaction 36, order NO_ORDER
+  C5 (Regular): WAITING, satisfaction 60, order NO_ORDER
+  C6 (Regular): WAITING, satisfaction 84, order NO_ORDER
+Orders:
+  (none)
+Legal actions: SEAT C3, SEAT C4, SEAT C5, SEAT C6, WAIT
+Waiter> 
+Waiter waits.
+Legal actions: WAIT
+Chef> 
+Chef waits.
+End of turn 18
+Served: 0
+Unhappy departures: 2
+Revenue: $0.00
+Average satisfaction: N/A
+Result: DEFEAT
