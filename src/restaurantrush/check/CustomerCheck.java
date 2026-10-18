@@ -4,6 +4,7 @@ import java.util.List;
 import restaurantrush.customer.Customer;
 import restaurantrush.customer.CustomerStatus;
 import restaurantrush.customer.RegularCustomer;
+import restaurantrush.customer.VIPCustomer;
 import restaurantrush.customer.WaitingQueue;
 import restaurantrush.menu.Menu;
 import restaurantrush.menu.Order;
@@ -25,6 +26,10 @@ public final class CustomerCheck {
         leaving();
         satisfaction();
         queue();
+        newVip();
+        vipMealChoice();
+        vipSatisfaction();
+        variantTransitions(new VIPCustomer("C2", 4, 2), new VIPCustomer("C5", 13, 5));
 
         System.out.print("OK CustomerCheck\n");
     }
@@ -174,6 +179,66 @@ public final class CustomerCheck {
         assertThrows(IllegalArgumentException.class, () -> q.remove("C9"));
         assertThrows(UnsupportedOperationException.class, () -> q.view().add(c2));
         assert q.view().equals(List.of(c1, c3));
+    }
+
+    private static void newVip() {
+        Customer vip = new VIPCustomer("C2", 4, 2);
+        assert vip.id().equals("C2");
+        assert vip.arrivalTurn() == 4;
+        assert vip.arrivalIndex() == 2;
+        assert vip.typeName().equals("VIP");
+        assert vip.status() == CustomerStatus.WAITING;
+        assert vip.satisfaction() == 100;
+        assert vip.order().isEmpty();
+        assert vip.servedTurn() == 0;
+        assert vip.readyToPayTurn() == 0;
+        assert vip.waitingLossPerTurn() == 5;
+        assert vip.discountPercent() == 10;
+        assert vip.isWaitingForTableOrFood();
+        Order discounted = new Order("O2", vip.id(), Menu.base().item("Burger"), vip.discountPercent(), 5);
+        assert discounted.billCents() == 1350;
+    }
+
+    private static void vipMealChoice() {
+        Menu menu = Menu.base();
+        List<String> meals = List.of("Salad", "Burger", "Pasta", "Salad", "Burger", "Pasta");
+        for (int index = 1; index <= 6; index++) {
+            Customer vip = new VIPCustomer("C" + index, 1 + (index - 1) * 3, index);
+            assert vip.chooseMeal(menu).name().equals(meals.get(index - 1));
+            assert vip.chooseMeal(menu) == new RegularCustomer("C" + index, 1, index).chooseMeal(menu);
+        }
+    }
+
+    private static void vipSatisfaction() {
+        Customer vip = new VIPCustomer("C2", 4, 2);
+        assert vip.loseSatisfaction() == 95;
+        assert vip.loseSatisfaction() == 90;
+        for (int loss = 3; loss <= 19; loss++) {
+            assert vip.loseSatisfaction() == 100 - loss * 5;
+        }
+        assert vip.loseSatisfaction() == 0;
+        assert vip.loseSatisfaction() == 0;
+    }
+
+    private static void variantTransitions(Customer customer, Customer waiting) {
+        assertThrows(IllegalStateException.class, waiting::pay);
+        assert waiting.status() == CustomerStatus.WAITING;
+        waiting.leave();
+        assert waiting.status() == CustomerStatus.LEFT;
+
+        customer.seat();
+        assert customer.status() == CustomerStatus.SEATED;
+        Order order = new Order("O1", customer.id(), customer.chooseMeal(Menu.base()), customer.discountPercent(), 2);
+        customer.attachOrder(order);
+        assert customer.order().orElseThrow() == order;
+        customer.startEating(4);
+        assert customer.status() == CustomerStatus.EATING;
+        assert customer.servedTurn() == 4;
+        customer.becomeReadyToPay(5);
+        assert customer.status() == CustomerStatus.READY_TO_PAY;
+        assert customer.readyToPayTurn() == 5;
+        customer.pay();
+        assert customer.status() == CustomerStatus.PAID;
     }
 
     /** A reference to attach; no Order method is called. */
