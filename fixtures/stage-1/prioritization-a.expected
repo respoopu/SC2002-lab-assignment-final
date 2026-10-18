@@ -22,6 +22,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 1
 Turn 2
 Revenue: $0.00
 Average satisfaction: N/A
@@ -45,6 +46,7 @@ Served: 0
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 2
 Turn 3
 Revenue: $0.00
 Average satisfaction: N/A
@@ -68,6 +70,7 @@ Served: 1
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 3
 C2 (Regular) arrives
 Turn 4
 Revenue: $0.00
@@ -94,6 +97,7 @@ Served: 1
 Unhappy departures: 0
 Revenue: $0.00
 Average satisfaction: N/A
+Turns used: 4
 Turn 5
 Revenue: $0.00
 Average satisfaction: N/A
@@ -119,6 +123,7 @@ Served: 1
 Unhappy departures: 0
 Revenue: $9.00
 Average satisfaction: 84.0
+Turns used: 5
 Turn 6
 Revenue: $9.00
 Average satisfaction: 84.0
@@ -144,6 +149,7 @@ Served: 2
 Unhappy departures: 0
 Revenue: $9.00
 Average satisfaction: 84.0
+Turns used: 6
 C3 (Regular) arrives
 Turn 7
 Revenue: $9.00
@@ -172,6 +178,7 @@ Served: 2
 Unhappy departures: 0
 Revenue: $9.00
 Average satisfaction: 84.0
+Turns used: 7
 Turn 8
 Revenue: $9.00
 Average satisfaction: 84.0
@@ -199,6 +206,7 @@ Served: 2
 Unhappy departures: 0
 Revenue: $24.00
 Average satisfaction: 84.0
+Turns used: 8
 Turn 9
 Revenue: $24.00
 Average satisfaction: 84.0
@@ -226,6 +234,7 @@ Served: 2
 Unhappy departures: 0
 Revenue: $24.00
 Average satisfaction: 84.0
+Turns used: 9
 C4 (Regular) arrives
 Turn 10
 Revenue: $24.00
@@ -255,6 +264,7 @@ Served: 3
 Unhappy departures: 0
 Revenue: $24.00
 Average satisfaction: 84.0
+Turns used: 10
 Turn 11
 Revenue: $24.00
 Average satisfaction: 84.0
@@ -284,6 +294,7 @@ Served: 3
 Unhappy departures: 0
 Revenue: $24.00
 Average satisfaction: 84.0
+Turns used: 11
 Turn 12
 Revenue: $24.00
 Average satisfaction: 84.0
@@ -313,6 +324,7 @@ Served: 3
 Unhappy departures: 0
 Revenue: $42.00
 Average satisfaction: 81.3
+Turns used: 12
 C5 (Regular) arrives
 Turn 13
 Revenue: $42.00
@@ -344,6 +356,7 @@ Served: 4
 Unhappy departures: 0
 Revenue: $42.00
 Average satisfaction: 81.3
+Turns used: 13
 Turn 14
 Revenue: $42.00
 Average satisfaction: 81.3
@@ -375,6 +388,7 @@ Served: 4
 Unhappy departures: 0
 Revenue: $42.00
 Average satisfaction: 81.3
+Turns used: 14
 Turn 15
 Revenue: $42.00
 Average satisfaction: 81.3
@@ -406,6 +420,7 @@ Served: 4
 Unhappy departures: 0
 Revenue: $51.00
 Average satisfaction: 80.0
+Turns used: 15
 C6 (Regular) arrives
 Turn 16
 Revenue: $51.00
@@ -439,6 +454,7 @@ Served: 5
 Unhappy departures: 0
 Revenue: $51.00
 Average satisfaction: 80.0
+Turns used: 16
 Turn 17
 Revenue: $51.00
 Average satisfaction: 80.0
@@ -472,6 +488,7 @@ Served: 5
 Unhappy departures: 0
 Revenue: $51.00
 Average satisfaction: 80.0
+Turns used: 17
 Turn 18
 Revenue: $51.00
 Average satisfaction: 80.0
@@ -505,4 +522,5 @@ Served: 5
 Unhappy departures: 0
 Revenue: $66.00
 Average satisfaction: 79.2
+Turns used: 18
 Result: VICTORY

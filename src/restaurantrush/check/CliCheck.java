@@ -98,7 +98,7 @@ public final class CliCheck {
             List<Action> actions = input.role() == StaffRole.WAITER ? waiterActions : chefActions;
             assert CommandParser.parse(input.line(), input.role(), actions).isEmpty() : input.line();
             assert CommandParser.errorFor(input.line(), input.role(), actions)
-                    .equals("Choose a number from the list, or type a command.") : input.line();
+                    .equals("That number is not in the list. Choose a number from the list, or type a command.") : input.line();
         }
         assert CommandParser.parse("1", StaffRole.WAITER, List.of(waiterWait)).isEmpty();
         assert CommandParser.parse("1", StaffRole.WAITER, null).isEmpty();
@@ -161,12 +161,13 @@ public final class CliCheck {
         assert noResult.contains("Unhappy departures: 1");
         assert noResult.contains("$45.20");
         assert noResult.contains("N/A");
+        assert noResult.endsWith("Turns used: 2\n");
         assertOutput(noResult);
 
         String victory = ConsoleUI.render(new TurnSummary(18, 5, 1, 8000, 5, 400), Optional.of(GameResult.VICTORY));
         String defeat = ConsoleUI.render(new TurnSummary(18, 2, 4, 2500, 2, 120), Optional.of(GameResult.DEFEAT));
-        assert victory.contains("VICTORY");
-        assert defeat.contains("DEFEAT");
+        assert victory.endsWith("Turns used: 18\nResult: VICTORY\n");
+        assert defeat.endsWith("Turns used: 18\nResult: DEFEAT\n");
         assertOutput(victory);
         assertOutput(defeat);
     }
@@ -182,7 +183,7 @@ public final class CliCheck {
         // Turn 1: 2 and 99 are not in the list, so the Waiter is asked again; 1 seats C1 and the Chef waits with 0.
         // Turn 2: 1 takes C1's order and 1 prepares it.
         String numbers = playUntilInputEnds("2\n99\n1\n0\n1\n1\n");
-        String retry = "Choose a number from the list, or type a command.\n";
+        String retry = "That number is not in the list. Choose a number from the list, or type a command.\n";
         String turnOneWaiter = "Legal actions: [1] SEAT C1, [0] WAIT\nWaiter> \n";
         assert numbers.contains(turnOneWaiter + retry + turnOneWaiter + retry + turnOneWaiter
                 + "C1 seated at T1\nLegal actions: [0] WAIT\nChef> \nChef waits.\n") : numbers;

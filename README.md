@@ -40,7 +40,7 @@ The game always plays 18 turns. Each turn prints any arrival, the status display
 | `Waiter> ` | `SEAT C<n>`, `ORDER C<n>`, `SERVE O<n>`, `WAIT` | `1` to the last number shown, `0` = `WAIT` |
 | `Chef> ` | `PREPARE O<n>`, `WAIT` | `1` to the last number shown, `0` = `WAIT` |
 
-For example, on turn 1 the Waiter sees `Legal actions: [1] SEAT C1, [0] WAIT`, and typing `1` seats C1. A number refers only to the list printed just above the prompt; a number that is not in it prints `Choose a number from the list, or type a command.` and asks again. The fixture `.in` files use text commands so they stay readable.
+For example, on turn 1 the Waiter sees `Legal actions: [1] SEAT C1, [0] WAIT`, and typing `1` seats C1. A number refers only to the list printed just above the prompt; a number that is not in it prints `That number is not in the list. Choose a number from the list, or type a command.` and asks again. The fixture `.in` files use text commands so they stay readable.
 
 An invalid or illegal command prints the reason and asks again without using up that staff member's task. The Cashier is automatic and collects at most one payment per turn. If input ends before the game finishes, the game prints `Input ended before the game finished.` and exits with status 2.
 
