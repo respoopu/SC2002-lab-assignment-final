@@ -379,6 +379,8 @@ package restaurantrush.cli;
 public final class CommandParser {
     public static Optional<Action> parse(String line, StaffRole role);  // empty on error; see errorFor
     public static String errorFor(String line, StaffRole role);          // the message printed when parse is empty
+    public static Optional<Action> parse(String line, StaffRole role, List<Action> legalActions);  // also reads a number; text delegates to parse(line, role)
+    public static String errorFor(String line, StaffRole role, List<Action> legalActions);         // the out-of-range message for a number; text delegates to errorFor(line, role)
 }
 
 public final class ConsoleUI {
@@ -391,10 +393,12 @@ public final class ConsoleUI {
 
 Parsing versus rejection: the parser accepts exactly `SEAT C<n>`, `ORDER C<n>`, `SERVE O<n>`, `PREPARE O<n>`, and `WAIT`, case-insensitive with any surrounding whitespace, and only the kinds that belong to the prompted role (`SEAT`, `ORDER`, `SERVE`, `WAIT` for the Waiter; `PREPARE`, `WAIT` for the Chef). Anything else is a parse error with the parser's message. Whether the ID exists and whether the action is legal now are decided by staff and reported through `ActionResult`.
 
+Numbered choices: the legal-actions line numbers the non-`WAIT` actions from 1 in their list order and shows `WAIT`, which 7.4 always lists last, as 0, for example `Legal actions: [1] SEAT C1, [2] ORDER C2, [0] WAIT`. A line that is only the digits 0 to 9 after trimming is a number. `0` is `WAIT` for the prompted role, and 1 to n is the nth non-`WAIT` action in the list printed just above the prompt. Any other number is a parse error with the message `Choose a number from the list, or type a command.` Anything else is parsed as text, as above. A number refers only to the list just printed, and the resulting `Action` carries the target's stable ID, so Section 3's rule that IDs, not list positions, identify targets still holds and `submit` still decides legality. The numbers are a CLI convenience over `Snapshot.legalActions` with no rule changes; fixture `.in` files keep text commands so they stay readable. The Stage 3 `Host> ` prompt (#19) reuses this numbering.
+
 The loop, fixed so every fixture has the same shape:
 
 1. Call `beginTurn`. Print each event on its own line, then `render(snapshot)`.
-2. For `WAITER` then `CHEF`: print the role's legal actions from `controller.snapshot()`, print the prompt `Waiter> ` or `Chef> `, read one line, parse, and `submit`. Print the result's events one per line, or its message when it has no events (a rejection or `WAIT`), so an accepted action is not reported twice. On a parse error or a rejection, re-prompt. On an accepted result, move on.
+2. For `WAITER` then `CHEF`: print the role's numbered legal actions from `controller.snapshot()`, print the prompt `Waiter> ` or `Chef> `, read one line, parse it against that list with the three-argument `parse`, and `submit`. Print the result's events one per line, or its message when it has no events (a rejection or `WAIT`), so an accepted action is not reported twice. On a parse error or a rejection, re-prompt. On an accepted result, move on.
 3. Call `endTurn`. Print each event, then `render(summary, result)`.
 
 Every role is prompted every turn, so a Stage 1 turn consumes exactly two accepted choices; retries after an error consume extra lines. Output is ASCII and uses `"\n"` only, never `println` or `%n`, so transcripts are identical on Windows and macOS. If standard input ends before the game finishes, `run` prints `Input ended before the game finished.` and returns false, and `Main` exits with status 2. Money prints through `Money.format`, satisfaction as an integer, and the paid-customer average with one decimal in `Locale.ROOT` or `N/A`.

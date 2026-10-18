@@ -11,10 +11,10 @@ Customers:
   C1 (Regular): WAITING, satisfaction 100, order NO_ORDER
 Orders:
   (none)
-Legal actions: SEAT C1, WAIT
+Legal actions: [1] SEAT C1, [0] WAIT
 Waiter> 
 C1 seated at T1
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 1
@@ -34,10 +34,10 @@ Customers:
   C1 (Regular): SEATED, satisfaction 92, order NO_ORDER
 Orders:
   (none)
-Legal actions: ORDER C1, WAIT
+Legal actions: [1] ORDER C1, [0] WAIT
 Waiter> 
 C1 orders Salad ($9.00) as O1
-Legal actions: PREPARE O1, WAIT
+Legal actions: [1] PREPARE O1, [0] WAIT
 Chef> 
 O1 is READY
 End of turn 2
@@ -57,10 +57,10 @@ Customers:
   C1 (Regular): SEATED, satisfaction 84, order O1
 Orders:
   O1: Salad for C1, READY, 1/1, $9.00
-Legal actions: SERVE O1, WAIT
+Legal actions: [1] SERVE O1, [0] WAIT
 Waiter> 
 O1 served to C1
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 3
@@ -82,10 +82,10 @@ Customers:
   C2 (Regular): WAITING, satisfaction 100, order NO_ORDER
 Orders:
   O1: Salad for C1, SERVED, 1/1, $9.00
-Legal actions: SEAT C2, WAIT
+Legal actions: [1] SEAT C2, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 C1 is ready to pay
@@ -107,10 +107,10 @@ Customers:
   C2 (Regular): WAITING, satisfaction 92, order NO_ORDER
 Orders:
   O1: Salad for C1, SERVED, 1/1, $9.00
-Legal actions: SEAT C2, WAIT
+Legal actions: [1] SEAT C2, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 C1 paid $9.00 (satisfaction 84), T1 free
@@ -132,10 +132,10 @@ Customers:
   C2 (Regular): WAITING, satisfaction 84, order NO_ORDER
 Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
-Legal actions: SEAT C2, WAIT
+Legal actions: [1] SEAT C2, [0] WAIT
 Waiter> 
 C2 seated at T1
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 6
@@ -158,10 +158,10 @@ Customers:
   C3 (Regular): WAITING, satisfaction 100, order NO_ORDER
 Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
-Legal actions: SEAT C3, ORDER C2, WAIT
+Legal actions: [1] SEAT C3, [2] ORDER C2, [0] WAIT
 Waiter> 
 C2 orders Burger ($15.00) as O2
-Legal actions: PREPARE O2, WAIT
+Legal actions: [1] PREPARE O2, [0] WAIT
 Chef> 
 O2 is READY
 End of turn 7
@@ -184,10 +184,10 @@ Customers:
 Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, READY, 1/1, $15.00
-Legal actions: SEAT C3, SERVE O2, WAIT
+Legal actions: [1] SEAT C3, [2] SERVE O2, [0] WAIT
 Waiter> 
 O2 served to C2
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 8
@@ -210,10 +210,10 @@ Customers:
 Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, SERVED, 1/1, $15.00
-Legal actions: SEAT C3, WAIT
+Legal actions: [1] SEAT C3, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 C2 is ready to pay
@@ -240,10 +240,10 @@ Customers:
 Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, SERVED, 1/1, $15.00
-Legal actions: SEAT C3, SEAT C4, WAIT
+Legal actions: [1] SEAT C3, [2] SEAT C4, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 C2 paid $15.00 (satisfaction 68), T1 free
@@ -269,10 +269,10 @@ Customers:
 Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, PAID, 1/1, $15.00
-Legal actions: SEAT C3, SEAT C4, WAIT
+Legal actions: [1] SEAT C3, [2] SEAT C4, [0] WAIT
 Waiter> 
 C3 seated at T1
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 11
@@ -296,10 +296,10 @@ Customers:
 Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, PAID, 1/1, $15.00
-Legal actions: SEAT C4, ORDER C3, WAIT
+Legal actions: [1] SEAT C4, [2] ORDER C3, [0] WAIT
 Waiter> 
 C3 orders Pasta ($18.00) as O3
-Legal actions: PREPARE O3, WAIT
+Legal actions: [1] PREPARE O3, [0] WAIT
 Chef> 
 O3 unit 1 of 2 done
 End of turn 12
@@ -327,13 +327,13 @@ Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, PAID, 1/1, $15.00
   O3: Pasta for C3, PREPARING, 1/2, $18.00
-Legal actions: SEAT C4, SEAT C5, WAIT
+Legal actions: [1] SEAT C4, [2] SEAT C5, [0] WAIT
 Waiter> 
 O3 is not READY; it is PREPARING.
-Legal actions: SEAT C4, SEAT C5, WAIT
+Legal actions: [1] SEAT C4, [2] SEAT C5, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: PREPARE O3, WAIT
+Legal actions: [1] PREPARE O3, [0] WAIT
 Chef> 
 O3 is READY
 End of turn 13
@@ -360,10 +360,10 @@ Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, PAID, 1/1, $15.00
   O3: Pasta for C3, READY, 2/2, $18.00
-Legal actions: SEAT C4, SEAT C5, SERVE O3, WAIT
+Legal actions: [1] SEAT C4, [2] SEAT C5, [3] SERVE O3, [0] WAIT
 Waiter> 
 O3 served to C3
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 14
@@ -390,10 +390,10 @@ Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, PAID, 1/1, $15.00
   O3: Pasta for C3, SERVED, 2/2, $18.00
-Legal actions: SEAT C4, SEAT C5, WAIT
+Legal actions: [1] SEAT C4, [2] SEAT C5, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 C3 is ready to pay
@@ -424,13 +424,13 @@ Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, PAID, 1/1, $15.00
   O3: Pasta for C3, SERVED, 2/2, $18.00
-Legal actions: SEAT C4, SEAT C5, SEAT C6, WAIT
+Legal actions: [1] SEAT C4, [2] SEAT C5, [3] SEAT C6, [0] WAIT
 Waiter> 
 Unknown command. Use SEAT C<n>, ORDER C<n>, SERVE O<n>, or WAIT.
-Legal actions: SEAT C4, SEAT C5, SEAT C6, WAIT
+Legal actions: [1] SEAT C4, [2] SEAT C5, [3] SEAT C6, [0] WAIT
 Waiter> 
 Waiter waits.
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 C3 paid $18.00 (satisfaction 44), T1 free
@@ -460,10 +460,10 @@ Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, PAID, 1/1, $15.00
   O3: Pasta for C3, PAID, 2/2, $18.00
-Legal actions: SEAT C4, SEAT C5, SEAT C6, WAIT
+Legal actions: [1] SEAT C4, [2] SEAT C5, [3] SEAT C6, [0] WAIT
 Waiter> 
 C4 seated at T1
-Legal actions: WAIT
+Legal actions: [0] WAIT
 Chef> 
 Chef waits.
 End of turn 17
@@ -491,10 +491,10 @@ Orders:
   O1: Salad for C1, PAID, 1/1, $9.00
   O2: Burger for C2, PAID, 1/1, $15.00
   O3: Pasta for C3, PAID, 2/2, $18.00
-Legal actions: SEAT C5, SEAT C6, ORDER C4, WAIT
+Legal actions: [1] SEAT C5, [2] SEAT C6, [3] ORDER C4, [0] WAIT
 Waiter> 
 C4 orders Salad ($9.00) as O4
-Legal actions: PREPARE O4, WAIT
+Legal actions: [1] PREPARE O4, [0] WAIT
 Chef> 
 O4 is READY
 End of turn 18

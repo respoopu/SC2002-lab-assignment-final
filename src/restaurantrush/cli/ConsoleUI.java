@@ -41,7 +41,8 @@ public final class ConsoleUI {
             for (StaffRole role : List.of(StaffRole.WAITER, StaffRole.CHEF)) {
                 boolean accepted = false;
                 while (!accepted) {
-                    printActions(controller.snapshot().legalActions());
+                    List<Action> legalActions = controller.snapshot().legalActions();
+                    printActions(legalActions);
                     out.print(prompt(role));
                     out.flush();
                     if (!in.hasNextLine()) {
@@ -52,9 +53,9 @@ public final class ConsoleUI {
 
                     String line = in.nextLine();
                     out.print('\n');
-                    Optional<Action> action = CommandParser.parse(line, role);
+                    Optional<Action> action = CommandParser.parse(line, role, legalActions);
                     if (action.isEmpty()) {
-                        printLine(CommandParser.errorFor(line, role));
+                        printLine(CommandParser.errorFor(line, role, legalActions));
                         continue;
                     }
 
@@ -130,14 +131,21 @@ public final class ConsoleUI {
         return paidCount == 0 ? "N/A" : String.format(Locale.ROOT, "%.1f", (double) satisfactionSum / paidCount);
     }
 
+    // Numbered as CommandParser reads them: the non-WAIT actions from 1 in list order, and WAIT, which 7.4 lists last, as 0.
     private void printActions(List<Action> actions) {
         StringBuilder text = new StringBuilder("Legal actions: ");
+        int number = 0;
         for (int i = 0; i < actions.size(); i++) {
             if (i > 0) {
                 text.append(", ");
             }
             Action action = actions.get(i);
-            text.append(action.kind() == ActionKind.WAIT ? "WAIT" : action.kind() + " " + action.targetId());
+            if (action.kind() == ActionKind.WAIT) {
+                text.append("[0] WAIT");
+            } else {
+                number++;
+                text.append("[" + number + "] " + action.kind() + " " + action.targetId());
+            }
         }
         printLine(text.toString());
     }

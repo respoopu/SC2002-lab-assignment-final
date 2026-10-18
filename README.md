@@ -33,12 +33,14 @@ javac --release 17 -d out $(find src -name '*.java')
 java -cp out restaurantrush.game.Main
 ```
 
-The game always plays 18 turns. Each turn prints any arrival, the status display, and the legal actions, then asks for one Waiter command at `Waiter> ` and one Chef command at `Chef> `. Commands are case-insensitive:
+The game always plays 18 turns. Each turn prints any arrival, the status display, and the numbered legal actions, then asks for one Waiter command at `Waiter> ` and one Chef command at `Chef> `. Type a command, which is case-insensitive, or the number shown beside a legal action:
 
-| Prompt | Commands |
-| --- | --- |
-| `Waiter> ` | `SEAT C<n>`, `ORDER C<n>`, `SERVE O<n>`, `WAIT` |
-| `Chef> ` | `PREPARE O<n>`, `WAIT` |
+| Prompt | Commands | Numbers |
+| --- | --- | --- |
+| `Waiter> ` | `SEAT C<n>`, `ORDER C<n>`, `SERVE O<n>`, `WAIT` | `1` to `n` from the list, `0` = `WAIT` |
+| `Chef> ` | `PREPARE O<n>`, `WAIT` | `1` to `n` from the list, `0` = `WAIT` |
+
+For example, on turn 1 the Waiter sees `Legal actions: [1] SEAT C1, [0] WAIT`, and typing `1` seats C1. A number refers only to the list printed just above the prompt; a number that is not in it prints `Choose a number from the list, or type a command.` and asks again. The fixture `.in` files use text commands so they stay readable.
 
 An invalid or illegal command prints the reason and asks again without using up that staff member's task. The Cashier is automatic and collects at most one payment per turn. If input ends before the game finishes, the game prints `Input ended before the game finished.` and exits with status 2.
 
