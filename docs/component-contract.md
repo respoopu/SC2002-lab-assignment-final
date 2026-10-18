@@ -394,7 +394,7 @@ Parsing versus rejection: the parser accepts exactly `SEAT C<n>`, `ORDER C<n>`, 
 The loop, fixed so every fixture has the same shape:
 
 1. Call `beginTurn`. Print each event on its own line, then `render(snapshot)`.
-2. For `WAITER` then `CHEF`: print the role's legal actions from `controller.snapshot()`, print the prompt `Waiter> ` or `Chef> `, read one line, parse, and `submit`. Print the result's message, then its events one per line. On a parse error or a rejection, re-prompt. On an accepted result, move on.
+2. For `WAITER` then `CHEF`: print the role's legal actions from `controller.snapshot()`, print the prompt `Waiter> ` or `Chef> `, read one line, parse, and `submit`. Print the result's events one per line, or its message when it has no events (a rejection or `WAIT`), so an accepted action is not reported twice. On a parse error or a rejection, re-prompt. On an accepted result, move on.
 3. Call `endTurn`. Print each event, then `render(summary, result)`.
 
 Every role is prompted every turn, so a Stage 1 turn consumes exactly two accepted choices; retries after an error consume extra lines. Output is ASCII and uses `"\n"` only, never `println` or `%n`, so transcripts are identical on Windows and macOS. If standard input ends before the game finishes, `run` prints `Input ended before the game finished.` and returns false, and `Main` exits with status 2. Money prints through `Money.format`, satisfaction as an integer, and the paid-customer average with one decimal in `Locale.ROOT` or `N/A`.
