@@ -146,8 +146,8 @@ The table lists the complete transition from `stage-1` to this Stage 2 branch, i
 
 | Path | Status | Reason | PR |
 | --- | --- | --- | --- |
-| `README.md` | Modified | Describe Stage 2 rules, runs, stage comparison, and gate status; correct the earlier-stage replay example. | [#15](https://github.com/respoopu/SC2002-lab-assignment-final/issues/15) (README PR pending) |
-| `fixtures/README.md` | Modified | Point readers to both stage sections for scenario details. | [#15](https://github.com/respoopu/SC2002-lab-assignment-final/issues/15) (README PR pending) |
+| `README.md` | Modified | Describe Stage 2 rules, runs, stage comparison, and gate status; correct the earlier-stage replay example. | [#32](https://github.com/respoopu/SC2002-lab-assignment-final/pull/32) |
+| `fixtures/README.md` | Modified | Point readers to both stage sections for scenario details. | [#32](https://github.com/respoopu/SC2002-lab-assignment-final/pull/32) |
 | `fixtures/stage-2/defeat.expected` | Added | Record the all-WAIT Stage 2 transcript, including the Critic's turn 18 departure. | [#31](https://github.com/respoopu/SC2002-lab-assignment-final/pull/31) |
 | `fixtures/stage-2/defeat.in` | Added | Supply the 36 WAIT commands for Stage 2 Defeat. | [#31](https://github.com/respoopu/SC2002-lab-assignment-final/pull/31) |
 | `fixtures/stage-2/vip-critic.expected` | Added | Record both new customer behaviours through payment and the $73.50 Victory. | [#31](https://github.com/respoopu/SC2002-lab-assignment-final/pull/31) |
