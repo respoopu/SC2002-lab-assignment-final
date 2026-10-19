@@ -1,0 +1,526 @@
+C1 (Regular) arrives
+Turn 1
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C1 (Regular)
+Tables:
+  T1: free
+  T2: free
+Customers:
+  C1 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  (none)
+Legal actions: [1] SEAT C1, [0] WAIT
+Waiter> 
+C1 seated at T1
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+End of turn 1
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turns used: 1
+Turn 2
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  (empty)
+Tables:
+  T1: occupied by C1
+  T2: free
+Customers:
+  C1 (Regular): SEATED, satisfaction 92, order NO_ORDER
+Orders:
+  (none)
+Legal actions: [1] ORDER C1, [0] WAIT
+Waiter> 
+C1 orders Salad ($9.00) as O1
+Legal actions: [1] PREPARE O1, [0] WAIT
+Chef> 
+O1 is READY
+End of turn 2
+Served: 0
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turns used: 2
+Turn 3
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  (empty)
+Tables:
+  T1: occupied by C1
+  T2: free
+Customers:
+  C1 (Regular): SEATED, satisfaction 84, order O1
+Orders:
+  O1: Salad for C1, READY, 1/1, $9.00
+Legal actions: [1] SERVE O1, [0] WAIT
+Waiter> 
+O1 served to C1
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+End of turn 3
+Served: 1
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turns used: 3
+C2 (VIP) arrives
+Turn 4
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  C2 (VIP)
+Tables:
+  T1: occupied by C1
+  T2: free
+Customers:
+  C1 (Regular): EATING, satisfaction 84, order O1
+  C2 (VIP): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  O1: Salad for C1, SERVED, 1/1, $9.00
+Legal actions: [1] SEAT C2, [0] WAIT
+Waiter> 
+C2 seated at T2
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+C1 is ready to pay
+End of turn 4
+Served: 1
+Unhappy departures: 0
+Revenue: $0.00
+Average satisfaction: N/A
+Turns used: 4
+Turn 5
+Revenue: $0.00
+Average satisfaction: N/A
+Queue:
+  (empty)
+Tables:
+  T1: occupied by C1
+  T2: occupied by C2
+Customers:
+  C1 (Regular): READY_TO_PAY, satisfaction 84, order O1
+  C2 (VIP): SEATED, satisfaction 95, order NO_ORDER
+Orders:
+  O1: Salad for C1, SERVED, 1/1, $9.00
+Legal actions: [1] ORDER C2, [0] WAIT
+Waiter> 
+C2 orders Burger ($13.50) as O2
+Legal actions: [1] PREPARE O2, [0] WAIT
+Chef> 
+O2 is READY
+C1 paid $9.00 (satisfaction 84), T1 free
+End of turn 5
+Served: 1
+Unhappy departures: 0
+Revenue: $9.00
+Average satisfaction: 84.0
+Turns used: 5
+Turn 6
+Revenue: $9.00
+Average satisfaction: 84.0
+Queue:
+  (empty)
+Tables:
+  T1: free
+  T2: occupied by C2
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): SEATED, satisfaction 90, order O2
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, READY, 1/1, $13.50
+Legal actions: [1] SERVE O2, [0] WAIT
+Waiter> 
+O2 served to C2
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+End of turn 6
+Served: 2
+Unhappy departures: 0
+Revenue: $9.00
+Average satisfaction: 84.0
+Turns used: 6
+C3 (Regular) arrives
+Turn 7
+Revenue: $9.00
+Average satisfaction: 84.0
+Queue:
+  C3 (Regular)
+Tables:
+  T1: free
+  T2: occupied by C2
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): EATING, satisfaction 90, order O2
+  C3 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, SERVED, 1/1, $13.50
+Legal actions: [1] SEAT C3, [0] WAIT
+Waiter> 
+C3 seated at T1
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+C2 is ready to pay
+End of turn 7
+Served: 2
+Unhappy departures: 0
+Revenue: $9.00
+Average satisfaction: 84.0
+Turns used: 7
+Turn 8
+Revenue: $9.00
+Average satisfaction: 84.0
+Queue:
+  (empty)
+Tables:
+  T1: occupied by C3
+  T2: occupied by C2
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): READY_TO_PAY, satisfaction 90, order O2
+  C3 (Regular): SEATED, satisfaction 92, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, SERVED, 1/1, $13.50
+Legal actions: [1] ORDER C3, [0] WAIT
+Waiter> 
+C3 orders Pasta ($18.00) as O3
+Legal actions: [1] PREPARE O3, [0] WAIT
+Chef> 
+O3 unit 1 of 2 done
+C2 paid $13.50 (satisfaction 90), T2 free
+End of turn 8
+Served: 2
+Unhappy departures: 0
+Revenue: $22.50
+Average satisfaction: 87.0
+Turns used: 8
+Turn 9
+Revenue: $22.50
+Average satisfaction: 87.0
+Queue:
+  (empty)
+Tables:
+  T1: occupied by C3
+  T2: free
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): SEATED, satisfaction 84, order O3
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, PREPARING, 1/2, $18.00
+Legal actions: [0] WAIT
+Waiter> 
+Waiter waits.
+Legal actions: [1] PREPARE O3, [0] WAIT
+Chef> 
+O3 is READY
+End of turn 9
+Served: 2
+Unhappy departures: 0
+Revenue: $22.50
+Average satisfaction: 87.0
+Turns used: 9
+C4 (Critic) arrives
+Turn 10
+Revenue: $22.50
+Average satisfaction: 87.0
+Queue:
+  C4 (Critic)
+Tables:
+  T1: occupied by C3
+  T2: free
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): SEATED, satisfaction 76, order O3
+  C4 (Critic): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, READY, 2/2, $18.00
+Legal actions: [1] SEAT C4, [2] SERVE O3, [0] WAIT
+Waiter> 
+O3 served to C3
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+End of turn 10
+Served: 3
+Unhappy departures: 0
+Revenue: $22.50
+Average satisfaction: 87.0
+Turns used: 10
+Turn 11
+Revenue: $22.50
+Average satisfaction: 87.0
+Queue:
+  C4 (Critic)
+Tables:
+  T1: occupied by C3
+  T2: free
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): EATING, satisfaction 76, order O3
+  C4 (Critic): WAITING, satisfaction 88, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, SERVED, 2/2, $18.00
+Legal actions: [1] SEAT C4, [0] WAIT
+Waiter> 
+C4 seated at T2
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+C3 is ready to pay
+End of turn 11
+Served: 3
+Unhappy departures: 0
+Revenue: $22.50
+Average satisfaction: 87.0
+Turns used: 11
+Turn 12
+Revenue: $22.50
+Average satisfaction: 87.0
+Queue:
+  (empty)
+Tables:
+  T1: occupied by C3
+  T2: occupied by C4
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): READY_TO_PAY, satisfaction 76, order O3
+  C4 (Critic): SEATED, satisfaction 76, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, SERVED, 2/2, $18.00
+Legal actions: [1] ORDER C4, [0] WAIT
+Waiter> 
+C4 orders Pasta ($18.00) as O4
+Legal actions: [1] PREPARE O4, [0] WAIT
+Chef> 
+O4 unit 1 of 2 done
+C3 paid $18.00 (satisfaction 76), T1 free
+End of turn 12
+Served: 3
+Unhappy departures: 0
+Revenue: $40.50
+Average satisfaction: 83.3
+Turns used: 12
+C5 (Regular) arrives
+Turn 13
+Revenue: $40.50
+Average satisfaction: 83.3
+Queue:
+  C5 (Regular)
+Tables:
+  T1: free
+  T2: occupied by C4
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): PAID, satisfaction 76, order O3
+  C4 (Critic): SEATED, satisfaction 64, order O4
+  C5 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, PAID, 2/2, $18.00
+  O4: Pasta for C4, PREPARING, 1/2, $18.00
+Legal actions: [1] SEAT C5, [0] WAIT
+Waiter> 
+C5 seated at T1
+Legal actions: [1] PREPARE O4, [0] WAIT
+Chef> 
+O4 is READY
+End of turn 13
+Served: 3
+Unhappy departures: 0
+Revenue: $40.50
+Average satisfaction: 83.3
+Turns used: 13
+Turn 14
+Revenue: $40.50
+Average satisfaction: 83.3
+Queue:
+  (empty)
+Tables:
+  T1: occupied by C5
+  T2: occupied by C4
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): PAID, satisfaction 76, order O3
+  C4 (Critic): SEATED, satisfaction 52, order O4
+  C5 (Regular): SEATED, satisfaction 92, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, PAID, 2/2, $18.00
+  O4: Pasta for C4, READY, 2/2, $18.00
+Legal actions: [1] ORDER C5, [2] SERVE O4, [0] WAIT
+Waiter> 
+O4 served to C4
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+End of turn 14
+Served: 4
+Unhappy departures: 0
+Revenue: $40.50
+Average satisfaction: 83.3
+Turns used: 14
+Turn 15
+Revenue: $40.50
+Average satisfaction: 83.3
+Queue:
+  (empty)
+Tables:
+  T1: occupied by C5
+  T2: occupied by C4
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): PAID, satisfaction 76, order O3
+  C4 (Critic): EATING, satisfaction 52, order O4
+  C5 (Regular): SEATED, satisfaction 84, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, PAID, 2/2, $18.00
+  O4: Pasta for C4, SERVED, 2/2, $18.00
+Legal actions: [1] ORDER C5, [0] WAIT
+Waiter> 
+C5 orders Burger ($15.00) as O5
+Legal actions: [1] PREPARE O5, [0] WAIT
+Chef> 
+O5 is READY
+C4 is ready to pay
+End of turn 15
+Served: 4
+Unhappy departures: 0
+Revenue: $40.50
+Average satisfaction: 83.3
+Turns used: 15
+C6 (Regular) arrives
+Turn 16
+Revenue: $40.50
+Average satisfaction: 83.3
+Queue:
+  C6 (Regular)
+Tables:
+  T1: occupied by C5
+  T2: occupied by C4
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): PAID, satisfaction 76, order O3
+  C4 (Critic): READY_TO_PAY, satisfaction 52, order O4
+  C5 (Regular): SEATED, satisfaction 76, order O5
+  C6 (Regular): WAITING, satisfaction 100, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, PAID, 2/2, $18.00
+  O4: Pasta for C4, SERVED, 2/2, $18.00
+  O5: Burger for C5, READY, 1/1, $15.00
+Legal actions: [1] SERVE O5, [0] WAIT
+Waiter> 
+O5 served to C5
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+C4 paid $18.00 (satisfaction 52), T2 free
+End of turn 16
+Served: 5
+Unhappy departures: 0
+Revenue: $58.50
+Average satisfaction: 75.5
+Turns used: 16
+Turn 17
+Revenue: $58.50
+Average satisfaction: 75.5
+Queue:
+  C6 (Regular)
+Tables:
+  T1: occupied by C5
+  T2: free
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): PAID, satisfaction 76, order O3
+  C4 (Critic): PAID, satisfaction 52, order O4
+  C5 (Regular): EATING, satisfaction 76, order O5
+  C6 (Regular): WAITING, satisfaction 92, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, PAID, 2/2, $18.00
+  O4: Pasta for C4, PAID, 2/2, $18.00
+  O5: Burger for C5, SERVED, 1/1, $15.00
+Legal actions: [1] SEAT C6, [0] WAIT
+Waiter> 
+Waiter waits.
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+C5 is ready to pay
+End of turn 17
+Served: 5
+Unhappy departures: 0
+Revenue: $58.50
+Average satisfaction: 75.5
+Turns used: 17
+Turn 18
+Revenue: $58.50
+Average satisfaction: 75.5
+Queue:
+  C6 (Regular)
+Tables:
+  T1: occupied by C5
+  T2: free
+Customers:
+  C1 (Regular): PAID, satisfaction 84, order O1
+  C2 (VIP): PAID, satisfaction 90, order O2
+  C3 (Regular): PAID, satisfaction 76, order O3
+  C4 (Critic): PAID, satisfaction 52, order O4
+  C5 (Regular): READY_TO_PAY, satisfaction 76, order O5
+  C6 (Regular): WAITING, satisfaction 84, order NO_ORDER
+Orders:
+  O1: Salad for C1, PAID, 1/1, $9.00
+  O2: Burger for C2, PAID, 1/1, $13.50
+  O3: Pasta for C3, PAID, 2/2, $18.00
+  O4: Pasta for C4, PAID, 2/2, $18.00
+  O5: Burger for C5, SERVED, 1/1, $15.00
+Legal actions: [1] SEAT C6, [0] WAIT
+Waiter> 
+Waiter waits.
+Legal actions: [0] WAIT
+Chef> 
+Chef waits.
+C5 paid $15.00 (satisfaction 76), T1 free
+End of turn 18
+Served: 5
+Unhappy departures: 0
+Revenue: $73.50
+Average satisfaction: 75.6
+Turns used: 18
+Result: VICTORY

@@ -1,0 +1,61 @@
+# Stage 2 VIP and Critic: the victory trace from the Stage 2 arrivals issue (#14).
+# Each turn reads two lines: the Waiter's choice, then the Chef's.
+# C2 arrives as a VIP (loses 5 per waiting turn, 10% off) and C4 as a Critic
+# (loses 12 per waiting turn, always orders Pasta). Both are served and pay.
+# The Critic's Pasta takes two Chef turns, so C5 is seated before O4 is served.
+# Result: C1 to C5 pay, revenue $73.50, average 75.6, VICTORY.
+
+# Turn 1: C1 (Regular, Salad) arrives
+SEAT C1
+WAIT
+# Turn 2
+ORDER C1
+PREPARE O1
+# Turn 3
+SERVE O1
+WAIT
+# Turn 4: C2 (VIP, Burger) arrives; T2 is free while C1 eats
+SEAT C2
+WAIT
+# Turn 5: C2 orders Burger at the VIP price of $13.50; C1 pays
+ORDER C2
+PREPARE O2
+# Turn 6
+SERVE O2
+WAIT
+# Turn 7: C3 (Regular, Pasta) arrives
+SEAT C3
+WAIT
+# Turn 8: C2 pays $13.50 at satisfaction 90; Pasta unit 1 of 2
+ORDER C3
+PREPARE O3
+# Turn 9: Pasta unit 2 of 2
+WAIT
+PREPARE O3
+# Turn 10: C4 (Critic) arrives and waits; the Pasta is served first
+SERVE O3
+WAIT
+# Turn 11: C4 is seated at T2
+SEAT C4
+WAIT
+# Turn 12: C4 orders Pasta, not the cycle's Salad; C3 pays
+ORDER C4
+PREPARE O4
+# Turn 13: C5 (Regular, Burger) arrives and is seated at T1; Pasta unit 2 of 2
+SEAT C5
+PREPARE O4
+# Turn 14: C4 is served at satisfaction 52
+SERVE O4
+WAIT
+# Turn 15
+ORDER C5
+PREPARE O5
+# Turn 16: C6 (Regular, Pasta) arrives; C4 pays $18.00 at satisfaction 52
+SERVE O5
+WAIT
+# Turn 17: C6 stays in the queue; it could not pay by turn 18 anyway
+WAIT
+WAIT
+# Turn 18: C5 pays
+WAIT
+WAIT
