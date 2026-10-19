@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.IntFunction;
+import restaurantrush.customer.CriticCustomer;
 import restaurantrush.customer.Customer;
 import restaurantrush.customer.CustomerStatus;
 import restaurantrush.customer.RegularCustomer;
+import restaurantrush.customer.VIPCustomer;
 import restaurantrush.game.Action;
 import restaurantrush.game.ActionKind;
 import restaurantrush.game.ActionResult;
@@ -17,6 +19,7 @@ import restaurantrush.game.GameEvent;
 import restaurantrush.game.GameResult;
 import restaurantrush.game.GameSetup;
 import restaurantrush.game.GameState;
+import restaurantrush.game.OrderView;
 import restaurantrush.game.Phase;
 import restaurantrush.game.Snapshot;
 import restaurantrush.game.StaffRole;
@@ -38,6 +41,9 @@ public final class GameCheck {
     private static final IntFunction<Customer> ALL_REGULAR =
             i -> new RegularCustomer("C" + i, BASE.arrivalTurns().get(i - 1), i);
 
+    /** Stage 2 arrivals from GameSetup.arrival, built without baseGame() so Stage 3 setup changes leave them alone. */
+    private static final IntFunction<Customer> STAGE_2 = i -> GameSetup.arrival(i, BASE.arrivalTurns().get(i - 1));
+
     private GameCheck() {
     }
 
@@ -58,6 +64,8 @@ public final class GameCheck {
         checkSeatedAbandonment();
         checkVictory();
         checkDefeat();
+        checkStage2Victory();
+        checkStage2Defeat();
 
         System.out.println("OK GameCheck");
     }
@@ -98,11 +106,26 @@ public final class GameCheck {
     /** Plays all 18 turns; waiter has one command per turn, chef maps turn to command (WAIT otherwise). */
     private static List<TurnEnd> playGame(TurnController controller, List<String> waiter, Map<Integer, String> chef,
                                           List<String> log) {
+        return playGame(controller, waiter, chef, log, new ArrayList<>());
+    }
+
+    /** As above, also appending the snapshot taken after each turn ends to snapshots. */
+    private static List<TurnEnd> playGame(TurnController controller, List<String> waiter, Map<Integer, String> chef,
+                                          List<String> log, List<Snapshot> snapshots) {
         List<TurnEnd> ends = new ArrayList<>();
         for (int turn = 1; turn <= BASE.turns(); turn++) {
             ends.add(playTurn(controller, waiter.get(turn - 1), chef.getOrDefault(turn, "WAIT"), log));
+            snapshots.add(controller.snapshot());
         }
         return ends;
+    }
+
+    private static List<String> allWait() {
+        List<String> waits = new ArrayList<>();
+        for (int turn = 1; turn <= BASE.turns(); turn++) {
+            waits.add("WAIT");
+        }
+        return waits;
     }
 
     private static void record(List<GameEvent> events, List<String> log) {
@@ -117,14 +140,38 @@ public final class GameCheck {
         return snapshot.tables().stream().filter(t -> t.id().equals(tableId)).findFirst().orElseThrow().occupantId();
     }
 
+    private static OrderView order(Snapshot snapshot, String id) {
+        return snapshot.orders().stream().filter(o -> o.id().equals(id)).findFirst().orElseThrow();
+    }
+
+    /** The customer's satisfaction at the end of each turn from first to last, inclusive. */
+    private static List<Integer> satisfactionByTurn(List<Snapshot> snapshots, String id, int first, int last) {
+        return snapshots.subList(first - 1, last).stream().map(s -> customer(s, id).satisfaction()).toList();
+    }
+
     private static List<String> ids(List<CustomerView> views) {
         return views.stream().map(CustomerView::id).toList();
     }
 
     private static void checkSetup() {
-        Customer c3 = GameSetup.arrival(3, 7);
-        assert c3.getClass() == RegularCustomer.class;
-        assert c3.id().equals("C3") && c3.arrivalTurn() == 7 && c3.arrivalIndex() == 3;
+        Customer c2 = GameSetup.arrival(2, 4);
+        assert c2.getClass() == VIPCustomer.class;
+        assert c2.id().equals("C2") && c2.arrivalTurn() == 4 && c2.arrivalIndex() == 2;
+        assert c2.typeName().equals("VIP");
+
+        Customer c4 = GameSetup.arrival(4, 10);
+        assert c4.getClass() == CriticCustomer.class;
+        assert c4.id().equals("C4") && c4.arrivalTurn() == 10 && c4.arrivalIndex() == 4;
+        assert c4.typeName().equals("Critic");
+
+        int[][] regulars = {{1, 1}, {3, 7}, {5, 13}, {6, 16}};
+        for (int[] arrival : regulars) {
+            Customer regular = GameSetup.arrival(arrival[0], arrival[1]);
+            assert regular.getClass() == RegularCustomer.class : "arrival " + arrival[0];
+            assert regular.id().equals("C" + arrival[0]);
+            assert regular.arrivalTurn() == arrival[1] && regular.arrivalIndex() == arrival[0];
+            assert regular.typeName().equals("Regular");
+        }
 
         TurnController game = GameSetup.baseGame();
         assert game.snapshot().turn() == 0;
@@ -360,11 +407,7 @@ public final class GameCheck {
     private static void checkDefeat() {
         TurnController game = controller(ALL_REGULAR);
         List<String> log = new ArrayList<>();
-        List<String> waits = new ArrayList<>();
-        for (int turn = 1; turn <= BASE.turns(); turn++) {
-            waits.add("WAIT");
-        }
-        List<TurnEnd> ends = playGame(game, waits, Map.of(), log);
+        List<TurnEnd> ends = playGame(game, allWait(), Map.of(), log);
 
         TurnEnd last = ends.get(17);
         assert last.result().equals(Optional.of(GameResult.DEFEAT));
@@ -372,6 +415,75 @@ public final class GameCheck {
         assert last.summary().leftCount() == 2;
         assert log.stream().filter(line -> line.contains(" left ")).toList()
                 .equals(List.of("13: C1 left unhappy", "16: C2 left unhappy"));
+        assert game.isOver();
+    }
+
+    /** The Stage 2 vip-critic fixture: C2 (VIP) and C4 (Critic) both pay. */
+    private static void checkStage2Victory() {
+        TurnController game = controller(STAGE_2);
+        List<String> waiter = List.of("SEAT C1", "ORDER C1", "SERVE O1", "SEAT C2", "ORDER C2", "SERVE O2",
+                "SEAT C3", "ORDER C3", "WAIT", "SERVE O3", "SEAT C4", "ORDER C4", "SEAT C5", "SERVE O4", "ORDER C5",
+                "SERVE O5", "WAIT", "WAIT");
+        Map<Integer, String> chef = Map.of(2, "PREPARE O1", 5, "PREPARE O2", 8, "PREPARE O3", 9, "PREPARE O3",
+                12, "PREPARE O4", 13, "PREPARE O4", 15, "PREPARE O5");
+        List<String> log = new ArrayList<>();
+        List<Snapshot> snapshots = new ArrayList<>();
+        List<TurnEnd> ends = playGame(game, waiter, chef, log, snapshots);
+
+        assert log.contains("4: C2 (VIP) arrives");
+        assert log.contains("10: C4 (Critic) arrives");
+
+        Snapshot snapshot = game.snapshot();
+        OrderView o2 = order(snapshot, "O2");
+        assert o2.customerId().equals("C2") && o2.itemName().equals("Burger") && o2.billCents() == 1350 : o2;
+        OrderView o4 = order(snapshot, "O4");
+        assert o4.customerId().equals("C4") && o4.itemName().equals("Pasta") && o4.billCents() == 1800 : o4;
+
+        assert satisfactionByTurn(snapshots, "C2", 4, 5).equals(List.of(95, 90));
+        assert satisfactionByTurn(snapshots, "C4", 10, 13).equals(List.of(88, 76, 64, 52));
+
+        List<String> payments = log.stream().filter(line -> line.contains(" paid ")).toList();
+        assert payments.equals(List.of(
+                "5: C1 paid $9.00 (satisfaction 84), T1 free",
+                "8: C2 paid $13.50 (satisfaction 90), T2 free",
+                "12: C3 paid $18.00 (satisfaction 76), T1 free",
+                "16: C4 paid $18.00 (satisfaction 52), T2 free",
+                "18: C5 paid $15.00 (satisfaction 76), T1 free")) : payments;
+        assert log.contains("11: C4 seated at T2");
+        assert log.contains("13: C5 seated at T1");
+
+        assert customer(snapshot, "C6").status() == CustomerStatus.WAITING;
+        assert customer(snapshot, "C6").satisfaction() == 76;
+
+        TurnEnd last = ends.get(17);
+        assert last.summary().turn() == 18;
+        assert last.summary().paidCount() == 5;
+        assert last.summary().revenueCents() == 7350;
+        assert last.summary().satisfactionSum() == 378;
+        assert last.result().equals(Optional.of(GameResult.VICTORY));
+        assert ends.subList(0, 17).stream().allMatch(e -> e.result().isEmpty());
+        assert game.isOver();
+    }
+
+    /** The Stage 2 defeat fixture: all WAIT, and the Critic walks out on turn 18. */
+    private static void checkStage2Defeat() {
+        TurnController game = controller(STAGE_2);
+        List<String> log = new ArrayList<>();
+        List<TurnEnd> ends = playGame(game, allWait(), Map.of(), log);
+
+        assert log.stream().filter(line -> line.contains(" left ")).toList()
+                .equals(List.of("13: C1 left unhappy", "18: C4 left unhappy"));
+        TurnEnd last = ends.get(17);
+        assert last.summary().leftCount() == 2;
+        assert last.summary().paidCount() == 0;
+        assert last.result().equals(Optional.of(GameResult.DEFEAT));
+
+        Snapshot snapshot = game.snapshot();
+        Map<String, Integer> waiting = Map.of("C2", 25, "C3", 4, "C5", 52, "C6", 76);
+        waiting.forEach((id, satisfaction) -> {
+            assert customer(snapshot, id).status() == CustomerStatus.WAITING : id;
+            assert customer(snapshot, id).satisfaction() == satisfaction : id + " " + customer(snapshot, id).satisfaction();
+        });
         assert game.isOver();
     }
 }

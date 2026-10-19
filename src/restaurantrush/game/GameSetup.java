@@ -1,7 +1,9 @@
 package restaurantrush.game;
 
+import restaurantrush.customer.CriticCustomer;
 import restaurantrush.customer.Customer;
 import restaurantrush.customer.RegularCustomer;
+import restaurantrush.customer.VIPCustomer;
 import restaurantrush.menu.Menu;
 import restaurantrush.staff.Cashier;
 import restaurantrush.staff.Chef;
@@ -19,8 +21,13 @@ public final class GameSetup {
                 i -> arrival(i, config.arrivalTurns().get(i - 1)));
     }
 
-    /** new RegularCustomer("C" + arrivalIndex, turn, arrivalIndex). */
+    /** Follows the arrival table: VIP for index 2, Critic for index 4, Regular otherwise; ID "C" + arrivalIndex. */
     public static Customer arrival(int arrivalIndex, int turn) {
-        return new RegularCustomer("C" + arrivalIndex, turn, arrivalIndex);
+        String id = "C" + arrivalIndex;
+        return switch (arrivalIndex) {
+            case 2 -> new VIPCustomer(id, turn, arrivalIndex);
+            case 4 -> new CriticCustomer(id, turn, arrivalIndex);
+            default -> new RegularCustomer(id, turn, arrivalIndex);
+        };
     }
 }

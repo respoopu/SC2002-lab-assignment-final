@@ -1,0 +1,79 @@
+# Stage 2 defeat: the Waiter and the Chef wait on every turn.
+# Each turn reads two lines: the Waiter's choice, then the Chef's.
+# Nobody is seated, so nobody pays and the average stays N/A.
+# Regular customers lose 8 per waiting turn, the VIP (C2) 5 and the Critic
+# (C4) 12. C1 leaves at the end of turn 13. C4 arrives on turn 10 and leaves
+# at the end of turn 18, while C2 and C3, who arrived earlier, are still
+# waiting. Result: DEFEAT.
+
+# Turn 1: C1 (Regular) arrives
+WAIT
+WAIT
+
+# Turn 2
+WAIT
+WAIT
+
+# Turn 3
+WAIT
+WAIT
+
+# Turn 4: C2 (VIP) arrives
+WAIT
+WAIT
+
+# Turn 5
+WAIT
+WAIT
+
+# Turn 6
+WAIT
+WAIT
+
+# Turn 7: C3 (Regular) arrives
+WAIT
+WAIT
+
+# Turn 8
+WAIT
+WAIT
+
+# Turn 9
+WAIT
+WAIT
+
+# Turn 10: C4 (Critic) arrives
+WAIT
+WAIT
+
+# Turn 11
+WAIT
+WAIT
+
+# Turn 12
+WAIT
+WAIT
+
+# Turn 13: C5 (Regular) arrives; C1 leaves unhappy
+WAIT
+WAIT
+
+# Turn 14
+WAIT
+WAIT
+
+# Turn 15
+WAIT
+WAIT
+
+# Turn 16: C6 (Regular) arrives
+WAIT
+WAIT
+
+# Turn 17
+WAIT
+WAIT
+
+# Turn 18: C4 leaves unhappy
+WAIT
+WAIT
