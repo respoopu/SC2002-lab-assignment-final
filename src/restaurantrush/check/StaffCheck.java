@@ -209,6 +209,9 @@ public final class StaffCheck {
         assert !readyToPay.accepted();
         assert readyToPay.message().equals("C1 has already ordered.");
         assert readyToPay.events().isEmpty();
+
+        customer(state, "C1").pay();
+        assert waiter.takeOrder(state, "C1").message().equals("C1 has already ordered.");
         assert state.orders().size() == 1;
     }
 
