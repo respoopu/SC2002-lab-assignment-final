@@ -119,13 +119,13 @@ All three types use the same seat, order, prepare, serve, eat, and pay flow, wit
 ### Replay the reproducible runs
 
 ```sh
-scripts/replay.sh                              # build, run all five self-checks, replay both Stage 2 fixtures
+scripts/replay.sh                                # build, run all five self-checks, replay both Stage 2 fixtures
 scripts/replay.sh fixtures/stage-2/vip-critic.in # replay one Stage 2 fixture
 ```
 
 | Fixture | What it demonstrates | Result |
 | --- | --- | --- |
-| `vip-critic` | The brief Section 4.2 base-setting run includes a VIP and a Critic, both through payment. C2 orders Burger at $13.50 and loses 5 per seated, unserved turn: 95 then 90 after turns 4 and 5. C4 chooses Pasta where a Regular C4 would choose Salad, losing 12 per waiting or seated, unserved turn: 88, 76, 64, 52 after turns 10 to 13. C3 reproduces the Pasta example: seated on 7, ordered and prepared on 8, READY on 9, served on 10, ready to pay on 11, paid on 12 at satisfaction 76. | Five paid, revenue $73.50, average 75.6, VICTORY |
+| `vip-critic` | The brief Section 4.2 base-setting run includes a VIP and a Critic, both through payment. C2 orders Burger at $13.50 and loses 5 per seated, unserved turn: 95 then 90 after turns 4 and 5. C4 chooses Pasta where a Regular C4 would choose Salad, losing 12 per waiting or seated, unserved turn: 88, 76, 64, 52 after turns 10 to 13. C3 reproduces the Pasta example: seated on 7, ordered on 8, READY on 9, served on 10, ready to pay on 11, paid on 12 at satisfaction 76. | Five paid, revenue $73.50, average 75.6, VICTORY |
 | `defeat` | Both staff always `WAIT`. Nobody pays and the average is `N/A` throughout. C1 leaves at the end of turn 13; Critic C4 leaves at the end of turn 18 after nine waiting turns (10 to 18). With the same input at Stage 1, C1 and C2 left on turns 13 and 16; Stage 2 VIP C2 is still waiting at satisfaction 25. | Zero paid, two unhappy departures, DEFEAT |
 
 The `vip-critic` payments are:
@@ -142,7 +142,7 @@ C6 is still waiting at satisfaction 76 when the game ends: the turn 16 arrival c
 
 ### Stage 1 to Stage 2
 
-The table lists the complete transition from `stage-1` to this Stage 2 branch, including these documentation changes. There are no deleted paths. After the README PR merges and the tag is created, `git diff --name-status stage-1 stage-2` must match it row for row.
+The table lists the complete transition from `stage-1` to `stage-2`, including these documentation changes, and matches `git diff --name-status stage-1 stage-2` row for row. There are no deleted paths.
 
 | Path | Status | Reason | PR |
 | --- | --- | --- | --- |
@@ -160,7 +160,7 @@ The table lists the complete transition from `stage-1` to this Stage 2 branch, i
 
 [Compare Stage 1 to Stage 2](https://github.com/respoopu/SC2002-lab-assignment-final/compare/stage-1...stage-2). This link resolves once the `stage-2` tag is pushed.
 
-The unchanged Stage 1 classes are `Customer`, `RegularCustomer`, `WaitingQueue`, `Waiter`, `Chef`, `Cashier`, `Table`, `Seating`, `TurnController`, `GameState`, all menu classes, `ConsoleUI`, `CommandParser`, and `Main`. Earlier behaviour remains covered by `GameCheck`'s Stage 1 traces on all-Regular arrivals; `git checkout stage-1 && scripts/replay.sh` replays the unchanged Stage 1 transcripts at their tag.
+The unchanged Stage 1 classes include `Customer`, `RegularCustomer`, `WaitingQueue`, `Waiter`, `Chef`, `Cashier`, `Table`, `Seating`, `TurnController`, `GameState`, all menu classes, `ConsoleUI`, `CommandParser`, and `Main`. Earlier behaviour remains covered by `GameCheck`'s Stage 1 traces on all-Regular arrivals; `git checkout stage-1 && scripts/replay.sh` replays the unchanged Stage 1 transcripts at their tag.
 
 ### Stage 2 gate
 
@@ -168,10 +168,10 @@ On 2026-10-19, `scripts/replay.sh` passed from a fresh clone of merged `main` at
 
 In the same clone, `git checkout stage-1 && scripts/replay.sh` also passed at `a40cdfd`: all five self-checks and all four Stage 1 fixtures, exit 0. The Stage 1 fixtures remain unchanged, and the Stage 2 tree contains no Host, ComboMeal, HappyHour, or Stage 3 fixture paths.
 
-The play-through report is to be supplied separately in the README PR discussion. Before approval, a teammate must confirm the Stage 2 manual gate against brief Sections 2.1, 2.2, 3.1 to 3.5 and 4.2, including the player, date, tested commit, final result, and any deviations with issue links. The Stage 2 gate remains open until that confirmation and the post-merge checks are complete.
+For the manual play-through, cknisaac played a full Stage 2 game by hand on 2026-10-19 at `063a13f`. It ran all 18 turns and ended in VICTORY: five paid, revenue $73.50, average 75.6, and no unhappy departures. C2 appeared as VIP, ordered Burger at $13.50, and lost 5 per waiting turn; C4 appeared as Critic, ordered Pasta at $18.00, and lost 12 per waiting turn. Preparation, serving, eating, and payment happened in order, and invalid commands, unfinished orders, and seating with both tables full each gave a clear error and re-prompted without using the staff task. cknisaac reported no deviations.
 
 The README PR uses `Refs #15`. After an independent reviewer finds nothing outstanding and the PR merges, rerun replay from a fresh clone at its merge commit and at `stage-1`. Create the annotated `stage-2` tag on the merge commit, push only that tag, confirm the comparison matches the table and no Stage 3 files exist, then record the tag commit and replay result on issue #15 and close it. Until those steps are complete, the issue remains open.
 
 ## Team workflow
 
-Track a coherent piece of work in each GitHub issue using the work-item form. Work on a branch, run `scripts/replay.sh`, open a pull request using the repository template and link it to the issue, then review and merge it. The Stage 2 gate issue [#15](https://github.com/respoopu/SC2002-lab-assignment-final/issues/15) uses `Refs #15` and stays open until its post-merge tag checks pass. When every issue for a stage is merged, run the stage gate in the contract (replay plus a manual play-through), open fix issues for anything outstanding, and tag the passing commit. Next-stage PRs are not merged until that tag exists. Specify the shared Java API in the contract before assigning dependent implementation work.
+Track a coherent piece of work in each GitHub issue using the work-item form. Work on a branch, run `scripts/replay.sh`, open a pull request using the repository template and link it to the issue, then review and merge it. When every issue for a stage is merged, run the stage gate in the contract (replay plus a manual play-through), open fix issues for anything outstanding, and tag the passing commit. Next-stage PRs are not merged until that tag exists. Specify the shared Java API in the contract before assigning dependent implementation work.
