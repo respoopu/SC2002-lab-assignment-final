@@ -52,11 +52,11 @@ public final class Waiter {
             return ActionResult.rejected(customerId + " is not a customer.");
         }
         Customer customer = found.get();
-        if (customer.status() != CustomerStatus.SEATED) {
-            return ActionResult.rejected(customerId + " is not seated.");
-        }
         if (customer.order().isPresent()) {
             return ActionResult.rejected(customerId + " has already ordered.");
+        }
+        if (customer.status() != CustomerStatus.SEATED) {
+            return ActionResult.rejected(customerId + " is not seated.");
         }
 
         MenuItem item = customer.chooseMeal(state.menu());

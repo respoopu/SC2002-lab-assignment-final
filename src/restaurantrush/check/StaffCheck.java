@@ -37,6 +37,7 @@ public final class StaffCheck {
         checkSeatRejections();
         checkTakeOrder();
         checkTakeOrderRejections();
+        checkTakeOrderAfterServing();
         checkPrepare();
         checkPrepareRejections();
         checkServe();
@@ -177,6 +178,8 @@ public final class StaffCheck {
             assert rejected.message().contains(id);
             assert rejected.events().isEmpty();
         }
+        assert waiter.takeOrder(state, "C1").message().equals("C1 has already ordered.");
+        assert waiter.takeOrder(state, "C3").message().equals("C3 is not seated.");
         assert state.orders().size() == 1;
         assert customer(state, "C3").order().isEmpty();
         assert customer(state, "C3").status() == CustomerStatus.WAITING;
@@ -184,6 +187,29 @@ public final class StaffCheck {
         assert waiter.takeOrder(state, "C2").accepted();
         assert state.order("O2").orElseThrow().customerId().equals("C2");
         assert state.orders().size() == 2;
+    }
+
+    /** A customer who is eating or ready to pay is no longer SEATED, but the reason given is the earlier order. */
+    private static void checkTakeOrderAfterServing() {
+        GameState state = stateWithSeated(2);
+        Waiter waiter = new Waiter();
+        assert waiter.takeOrder(state, "C1").accepted();
+        assert new Chef().prepare(state, "O1").accepted();
+        state.setTurn(3);
+        assert waiter.serve(state, "O1").accepted();
+
+        assert customer(state, "C1").status() == CustomerStatus.EATING;
+        ActionResult eating = waiter.takeOrder(state, "C1");
+        assert !eating.accepted();
+        assert eating.message().equals("C1 has already ordered.");
+        assert eating.events().isEmpty();
+
+        customer(state, "C1").becomeReadyToPay(4);
+        ActionResult readyToPay = waiter.takeOrder(state, "C1");
+        assert !readyToPay.accepted();
+        assert readyToPay.message().equals("C1 has already ordered.");
+        assert readyToPay.events().isEmpty();
+        assert state.orders().size() == 1;
     }
 
     private static GameState stateWithPastaOrder() {
