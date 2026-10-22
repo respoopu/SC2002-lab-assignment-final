@@ -1,13 +1,14 @@
 package restaurantrush.check;
 
 import java.util.List;
+import restaurantrush.menu.ComboMeal;
 import restaurantrush.menu.Menu;
 import restaurantrush.menu.MenuItem;
 import restaurantrush.menu.Money;
 import restaurantrush.menu.Order;
 import restaurantrush.menu.OrderStatus;
 
-/** Self-check for the menu package: Menu, MenuItem, Money, and Order. Run with java -ea. */
+/** Self-check for the menu package: Menu, MenuItem, ComboMeal, Money, and Order. Run with java -ea. */
 public final class MenuCheck {
     private MenuCheck() {
     }
@@ -26,6 +27,9 @@ public final class MenuCheck {
         checkPay();
         checkCancel();
         checkBill();
+        checkComboMeal();
+        checkComboValidation();
+        checkHappyHourBill();
         checkApplyDiscount();
         checkFormat();
         checkMenu();
@@ -193,6 +197,99 @@ public final class MenuCheck {
         Order cancelled = new Order("O5", "C5", Menu.base().item("Burger"), 10, 1);
         cancelled.cancel();
         assert cancelled.billCents() == 1350;
+    }
+
+    private static ComboMeal saladPasta() {
+        Menu menu = Menu.base();
+        return new ComboMeal("Salad + Pasta combo", menu.item("Salad"), menu.item("Pasta"));
+    }
+
+    private static void checkComboMeal() {
+        Menu menu = Menu.base();
+        MenuItem salad = menu.item("Salad");
+        MenuItem pasta = menu.item("Pasta");
+        ComboMeal combo = new ComboMeal("Salad + Pasta combo", salad, pasta);
+        assert combo.first() == salad;
+        assert combo.second() == pasta;
+        assertItem(combo, "Salad + Pasta combo", 2430, 3);
+        assert combo.toString().equals("Salad + Pasta combo");
+
+        MenuItem item = combo;
+        Order order = new Order("O6", "C3", item, 0, 8);
+        assert order.item() == combo;
+        assert order.billCents() == 2430;
+        assert order.unitsRequired() == 3;
+        order.advanceOneUnit(8);
+        assert order.status() == OrderStatus.PREPARING;
+        order.advanceOneUnit(9);
+        assert order.status() == OrderStatus.PREPARING;
+        assert order.unitsDone() == 2;
+        order.advanceOneUnit(10);
+        assert order.status() == OrderStatus.READY;
+        assert order.readyTurn() == 10;
+
+        // 90% of 5 cents is 4.5, rounded half up to 5.
+        assertItem(new ComboMeal("Tiny", new MenuItem("A", 3, 1), new MenuItem("B", 2, 2)), "Tiny", 5, 3);
+        assertItem(new ComboMeal("Free", new MenuItem("A", 0, 1), new MenuItem("B", 0, 1)), "Free", 0, 2);
+        assert new ComboMeal("Burger pair", menu.item("Burger"), menu.item("Burger")).priceCents() == 2700;
+
+        assert menu.items().size() == 3;
+        assertItem(salad, "Salad", 900, 1);
+        assertItem(pasta, "Pasta", 1800, 2);
+    }
+
+    private static void checkComboValidation() {
+        Menu menu = Menu.base();
+        MenuItem salad = menu.item("Salad");
+        MenuItem pasta = menu.item("Pasta");
+        assertThrows(() -> new ComboMeal(null, salad, pasta), NullPointerException.class);
+        assertThrows(() -> new ComboMeal("Combo", null, pasta), NullPointerException.class);
+        assertThrows(() -> new ComboMeal("Combo", salad, null), NullPointerException.class);
+        assertIllegalArgument(() -> new ComboMeal("", salad, pasta));
+        assertIllegalArgument(() -> new ComboMeal("   ", salad, pasta));
+    }
+
+    private static void checkHappyHourBill() {
+        Menu menu = Menu.base();
+        MenuItem burger = menu.item("Burger");
+        assert new Order("O1", "C1", saladPasta(), 0, 7, true).billCents() == 1944;
+        assert new Order("O2", "C2", burger, 10, 7, true).billCents() == 1080;
+        // VIP combo: 2430 -> 2187 after 10% off -> 1749.6, rounded half up to 1750 after Happy Hour.
+        assert new Order("O3", "C3", saladPasta(), 10, 7, false).billCents() == 2187;
+        assert new Order("O4", "C4", saladPasta(), 10, 7, true).billCents() == 1750;
+        assert new Order("O5", "C5", menu.item("Pasta"), 0, 7, true).billCents() == 1440;
+        assert new Order("O6", "C6", new MenuItem("Tiny", 5, 1), 10, 7, true).billCents() == 4;
+        // 13 -> 11.7 -> 12 -> 9.6 -> 10; Happy Hour first or a single 28% off would give 9.
+        assert new Order("O6", "C6", new MenuItem("Tiny", 13, 1), 10, 7, true).billCents() == 10;
+
+        for (MenuItem item : List.of(menu.item("Salad"), burger, menu.item("Pasta"), saladPasta())) {
+            for (int percent : new int[] {0, 10}) {
+                assert new Order("O7", "C7", item, percent, 1, false).billCents()
+                        == new Order("O7", "C7", item, percent, 1).billCents();
+            }
+        }
+
+        Order order = new Order("O8", "C8", saladPasta(), 10, 7, true);
+        assert order.status() == OrderStatus.PLACED;
+        assert order.placedTurn() == 7;
+        order.advanceOneUnit(7);
+        assert order.billCents() == 1750;
+        order.advanceOneUnit(8);
+        order.advanceOneUnit(9);
+        assert order.billCents() == 1750;
+        order.markServed(10);
+        assert order.billCents() == 1750;
+        order.markPaid();
+        assert order.status() == OrderStatus.PAID;
+        assert order.billCents() == 1750;
+
+        Order cancelled = new Order("O9", "C9", burger, 10, 7, true);
+        cancelled.advanceOneUnit(7);
+        cancelled.cancel();
+        assert cancelled.billCents() == 1080;
+
+        assertIllegalArgument(() -> new Order("O10", "C10", burger, -1, 7, true));
+        assertIllegalArgument(() -> new Order("O10", "C10", burger, 101, 7, false));
     }
 
     private static void checkApplyDiscount() {

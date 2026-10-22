@@ -2,6 +2,8 @@ package restaurantrush.menu;
 
 /** An order owns its preparation progress and its locked bill. Illegal transitions throw IllegalStateException. */
 public final class Order {
+    private static final int HAPPY_HOUR_DISCOUNT_PERCENT = 20;
+
     private final String id;
     private final String customerId;
     private final MenuItem item;
@@ -14,10 +16,19 @@ public final class Order {
 
     /** billCents is Money.applyDiscount(item.priceCents(), customerDiscountPercent), locked at creation. */
     public Order(String id, String customerId, MenuItem item, int customerDiscountPercent, int placedTurn) {
+        this(id, customerId, item, customerDiscountPercent, placedTurn, false);
+    }
+
+    /** As above, then a further 20% off while Happy Hour is active, rounding half up after each discount. */
+    public Order(String id, String customerId, MenuItem item, int customerDiscountPercent, int placedTurn,
+            boolean happyHourActive) {
         this.id = id;
         this.customerId = customerId;
         this.item = item;
-        this.billCents = Money.applyDiscount(item.priceCents(), customerDiscountPercent);
+        int personalCents = Money.applyDiscount(item.priceCents(), customerDiscountPercent);
+        this.billCents = happyHourActive
+                ? Money.applyDiscount(personalCents, HAPPY_HOUR_DISCOUNT_PERCENT)
+                : personalCents;
         this.placedTurn = placedTurn;
     }
 
