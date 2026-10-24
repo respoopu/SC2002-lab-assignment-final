@@ -37,6 +37,10 @@ public final class CustomerCheck {
         criticSatisfaction();
         variantTransitions(new CriticCustomer("C4", 10, 4), new CriticCustomer("C6", 16, 6));
         polymorphicBehavior();
+        recovery();
+        recoveryIgnoredWhenNotWaiting();
+        comboChoice();
+        variantsIgnoreCombo();
 
         System.out.print("OK CustomerCheck\n");
     }
@@ -276,6 +280,90 @@ public final class CustomerCheck {
         assert customers.stream().map(Customer::waitingLossPerTurn).toList().equals(List.of(8, 5, 12));
         assert customers.stream().map(Customer::discountPercent).toList().equals(List.of(0, 10, 0));
         assert customers.get(0).loseSatisfaction() == 92;
+    }
+
+    /** Base items plus the Stage 3 combo; choice goes by exact name, so a plain MenuItem stands in for ComboMeal. */
+    private static Menu comboMenu() {
+        Menu base = Menu.base();
+        return new Menu(List.of(base.item("Salad"), base.item("Burger"), base.item("Pasta"),
+                new MenuItem("Salad + Pasta combo", 2430, 3)));
+    }
+
+    private static void recovery() {
+        Customer waiting = new RegularCustomer("C1", 1, 1);
+        waiting.loseSatisfaction();
+        waiting.loseSatisfaction();
+        assert waiting.recover(0) == 84;
+        assert waiting.recover(15) == 99;
+        assert waiting.recover(15) == 100;
+        assert waiting.satisfaction() == 100;
+        assert waiting.status() == CustomerStatus.WAITING;
+
+        Customer seated = new VIPCustomer("C2", 4, 2);
+        seated.seat();
+        for (int i = 0; i < 5; i++) {
+            seated.loseSatisfaction();
+        }
+        assert seated.recover(15) == 90;
+        assert seated.recover(Integer.MAX_VALUE) == 100;
+        assert seated.status() == CustomerStatus.SEATED;
+
+        Customer low = new CriticCustomer("C4", 10, 4);
+        low.loseSatisfaction();
+        assertThrows(IllegalArgumentException.class, () -> low.recover(-1));
+        assertThrows(IllegalArgumentException.class, () -> low.recover(Integer.MIN_VALUE));
+        assert low.satisfaction() == 88;
+        assert low.recover(Integer.MAX_VALUE) == 100;
+    }
+
+    private static void recoveryIgnoredWhenNotWaiting() {
+        Customer c = new RegularCustomer("C3", 7, 3);
+        c.seat();
+        c.loseSatisfaction();
+        c.attachOrder(order());
+        c.startEating(4);
+        assert c.recover(15) == 92;
+        assert c.status() == CustomerStatus.EATING;
+        c.becomeReadyToPay(5);
+        assert c.recover(15) == 92;
+        assert c.status() == CustomerStatus.READY_TO_PAY;
+        c.pay();
+        assert c.recover(Integer.MAX_VALUE) == 92;
+        assert c.status() == CustomerStatus.PAID;
+        assertThrows(IllegalArgumentException.class, () -> c.recover(-1));
+
+        Customer left = new RegularCustomer("C1", 1, 1);
+        for (int i = 0; i < 13; i++) {
+            left.loseSatisfaction();
+        }
+        left.leave();
+        assert left.recover(15) == 0;
+        assert left.status() == CustomerStatus.LEFT;
+    }
+
+    private static void comboChoice() {
+        Menu combo = comboMenu();
+        List<String> meals = List.of("Salad", "Burger", "Salad + Pasta combo", "Salad", "Burger", "Salad + Pasta combo");
+        for (int index = 1; index <= 6; index++) {
+            Customer regular = new RegularCustomer("C" + index, 1 + (index - 1) * 3, index);
+            assert regular.chooseMeal(combo).name().equals(meals.get(index - 1));
+        }
+        assert new RegularCustomer("C3", 7, 3).chooseMeal(combo) == combo.items().get(3);
+
+        Menu base = Menu.base();
+        assert new RegularCustomer("C3", 7, 3).chooseMeal(base) == base.item("Pasta");
+        assert new RegularCustomer("C6", 16, 6).chooseMeal(base) == base.item("Pasta");
+    }
+
+    private static void variantsIgnoreCombo() {
+        Menu combo = comboMenu();
+        List<String> meals = List.of("Salad", "Burger", "Pasta", "Salad", "Burger", "Pasta");
+        for (int index = 1; index <= 6; index++) {
+            Customer vip = new VIPCustomer("C" + index, 1 + (index - 1) * 3, index);
+            assert vip.chooseMeal(combo).name().equals(meals.get(index - 1));
+            Customer critic = new CriticCustomer("C" + index, 1 + (index - 1) * 3, index);
+            assert critic.chooseMeal(combo) == combo.item("Pasta");
+        }
     }
 
     private static void variantTransitions(Customer customer, Customer waiting) {
