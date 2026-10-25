@@ -260,16 +260,16 @@ public final class MenuCheck {
         assert new Order("O5", "C5", menu.item("Pasta"), 0, 7, true).billCents() == 1440;
         assert new Order("O6", "C6", new MenuItem("Tiny", 5, 1), 10, 7, true).billCents() == 4;
         // 13 -> 11.7 -> 12 -> 9.6 -> 10; Happy Hour first or a single 28% off would give 9.
-        assert new Order("O6", "C6", new MenuItem("Tiny", 13, 1), 10, 7, true).billCents() == 10;
+        assert new Order("O7", "C7", new MenuItem("Tiny", 13, 1), 10, 7, true).billCents() == 10;
 
         for (MenuItem item : List.of(menu.item("Salad"), burger, menu.item("Pasta"), saladPasta())) {
             for (int percent : new int[] {0, 10}) {
-                assert new Order("O7", "C7", item, percent, 1, false).billCents()
-                        == new Order("O7", "C7", item, percent, 1).billCents();
+                assert new Order("O8", "C8", item, percent, 1, false).billCents()
+                        == new Order("O8", "C8", item, percent, 1).billCents();
             }
         }
 
-        Order order = new Order("O8", "C8", saladPasta(), 10, 7, true);
+        Order order = new Order("O9", "C9", saladPasta(), 10, 7, true);
         assert order.status() == OrderStatus.PLACED;
         assert order.placedTurn() == 7;
         order.advanceOneUnit(7);
@@ -283,13 +283,13 @@ public final class MenuCheck {
         assert order.status() == OrderStatus.PAID;
         assert order.billCents() == 1750;
 
-        Order cancelled = new Order("O9", "C9", burger, 10, 7, true);
+        Order cancelled = new Order("O10", "C10", burger, 10, 7, true);
         cancelled.advanceOneUnit(7);
         cancelled.cancel();
         assert cancelled.billCents() == 1080;
 
-        assertIllegalArgument(() -> new Order("O10", "C10", burger, -1, 7, true));
-        assertIllegalArgument(() -> new Order("O10", "C10", burger, 101, 7, false));
+        assertIllegalArgument(() -> new Order("O11", "C11", burger, -1, 7, true));
+        assertIllegalArgument(() -> new Order("O12", "C12", burger, 101, 7, false));
     }
 
     private static void checkApplyDiscount() {
