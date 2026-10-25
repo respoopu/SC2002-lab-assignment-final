@@ -331,6 +331,7 @@ public final class CustomerCheck {
         assert c.recover(Integer.MAX_VALUE) == 92;
         assert c.status() == CustomerStatus.PAID;
         assertThrows(IllegalArgumentException.class, () -> c.recover(-1));
+        assert c.satisfaction() == 92;
 
         Customer left = new RegularCustomer("C1", 1, 1);
         for (int i = 0; i < 13; i++) {
