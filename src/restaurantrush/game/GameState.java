@@ -12,6 +12,9 @@ import restaurantrush.staff.Table;
 
 /** Shared store of game objects and counters. Holds no game rules. */
 public final class GameState {
+    /** Happy Hour lasts for the activation turn and the next. */
+    private static final int HAPPY_HOUR_TURNS = 2;
+
     private final GameConfig config;
     private final Menu menu;
     private final WaitingQueue queue = new WaitingQueue();
@@ -26,6 +29,7 @@ public final class GameState {
     private int paidCount;
     private int revenueCents;
     private int satisfactionSum;
+    private int happyHourTurn;
 
     public GameState(GameConfig config, Menu menu) {
         this.config = config;
@@ -86,4 +90,27 @@ public final class GameState {
     public int paidCount() { return paidCount; }
     public int revenueCents() { return revenueCents; }
     public int satisfactionSum() { return satisfactionSum; }
+
+    /** True once Happy Hour has been activated; it can be activated only once per game. */
+    public boolean happyHourUsed() { return happyHourTurn > 0; }
+
+    /** True on the activation turn and the next. */
+    public boolean happyHourActive() { return happyHourRemaining() > 0; }
+
+    /** 2 on the activation turn, 1 on the next, otherwise 0. There is no end-of-turn decrement. */
+    public int happyHourRemaining() {
+        int elapsed = turn - happyHourTurn;
+        return happyHourUsed() && elapsed >= 0 && elapsed < HAPPY_HOUR_TURNS ? HAPPY_HOUR_TURNS - elapsed : 0;
+    }
+
+    /** Controller only: records the current turn as the activation turn. Needs TURN_START after the turn has started and no earlier activation; otherwise throws before any change. */
+    void activateHappyHour() {
+        if (happyHourUsed()) {
+            throw new IllegalStateException("Happy Hour was already activated on turn " + happyHourTurn);
+        }
+        if (phase != Phase.TURN_START || turn < 1) {
+            throw new IllegalStateException("Happy Hour activates at the start of a turn, not on turn " + turn + " in phase " + phase);
+        }
+        happyHourTurn = turn;
+    }
 }

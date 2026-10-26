@@ -87,6 +87,15 @@ public final class CommandParser {
         return verb + " is not available to " + roleName(role) + ".";
     }
 
+    // The Manager> answer before a Stage 3 turn: HAPPY_HOUR activates it, SKIP does not; empty for anything else.
+    public static Optional<Boolean> parseHappyHour(String line) {
+        return switch (normalize(line)) {
+            case "HAPPY_HOUR" -> Optional.of(true);
+            case "SKIP" -> Optional.of(false);
+            default -> Optional.empty();
+        };
+    }
+
     private static String normalize(String line) {
         return line == null ? "" : line.strip().toUpperCase(Locale.ROOT);
     }
@@ -115,6 +124,7 @@ public final class CommandParser {
 
     private static boolean allowed(ActionKind kind, StaffRole role) {
         return switch (role) {
+            case HOST -> kind == ActionKind.SEAT || kind == ActionKind.WAIT;
             case WAITER -> kind == ActionKind.SEAT || kind == ActionKind.ORDER
                     || kind == ActionKind.SERVE || kind == ActionKind.WAIT;
             case CHEF -> kind == ActionKind.PREPARE || kind == ActionKind.WAIT;
@@ -135,9 +145,11 @@ public final class CommandParser {
     }
 
     private static String commandsFor(StaffRole role) {
-        return role == StaffRole.WAITER
-                ? "SEAT C<n>, ORDER C<n>, SERVE O<n>, or WAIT"
-                : "PREPARE O<n> or WAIT";
+        return switch (role) {
+            case HOST -> "SEAT C<n> or WAIT";
+            case WAITER -> "SEAT C<n>, ORDER C<n>, SERVE O<n>, or WAIT";
+            case CHEF -> "PREPARE O<n> or WAIT";
+        };
     }
 
     private static String firstToken(String input) {
@@ -148,6 +160,10 @@ public final class CommandParser {
     }
 
     private static String roleName(StaffRole role) {
-        return role == StaffRole.WAITER ? "Waiter" : "Chef";
+        return switch (role) {
+            case HOST -> "Host";
+            case WAITER -> "Waiter";
+            case CHEF -> "Chef";
+        };
     }
 }
