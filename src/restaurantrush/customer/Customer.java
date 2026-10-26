@@ -108,6 +108,17 @@ public abstract class Customer {
         return satisfaction;
     }
 
+    /** Adds amount, capped at 100, only while WAITING or SEATED; other statuses are unchanged. Returns the resulting value. */
+    public int recover(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("recovery amount must not be negative: " + amount);
+        }
+        if (isWaitingForTableOrFood()) {
+            satisfaction += Math.min(amount, START_SATISFACTION - satisfaction);
+        }
+        return satisfaction;
+    }
+
     private void requireStatus(String action, CustomerStatus required) {
         if (status != required) {
             throw new IllegalStateException(id + " cannot " + action + " while " + status);
