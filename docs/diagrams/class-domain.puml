@@ -1,0 +1,185 @@
+@startuml class-domain
+!include style.iuml
+!pragma layout smetana
+top to bottom direction
+title Restaurant Rush | Stage 3 domain model (view 1 of 2)
+caption Key members shown; packages are under restaurantrush. Controller and CLI appear in view 2.
+
+package customer {
+  abstract class Customer {
+    -id : String {readOnly}
+    -arrivalTurn : int {readOnly}
+    -arrivalIndex : int {readOnly}
+    -status : CustomerStatus
+    -satisfaction : int
+    -order : Order
+    -servedTurn : int
+    -readyToPayTurn : int
+    #Customer(id: String, arrivalTurn: int, arrivalIndex: int)
+    {abstract} +typeName() : String
+    {abstract} +waitingLossPerTurn() : int
+    {abstract} +discountPercent() : int
+    {abstract} +chooseMeal(menu: Menu) : MenuItem
+    +seat() : void
+    +attachOrder(order: Order) : void
+    +startEating(turn: int) : void
+    +becomeReadyToPay(turn: int) : void
+    +pay() : void
+    +leave() : void
+    +loseSatisfaction() : int
+    +recover(amount: int) : int
+  }
+  class RegularCustomer <<final>> {
+    +waitingLossPerTurn() : int
+    +discountPercent() : int
+    +chooseMeal(menu: Menu) : MenuItem
+  }
+  class VIPCustomer <<final>> {
+    +waitingLossPerTurn() : int
+    +discountPercent() : int
+    +chooseMeal(menu: Menu) : MenuItem
+  }
+  class CriticCustomer <<final>> {
+    +waitingLossPerTurn() : int
+    +discountPercent() : int
+    +chooseMeal(menu: Menu) : MenuItem
+  }
+  class WaitingQueue <<final>> {
+    -customers : List<Customer> {readOnly reference}
+    +add(customer: Customer) : void
+    +find(id: String) : Optional<Customer>
+    +remove(id: String) : Customer
+    +view() : List<Customer>
+  }
+  enum CustomerStatus {
+    WAITING
+    SEATED
+    EATING
+    READY_TO_PAY
+    PAID
+    LEFT
+  }
+}
+
+package menu {
+  class Menu <<final>> {
+    -items : List<MenuItem> {readOnly}
+    +{static} base() : Menu
+    +items() : List<MenuItem>
+    +item(name: String) : MenuItem
+    +cycleChoice(arrivalIndex: int) : MenuItem
+  }
+  class MenuItem {
+    -name : String {readOnly}
+    -priceCents : int {readOnly}
+    -preparationUnits : int {readOnly}
+    +priceCents() : int
+    +preparationUnits() : int
+  }
+  class ComboMeal <<final>> {
+    -first : MenuItem {readOnly}
+    -second : MenuItem {readOnly}
+    +ComboMeal(name: String, first: MenuItem, second: MenuItem)
+    +first() : MenuItem
+    +second() : MenuItem
+  }
+  class Order <<final>> {
+    -id : String {readOnly}
+    -customerId : String {readOnly}
+    -item : MenuItem {readOnly}
+    -billCents : int {readOnly}
+    -status : OrderStatus
+    -unitsDone : int
+    -readyTurn : int
+    -servedTurn : int
+    +Order(id: String, customerId: String, item: MenuItem,\n  customerDiscountPercent: int, placedTurn: int, happyHourActive: boolean)
+    +advanceOneUnit(turn: int) : void
+    +markServed(turn: int) : void
+    +markPaid() : void
+    +cancel() : void
+  }
+  class Money <<utility, final>> {
+    +{static} applyDiscount(cents: int, percentOff: int) : int
+    +{static} format(cents: int) : String
+  }
+  enum OrderStatus {
+    PLACED
+    PREPARING
+    READY
+    SERVED
+    PAID
+    CANCELLED
+  }
+}
+
+package staff {
+  class Table <<final>> {
+    -id : String {readOnly}
+    -occupantId : String
+    +isFree() : boolean
+    +seat(customerId: String) : void
+    +release() : void
+  }
+}
+package game {
+  class GameState <<final; detailed in view 2>> {
+    -queue : WaitingQueue {readOnly reference}
+    -tables : List<Table> {readOnly reference}
+    -customers : List<Customer> {readOnly reference}
+    -orders : List<Order> {readOnly reference}
+    -menu : Menu {readOnly reference}
+  }
+}
+
+Customer <|-- RegularCustomer
+Customer <|-- VIPCustomer
+Customer <|-- CriticCustomer
+MenuItem <|-- ComboMeal
+Customer "1" --> "0..1" Order : order
+Customer --> CustomerStatus : status
+Order --> OrderStatus : status
+Order "0..*" --> "1" MenuItem : item
+Menu "0..*" o-- "3..*" MenuItem : items
+ComboMeal "0..*" o-- "1" MenuItem : first
+ComboMeal "0..*" o-- "1" MenuItem : second
+WaitingQueue "0..1" --> "0..*" Customer : queued subset
+GameState "1" *-- "1" WaitingQueue : creates queue
+GameState "1" *-- "0..*" Table : creates tables {config.tableCount(); base = 2}
+GameState "1" --> "0..*" Customer : all arrivals, including PAID/LEFT
+GameState "1" --> "0..*" Order : all placed orders
+GameState "1" --> "1" Menu : menu
+Order ..> Money : locks discounted bill
+ComboMeal ..> Money : 10% off component sum
+Customer ..> Menu : chooses through abstract operation
+Order ..> Customer : customerId (ID lookup)
+Table ..> Customer : occupantId (ID lookup; 0..1 occupant)
+
+note bottom of Customer
+  Encapsulation: state transitions own their guards.
+  Satisfaction stays in [0,100].
+  Stores Order but never calls it.
+end note
+note bottom of RegularCustomer
+  Polymorphic meal/loss/discount rules:
+  Regular: loss 8, 0%; cycle, combo at index % 3 = 0 if offered.
+  VIP: loss 5, 10%; cycle. Critic: loss 12, 0%; always Pasta.
+  All three override typeName() as well.
+end note
+note bottom of ComboMeal
+  Object composition: two existing items are retained and shared.
+  Hollow diamonds reflect shared components, not exclusive ownership.
+  Salad + Pasta = 2430 cents, 3 units; Menu.base() stays unchanged.
+end note
+note bottom of Order
+  Encapsulation: preparation and status transitions live here.
+  Personal discount, then Happy Hour 20%; half up at each step.
+  billCents is final; later activation/expiry cannot change it.
+end note
+legend bottom left
+  + public; # protected; - private. {readOnly} means final/immutable value.
+  Solid arrows: stored object references. Dashed arrows: dependency or explicit ID lookup.
+  Black diamond: internally created lifetime-owned part. Hollow diamond: shared aggregation.
+  A customer has at most one order/table in reachable gameplay; ID links are not object fields.
+endlegend
+footer Source baseline: d38231a (merged Stage 3 integration). See README.md for scope and trace evidence.
+@enduml

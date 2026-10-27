@@ -1,0 +1,26 @@
+' Shared presentation only; all UML model content lives in the .puml sources.
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #42566A
+skinparam ArrowThickness 1
+skinparam noteBackgroundColor #FFF7DE
+skinparam noteBorderColor #B99A45
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F3F7FB
+skinparam classBorderColor #536D86
+skinparam packageBackgroundColor #FFFFFF
+skinparam packageBorderColor #A4B3C2
+skinparam sequenceMessageAlign center
+skinparam sequenceParticipantBackgroundColor #EAF2F8
+skinparam sequenceParticipantBorderColor #536D86
+skinparam sequenceLifeLineBorderColor #9CAEBE
+skinparam sequenceGroupBackgroundColor #F5F8FB
+skinparam sequenceGroupBorderColor #8FA2B5
+skinparam sequenceReferenceBackgroundColor #EEF5F2
+skinparam sequenceReferenceBorderColor #6E9984
+skinparam titleFontSize 20
+skinparam footerFontSize 11
+hide empty members
