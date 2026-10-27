@@ -1,0 +1,102 @@
+@startuml sequence-1-game
+!include style.iuml
+title Restaurant Rush | One choice-sensitive game (sequence 1 of 4)
+caption Same base configuration, arrival schedule and meal rules; only manager choices differ.
+actor Manager
+boundary "ui : ConsoleUI" as UI
+participant "CommandParser\n(static)" as Parser
+control "controller : TurnController" as TC
+autonumber
+
+note over Manager, TC
+  Fixtures: stage-3/host-combo-happy-hour and stage-3/defeat.
+  GameSetup.baseGame() wires Host, two tables, 18 turns and mixed arrivals.
+  Pages 2-4 expand the winning run's C3/O3 interactions; other customers
+  use the same methods. Loop guards and labels summarize Java conditions.
+end note
+
+alt manager follows host-combo-happy-hour.in
+  loop !controller.isOver(); turns 1 through 18
+    UI -> TC : snapshot()
+    TC --> UI : Snapshot (availability is controller-owned)
+    opt snapshot.happyHourAvailable()
+      UI --> Manager : Manager> (HAPPY_HOUR or SKIP)
+      Manager -> UI : SKIP on turns 1-6; HAPPY_HOUR on turn 7
+      UI -> Parser : parseHappyHour(line)
+      Parser --> UI : Optional<Boolean>
+      note right of Parser
+        Invalid manager input is retried
+        before beginTurn; no turn consumed.
+      end note
+    end
+    UI -> TC : beginTurn(activateHappyHour)
+    ref over UI, TC : Page 2: turn-7 activation, arrival and Host seating
+    TC --> UI : TurnStart(events, snapshot)
+    UI --> Manager : render events, state and remaining duration
+    loop controller.currentRole().isPresent(); Host then Waiter then Chef
+      UI -> TC : snapshot()
+      TC --> UI : Snapshot with current role's legalActions
+      UI --> Manager : numbered legal actions and role prompt
+      Manager -> UI : number or text command from fixture
+      UI -> Parser : parse(line, role, legalActions)
+      Parser --> UI : Optional<Action>
+      alt parse returned empty
+        UI -> Parser : errorFor(line, role, legalActions)
+        Parser --> UI : error text
+        UI --> Manager : error; retry same role
+      else parsed Action
+        UI -> TC : submit(action)
+        ref over UI, TC : Pages 2-4: real staff/domain calls for C3 and O3
+        TC --> UI : ActionResult
+        alt rejected
+          UI --> Manager : reason; retry same role (no mutation)
+        else accepted, including WAIT
+          UI --> Manager : events, or message when no events
+          note right of TC : Accepted action advances one phase.
+        end
+      end
+    end
+    UI -> TC : endTurn()
+    ref over UI, TC : Page 4: eating, automatic payment, waiting loss, result
+    TC --> UI : TurnEnd(events, summary, optional result)
+    UI --> Manager : end-of-turn summary; final result on turn 18
+  end
+  note over Manager, TC #E5F2E9
+    VICTORY: five payments, 7494 cents, satisfactionSum 419, average 83.8.
+    All targets hold: paidCount >= 4, revenueCents >= 4500,
+    satisfactionSum >= 60 * paidCount (419 >= 300).
+    Payments: C1@4 900/92; C2@7 1350/95; C3@12 1944/84;
+    C4@15 1800/64; C5@17 1500/84 (cents/satisfaction).
+  end note
+else manager follows defeat.in: every opportunity is skipped/waited
+  loop turns 1 through 18
+    UI --> Manager : Manager>
+    Manager -> UI : SKIP
+    UI -> Parser : parseHappyHour("SKIP")
+    Parser --> UI : Optional.of(false)
+    UI -> TC : beginTurn(false)
+    TC --> UI : arrivals/state; Happy Hour remains unused
+    loop Host then Waiter then Chef
+      Manager -> UI : WAIT
+      UI -> Parser : parse("WAIT", role, legalActions)
+      Parser --> UI : Action(role, WAIT, null)
+      UI -> TC : submit(action)
+      TC --> UI : accepted; phase advances; no staff operation
+    end
+    UI -> TC : endTurn()
+    TC --> UI : waiting loss; C1 leaves on 13, C4 on 18; summary/result
+  end
+  note over Manager, TC #FBEAE6
+    DEFEAT: paidCount 0, revenue 0, satisfactionSum 0, leftCount 2; average N/A.
+    No seats, orders or payments. C2/C3/C5/C6 remain WAITING at 25/4/52/76.
+    No early ending: both branches complete all 18 turns.
+  end note
+end
+
+legend bottom left
+  Solid message arrows are calls/input; dashed arrows are returns/output.
+  ref frames expand into pages 2-4, not additional Java methods.
+  Role/phase retries do not add a turn or consume a successful staff action.
+endlegend
+footer Checked against merged Stage 3 code d38231a and the two unchanged Stage 3 fixtures.
+@enduml
