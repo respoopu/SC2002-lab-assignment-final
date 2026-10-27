@@ -17,10 +17,11 @@ import restaurantrush.menu.Order;
 import restaurantrush.menu.OrderStatus;
 import restaurantrush.staff.Cashier;
 import restaurantrush.staff.Chef;
+import restaurantrush.staff.Host;
 import restaurantrush.staff.Table;
 import restaurantrush.staff.Waiter;
 
-/** Self-check for the staff package: Waiter, Chef, and Cashier. Run with java -ea. */
+/** Self-check for the staff package: Host, Waiter, Chef, and Cashier. Run with java -ea. */
 public final class StaffCheck {
     private StaffCheck() {
     }
@@ -47,6 +48,10 @@ public final class StaffCheck {
         checkWaiterLegalActions();
         checkChefLegalActions();
         checkRejectionsLeaveStateUnchanged();
+        checkHostSeat();
+        checkHostRejections();
+        checkHostLegalActions();
+        checkHostAndWaiterSeatDifferentCustomers();
 
         System.out.println("OK StaffCheck");
     }
@@ -506,5 +511,104 @@ public final class StaffCheck {
         assert !fingerprint(state).equals(before);
         assert state.orders().size() == 2;
         assert state.nextOrderId().equals("O3");
+    }
+
+    private static Action host(ActionKind kind, String targetId) {
+        return new Action(StaffRole.HOST, kind, targetId);
+    }
+
+    /** The Host uses the Waiter's seating rule: the chosen queued customer goes to the lowest-numbered free table. */
+    private static void checkHostSeat() {
+        GameState state = stateWithQueue(1, 3);
+        Host host = new Host();
+
+        ActionResult first = host.seat(state, "C2");
+        assert first.accepted();
+        assert first.message().equals("C2 seated at T1.");
+        assert first.events().equals(List.of(new GameEvent(1, "C2 seated at T1")));
+        assert state.queue().find("C2").isEmpty();
+        assert "C2".equals(occupant(state, "T1"));
+        assert customer(state, "C2").status() == CustomerStatus.SEATED;
+
+        assert host.seat(state, "C1").accepted();
+        assert "C1".equals(occupant(state, "T2"));
+        assert state.queue().view().stream().map(Customer::id).toList().equals(List.of("C3"));
+        assert state.orders().isEmpty();
+    }
+
+    private static void checkHostRejections() {
+        Host host = new Host();
+        GameState state = stateWithQueue(1, 3);
+        assert host.seat(state, "C1").accepted();
+        assert new Waiter().seat(state, "C2").accepted();
+
+        String before = fingerprint(state);
+        ActionResult full = host.seat(state, "C3");
+        assert !full.accepted();
+        assert full.message().equals("No table is free.");
+        assert full.events().isEmpty();
+        assert fingerprint(state).equals(before);
+
+        GameState fresh = stateWithQueue(1, 2);
+        assert host.seat(fresh, "C1").accepted();
+        before = fingerprint(fresh);
+        for (String id : new String[] {"C1", "C9", "C1x", "O1"}) {
+            ActionResult rejected = host.seat(fresh, id);
+            assert !rejected.accepted();
+            assert rejected.message().equals(id + " is not in the waiting queue.") : rejected.message();
+            assert rejected.events().isEmpty();
+        }
+        assert fingerprint(fresh).equals(before);
+        assert "C1".equals(occupant(fresh, "T1"));
+        assert fresh.table("T2").orElseThrow().isFree();
+        assert customer(fresh, "C2").status() == CustomerStatus.WAITING;
+    }
+
+    private static void checkHostLegalActions() {
+        Host host = new Host();
+        assert host.legalActions(stateWithQueue(1, 0)).equals(List.of(host(ActionKind.WAIT, null)));
+
+        GameState state = stateWithQueue(1, 3);
+        assert host.legalActions(state).equals(List.of(
+                host(ActionKind.SEAT, "C1"),
+                host(ActionKind.SEAT, "C2"),
+                host(ActionKind.SEAT, "C3"),
+                host(ActionKind.WAIT, null)));
+
+        // The Host never takes orders or serves, even when the Waiter could.
+        assert new Waiter().seat(state, "C2").accepted();
+        assert host.legalActions(state).equals(List.of(
+                host(ActionKind.SEAT, "C1"),
+                host(ActionKind.SEAT, "C3"),
+                host(ActionKind.WAIT, null)));
+
+        assert host.seat(state, "C3").accepted();
+        assert host.legalActions(state).equals(List.of(host(ActionKind.WAIT, null)));
+    }
+
+    /** One Host seating and one Waiter seating of different queued customers in the same turn fill both tables. */
+    private static void checkHostAndWaiterSeatDifferentCustomers() {
+        GameState state = stateWithQueue(4, 3);
+        Host host = new Host();
+        Waiter waiter = new Waiter();
+
+        assert host.seat(state, "C3").events().equals(List.of(new GameEvent(4, "C3 seated at T1")));
+        assert waiter.legalActions(state).equals(List.of(
+                waiter(ActionKind.SEAT, "C1"),
+                waiter(ActionKind.SEAT, "C2"),
+                waiter(ActionKind.ORDER, "C3"),
+                waiter(ActionKind.WAIT, null)));
+        assert waiter.seat(state, "C1").events().equals(List.of(new GameEvent(4, "C1 seated at T2")));
+
+        assert "C3".equals(occupant(state, "T1"));
+        assert "C1".equals(occupant(state, "T2"));
+        assert customer(state, "C2").status() == CustomerStatus.WAITING;
+        assert state.queue().view().stream().map(Customer::id).toList().equals(List.of("C2"));
+        assert !host.seat(state, "C2").accepted();
+        assert !waiter.seat(state, "C2").accepted();
+        assert waiter.legalActions(state).equals(List.of(
+                waiter(ActionKind.ORDER, "C1"),
+                waiter(ActionKind.ORDER, "C3"),
+                waiter(ActionKind.WAIT, null)));
     }
 }

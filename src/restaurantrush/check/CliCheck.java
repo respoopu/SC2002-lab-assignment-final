@@ -3,6 +3,7 @@ package restaurantrush.check;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -12,15 +13,27 @@ import restaurantrush.customer.CustomerStatus;
 import restaurantrush.game.Action;
 import restaurantrush.game.ActionKind;
 import restaurantrush.game.CustomerView;
+import restaurantrush.game.GameConfig;
 import restaurantrush.game.GameResult;
 import restaurantrush.game.GameSetup;
+import restaurantrush.game.GameState;
 import restaurantrush.game.Phase;
 import restaurantrush.game.Snapshot;
 import restaurantrush.game.StaffRole;
 import restaurantrush.game.TableView;
+import restaurantrush.game.TurnController;
 import restaurantrush.game.TurnSummary;
+import restaurantrush.menu.Menu;
+import restaurantrush.staff.Cashier;
+import restaurantrush.staff.Chef;
+import restaurantrush.staff.Waiter;
 
 public final class CliCheck {
+    private static final String OUT_OF_RANGE = "That number is not in the list. Choose a number from the list, or type a command.";
+    private static final String MANAGER_PROMPT = "Happy Hour available: HAPPY_HOUR or SKIP\nManager> \n";
+    private static final String MANAGER_ERROR = "Invalid manager command. Use HAPPY_HOUR or SKIP.\n";
+    private static final String INPUT_ENDED = "Input ended before the game finished.\n";
+
     private CliCheck() {
     }
 
@@ -32,9 +45,14 @@ public final class CliCheck {
         }
         checkParsing();
         checkNumbers();
+        checkHostParsing();
+        checkHappyHourParsing();
         checkRendering();
+        checkHappyHourRendering();
         checkRunEndsEarly();
         checkNumberedRun();
+        checkStage3Run();
+        checkStage3InputEnds();
         System.out.print("OK CliCheck\n");
     }
 
@@ -131,6 +149,53 @@ public final class CliCheck {
         assert CommandParser.errorFor("1", null, waiterActions).equals(CommandParser.errorFor("1", null));
     }
 
+    // The Host may only SEAT or WAIT; its errors name the Host and its two commands.
+    private static void checkHostParsing() {
+        expect("seat c3", StaffRole.HOST, new Action(StaffRole.HOST, ActionKind.SEAT, "C3"));
+        expect(" WAIT ", StaffRole.HOST, new Action(StaffRole.HOST, ActionKind.WAIT, null));
+        for (String verb : List.of("ORDER C1", "SERVE O1", "PREPARE O1")) {
+            assert CommandParser.parse(verb, StaffRole.HOST).isEmpty() : verb;
+            String name = verb.substring(0, verb.indexOf(' '));
+            assert CommandParser.errorFor(verb, StaffRole.HOST).equals(name + " is not available to Host.") : verb;
+        }
+        assert CommandParser.errorFor("", StaffRole.HOST).equals("Nothing was entered. Enter a command for Host.");
+        assert CommandParser.errorFor("HELLO", StaffRole.HOST).equals("Unknown command. Use SEAT C<n> or WAIT.");
+        assert CommandParser.errorFor("SEAT O1", StaffRole.HOST).equals("Invalid target for SEAT. Use SEAT C<n>.");
+        assert CommandParser.errorFor("SEAT", StaffRole.HOST).equals("Invalid SEAT command. Use SEAT C<n>.");
+        // Adding the Host leaves the Waiter's and Chef's command lists as they were.
+        assert CommandParser.errorFor("HELLO", StaffRole.WAITER).equals("Unknown command. Use SEAT C<n>, ORDER C<n>, SERVE O<n>, or WAIT.");
+        assert CommandParser.errorFor("HELLO", StaffRole.CHEF).equals("Unknown command. Use PREPARE O<n> or WAIT.");
+
+        Action seatFirst = new Action(StaffRole.HOST, ActionKind.SEAT, "C1");
+        Action seatSecond = new Action(StaffRole.HOST, ActionKind.SEAT, "C2");
+        Action hostWait = new Action(StaffRole.HOST, ActionKind.WAIT, null);
+        List<Action> hostActions = List.of(seatFirst, seatSecond, hostWait);
+        expect("1", StaffRole.HOST, hostActions, seatFirst);
+        expect("2", StaffRole.HOST, hostActions, seatSecond);
+        expect("0", StaffRole.HOST, hostActions, hostWait);
+        expect("0", StaffRole.HOST, List.of(hostWait), hostWait);
+        for (String number : List.of("3", "1")) {
+            List<Action> actions = number.equals("1") ? List.of(hostWait) : hostActions;
+            assert CommandParser.parse(number, StaffRole.HOST, actions).isEmpty() : number;
+            assert CommandParser.errorFor(number, StaffRole.HOST, actions).equals(OUT_OF_RANGE) : number;
+        }
+        assert CommandParser.errorFor("ORDER C1", StaffRole.HOST, hostActions).equals("ORDER is not available to Host.");
+    }
+
+    private static void checkHappyHourParsing() {
+        for (String yes : List.of("HAPPY_HOUR", "happy_hour", "  Happy_Hour\t")) {
+            assert CommandParser.parseHappyHour(yes).equals(Optional.of(true)) : yes;
+        }
+        for (String no : List.of("SKIP", "skip", " Skip ")) {
+            assert CommandParser.parseHappyHour(no).equals(Optional.of(false)) : no;
+        }
+        List<String> invalid = Arrays.asList(null, "", "   ", "HAPPY HOUR", "HAPPYHOUR", "HAPPY_HOUR now",
+                "yes", "WAIT", "0", "1");
+        for (String line : invalid) {
+            assert CommandParser.parseHappyHour(line).isEmpty() : line;
+        }
+    }
+
     private static void checkRendering() {
         CustomerView customer = new CustomerView("C1", "Regular", CustomerStatus.WAITING, 100, Optional.empty());
         Snapshot firstTurn = new Snapshot(1, Phase.WAITER, 0, 0, 0,
@@ -174,38 +239,126 @@ public final class CliCheck {
         assertOutput(defeat);
     }
 
+    // A HOST-phase start snapshot shows the remaining Happy Hour duration, including 0; other snapshots render as before.
+    private static void checkHappyHourRendering() {
+        CustomerView customer = new CustomerView("C1", "Regular", CustomerStatus.WAITING, 100, Optional.empty());
+        List<TableView> tables = List.of(new TableView("T1", Optional.empty()), new TableView("T2", Optional.empty()));
+        List<Action> hostActions = List.of(new Action(StaffRole.HOST, ActionKind.SEAT, "C1"),
+                new Action(StaffRole.HOST, ActionKind.WAIT, null));
+        for (int remaining : new int[] {2, 1, 0}) {
+            Snapshot host = new Snapshot(7, Phase.HOST, 900, 1, 92, List.of(customer), tables, List.of(customer),
+                    List.of(), Optional.of(StaffRole.HOST), hostActions, false, remaining);
+            String display = ConsoleUI.render(host);
+            assert display.startsWith("Turn 7\nRevenue: $9.00\nAverage satisfaction: 92.0\nHappy Hour remaining: "
+                    + remaining + "\nQueue:\n") : display;
+            assertOutput(display);
+        }
+
+        List<Action> waiterActions = List.of(new Action(StaffRole.WAITER, ActionKind.SEAT, "C1"));
+        Snapshot legacy = new Snapshot(1, Phase.WAITER, 0, 0, 0, List.of(customer), tables, List.of(customer), List.of(),
+                Optional.of(StaffRole.WAITER), waiterActions);
+        assert !legacy.happyHourAvailable() && legacy.happyHourRemaining() == 0;
+        assert legacy.equals(new Snapshot(1, Phase.WAITER, 0, 0, 0, List.of(customer), tables, List.of(customer),
+                List.of(), Optional.of(StaffRole.WAITER), waiterActions, false, 0));
+        String legacyDisplay = ConsoleUI.render(legacy);
+        assert legacyDisplay.startsWith("Turn 1\nRevenue: $0.00\nAverage satisfaction: N/A\nQueue:\n") : legacyDisplay;
+        assert !legacyDisplay.contains("Happy Hour");
+    }
+
     private static void checkRunEndsEarly() {
         // The first four commands of fixtures/stage-1/defeat.in, so input ends long before turn 18.
-        String transcript = playUntilInputEnds("WAIT\nWAIT\nWAIT\nWAIT\n");
+        String transcript = playLegacyUntilInputEnds("WAIT\nWAIT\nWAIT\nWAIT\n");
         String[] lines = transcript.split("\n");
         assert lines[lines.length - 1].equals("Input ended before the game finished.");
+        assertTwoRoles(transcript);
     }
 
     private static void checkNumberedRun() {
         // Turn 1: 2 and 99 are not in the list, so the Waiter is asked again; 1 seats C1 and the Chef waits with 0.
         // Turn 2: 1 takes C1's order and 1 prepares it.
-        String numbers = playUntilInputEnds("2\n99\n1\n0\n1\n1\n");
-        String retry = "That number is not in the list. Choose a number from the list, or type a command.\n";
+        String numbers = playLegacyUntilInputEnds("2\n99\n1\n0\n1\n1\n");
+        String retry = OUT_OF_RANGE + "\n";
         String turnOneWaiter = "Legal actions: [1] SEAT C1, [0] WAIT\nWaiter> \n";
         assert numbers.contains(turnOneWaiter + retry + turnOneWaiter + retry + turnOneWaiter
                 + "C1 seated at T1\nLegal actions: [0] WAIT\nChef> \nChef waits.\n") : numbers;
         assert numbers.contains("Legal actions: [1] ORDER C1, [0] WAIT\nWaiter> \nC1 orders Salad ($9.00) as O1\n"
                 + "Legal actions: [1] PREPARE O1, [0] WAIT\nChef> \nO1 is READY\n") : numbers;
 
-        String waits = playUntilInputEnds("0\n");
+        String waits = playLegacyUntilInputEnds("0\n");
         assert waits.contains(turnOneWaiter + "Waiter waits.\nLegal actions: [0] WAIT\nChef> \n") : waits;
+        assertTwoRoles(numbers);
+        assertTwoRoles(waits);
     }
 
-    // Plays the base game until the given input runs out, which must happen before turn 18.
-    private static String playUntilInputEnds(String input) {
+    // Two Stage 3 turns on the base game, with a manager retry, Host retries, numbers at the Host prompt, and activation.
+    private static void checkStage3Run() {
+        // Turn 1: a Manager retry, then SKIP. The Host gets a parse error, an empty line, a rejected SEAT, and a number
+        // outside the list before 1 seats C1; the Waiter takes C1's order with 1 and the Chef waits with 0.
+        // Turn 2: Happy Hour starts and the Host waits with 0. Turn 3 has no Manager prompt, and input ends at the Host.
+        String input = "hello\nskip\n" + "ORDER C1\n\nSEAT C9\n5\n1\n" + "1\n0\n"
+                + "happy_hour\n" + "0\nWAIT\nPREPARE O1\n";
+        String transcript = playUntilInputEnds(GameSetup.baseGame(), input);
+
+        String hostTurnOne = "Legal actions: [1] SEAT C1, [0] WAIT\nHost> \n";
+        assert transcript.startsWith(MANAGER_PROMPT + MANAGER_ERROR + MANAGER_PROMPT
+                + "C1 (Regular) arrives\nTurn 1\nRevenue: $0.00\nAverage satisfaction: N/A\nHappy Hour remaining: 0\nQueue:\n")
+                : transcript;
+        assert transcript.contains(hostTurnOne + "ORDER is not available to Host.\n"
+                + hostTurnOne + "Nothing was entered. Enter a command for Host.\n"
+                + hostTurnOne + "C9 is not in the waiting queue.\n"
+                + hostTurnOne + OUT_OF_RANGE + "\n"
+                + hostTurnOne + "C1 seated at T1\n"
+                + "Legal actions: [1] ORDER C1, [0] WAIT\nWaiter> \nC1 orders Salad ($9.00) as O1\n"
+                + "Legal actions: [1] PREPARE O1, [0] WAIT\nChef> \nChef waits.\n") : transcript;
+        assert transcript.contains("Turns used: 1\n" + MANAGER_PROMPT
+                + "Happy Hour activated\nC1 recovers 8 satisfaction (100)\nTurn 2\nRevenue: $0.00\n"
+                + "Average satisfaction: N/A\nHappy Hour remaining: 2\n") : transcript;
+        assert transcript.contains("Legal actions: [0] WAIT\nHost> \nHost waits.\n"
+                + "Legal actions: [0] WAIT\nWaiter> \nWaiter waits.\n") : transcript;
+        assert transcript.contains("O1 is READY\n") : transcript;
+        assert transcript.contains("Turns used: 2\nC1 recovers 8 satisfaction (100)\nTurn 3\n"
+                + "Revenue: $0.00\nAverage satisfaction: N/A\nHappy Hour remaining: 1\n") : transcript;
+        assert transcript.endsWith("Host> \n" + INPUT_ENDED) : transcript;
+        assert transcript.split("Manager> ", -1).length - 1 == 3;
+    }
+
+    // Input that ends at the Manager prompt, after a manager retry, or at the Host prompt stops the run with the usual message.
+    private static void checkStage3InputEnds() {
+        assert playUntilInputEnds(GameSetup.baseGame(), "").equals(MANAGER_PROMPT + INPUT_ENDED);
+        assert playUntilInputEnds(GameSetup.baseGame(), "maybe\n")
+                .equals(MANAGER_PROMPT + MANAGER_ERROR + MANAGER_PROMPT + INPUT_ENDED);
+        String atHost = playUntilInputEnds(GameSetup.baseGame(), "SKIP\n");
+        assert atHost.startsWith(MANAGER_PROMPT + "C1 (Regular) arrives\nTurn 1\n") : atHost;
+        assert atHost.endsWith("Legal actions: [1] SEAT C1, [0] WAIT\nHost> \n" + INPUT_ENDED) : atHost;
+    }
+
+    // The Stage 1 and 2 flow, built without a Host as earlier stages' GameCheck traces are.
+    private static TurnController legacyGame() {
+        GameConfig config = GameConfig.base();
+        return new TurnController(new GameState(config, Menu.base()), new Waiter(), new Chef(), new Cashier(),
+                i -> GameSetup.arrival(i, config.arrivalTurns().get(i - 1)));
+    }
+
+    private static String playLegacyUntilInputEnds(String input) {
+        return playUntilInputEnds(legacyGame(), input);
+    }
+
+    // Plays the game until the given input runs out, which must happen before turn 18.
+    private static String playUntilInputEnds(TurnController controller, String input) {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(buffer, true, StandardCharsets.UTF_8);
-        boolean finished = new ConsoleUI(new Scanner(input), out).run(GameSetup.baseGame());
+        boolean finished = new ConsoleUI(new Scanner(input), out).run(controller);
         String transcript = buffer.toString(StandardCharsets.UTF_8);
 
         assert !finished;
         assertOutput(transcript);
         return transcript;
+    }
+
+    // A game without a Host prints only the Waiter and Chef prompts and no Happy Hour lines.
+    private static void assertTwoRoles(String transcript) {
+        assert !transcript.contains("Manager> ") && !transcript.contains("Host> ") : transcript;
+        assert !transcript.contains("Happy Hour") : transcript;
     }
 
     private static Snapshot emptySnapshot(int turn, int paidCount, int satisfactionSum) {

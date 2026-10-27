@@ -45,7 +45,7 @@ public final class Waiter {
         return Seating.seat(state, customerId);
     }
 
-    /** Checks: customer SEATED with no order. Effects: chooseMeal, new Order with state.nextOrderId(), state.addOrder, customer.attachOrder, event naming the food. */
+    /** Checks: customer SEATED with no order. Effects: chooseMeal, new Order with state.nextOrderId() and whether Happy Hour is active, state.addOrder, customer.attachOrder, event naming the food. */
     public ActionResult takeOrder(GameState state, String customerId) {
         Optional<Customer> found = state.customer(customerId);
         if (found.isEmpty()) {
@@ -60,7 +60,8 @@ public final class Waiter {
         }
 
         MenuItem item = customer.chooseMeal(state.menu());
-        Order order = new Order(state.nextOrderId(), customerId, item, customer.discountPercent(), state.turn());
+        Order order = new Order(state.nextOrderId(), customerId, item, customer.discountPercent(), state.turn(),
+                state.happyHourActive());
         state.addOrder(order);
         customer.attachOrder(order);
         String text = customerId + " orders " + item.name() + " (" + Money.format(order.billCents()) + ") as " + order.id();

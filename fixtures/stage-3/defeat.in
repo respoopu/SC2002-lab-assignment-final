@@ -1,0 +1,96 @@
+# Stage 3 defeat: the manager never starts Happy Hour and every role always waits.
+# Each turn reads four lines: SKIP at the Manager prompt, then WAIT for the Host,
+# the Waiter and the Chef. Nobody is seated, so nobody orders or pays.
+# C1 leaves at the end of turn 13 and Critic C4 at the end of turn 18.
+# Result: zero paid, two unhappy departures, average N/A, DEFEAT.
+
+# Turn 1
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 2
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 3
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 4
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 5
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 6
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 7
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 8
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 9
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 10
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 11
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 12
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 13
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 14
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 15
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 16
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 17
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 18
+SKIP
+WAIT
+WAIT
+WAIT

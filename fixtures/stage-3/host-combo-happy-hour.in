@@ -1,0 +1,89 @@
+# Stage 3 Host, ComboMeal and Happy Hour: the victory trace from issue #19.
+# Until Happy Hour is used, each turn reads four lines: the Manager's Happy Hour
+# choice, then the Host's, the Waiter's and the Chef's. After it is used, three.
+# The Host does all the seating, which leaves the Waiter free to take C1's to C3's
+# orders on the turn they are seated and to serve O3 and O4 as C4 and C5 are seated.
+# Happy Hour starts on turn 7 (2 turns remaining, then 1, then 0 on turn 9).
+# C3 is a Regular customer at index 3, so they order the Salad + Pasta combo
+# ($24.30, 3 units) during Happy Hour for $19.44, and recover to 100 at the start of turn 8.
+# Result: C1 to C5 pay, revenue $74.94, average 83.8, VICTORY.
+
+# Turn 1: C1 (Regular, Salad) arrives
+SKIP
+SEAT C1
+ORDER C1
+PREPARE O1
+# Turn 2
+SKIP
+WAIT
+SERVE O1
+WAIT
+# Turn 3: C1 is ready to pay
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 4: C2 (VIP, Burger) arrives; the Host seats them at T2, and C1 pays $9.00 at turn end
+SKIP
+SEAT C2
+ORDER C2
+PREPARE O2
+# Turn 5
+SKIP
+WAIT
+SERVE O2
+WAIT
+# Turn 6: C2 is ready to pay
+SKIP
+WAIT
+WAIT
+WAIT
+# Turn 7: Happy Hour starts; C3 (Regular, combo) arrives and orders at the Happy Hour price; C2 pays $13.50
+HAPPY_HOUR
+SEAT C3
+ORDER C3
+PREPARE O3
+# Turn 8: Happy Hour's last turn; C3 recovers 8 to 100; combo unit 2 of 3
+WAIT
+WAIT
+PREPARE O3
+# Turn 9: Happy Hour is over; the combo is READY
+WAIT
+WAIT
+PREPARE O3
+# Turn 10: C4 (Critic, Pasta) arrives and the Host seats them; the combo is served
+SEAT C4
+SERVE O3
+WAIT
+# Turn 11: C4 orders Pasta at full price
+WAIT
+ORDER C4
+PREPARE O4
+# Turn 12: C3 pays $19.44
+WAIT
+WAIT
+PREPARE O4
+# Turn 13: C5 (Regular, Burger) arrives and the Host seats them at T1
+SEAT C5
+SERVE O4
+WAIT
+# Turn 14
+WAIT
+ORDER C5
+PREPARE O5
+# Turn 15: C4 pays $18.00
+WAIT
+SERVE O5
+WAIT
+# Turn 16: C6 (Regular, combo) arrives and waits
+WAIT
+WAIT
+WAIT
+# Turn 17: C5 pays $15.00
+WAIT
+WAIT
+WAIT
+# Turn 18
+WAIT
+WAIT
+WAIT

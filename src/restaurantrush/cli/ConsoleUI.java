@@ -13,6 +13,7 @@ import restaurantrush.game.CustomerView;
 import restaurantrush.game.GameEvent;
 import restaurantrush.game.GameResult;
 import restaurantrush.game.OrderView;
+import restaurantrush.game.Phase;
 import restaurantrush.game.Snapshot;
 import restaurantrush.game.StaffRole;
 import restaurantrush.game.TableView;
@@ -23,6 +24,9 @@ import restaurantrush.game.TurnSummary;
 import restaurantrush.menu.Money;
 
 public final class ConsoleUI {
+    private static final String HAPPY_HOUR_CHOICES = "Happy Hour available: HAPPY_HOUR or SKIP";
+    private static final String HAPPY_HOUR_ERROR = "Invalid manager command. Use HAPPY_HOUR or SKIP.";
+
     private final Scanner in;
     private final PrintStream out;
 
@@ -34,38 +38,40 @@ public final class ConsoleUI {
     public boolean run(TurnController controller) {
         Objects.requireNonNull(controller);
         while (!controller.isOver()) {
-            TurnStart start = controller.beginTurn();
+            boolean activateHappyHour = false;
+            if (controller.snapshot().happyHourAvailable()) {
+                Optional<Boolean> choice = readHappyHour();
+                if (choice.isEmpty()) {
+                    return false;
+                }
+                activateHappyHour = choice.orElseThrow();
+            }
+            TurnStart start = controller.beginTurn(activateHappyHour);
             printEvents(start.events());
             out.print(render(start.snapshot()));
 
-            for (StaffRole role : List.of(StaffRole.WAITER, StaffRole.CHEF)) {
-                boolean accepted = false;
-                while (!accepted) {
-                    List<Action> legalActions = controller.snapshot().legalActions();
-                    printActions(legalActions);
-                    out.print(prompt(role));
-                    out.flush();
-                    if (!in.hasNextLine()) {
-                        out.print('\n');
-                        printLine("Input ended before the game finished.");
-                        return false;
-                    }
-
-                    String line = in.nextLine();
-                    out.print('\n');
-                    Optional<Action> action = CommandParser.parse(line, role, legalActions);
-                    if (action.isEmpty()) {
-                        printLine(CommandParser.errorFor(line, role, legalActions));
-                        continue;
-                    }
-
-                    ActionResult result = controller.submit(action.orElseThrow());
-                    if (result.events().isEmpty()) {
-                        printLine(result.message());
-                    }
-                    printEvents(result.events());
-                    accepted = result.accepted();
+            // Host (Stage 3), Waiter, then Chef, as the controller moves the phase; a rejected or unparsed line asks the same role again.
+            while (controller.currentRole().isPresent()) {
+                StaffRole role = controller.currentRole().orElseThrow();
+                List<Action> legalActions = controller.snapshot().legalActions();
+                printActions(legalActions);
+                out.print(prompt(role));
+                Optional<String> line = readLine();
+                if (line.isEmpty()) {
+                    return false;
                 }
+
+                Optional<Action> action = CommandParser.parse(line.orElseThrow(), role, legalActions);
+                if (action.isEmpty()) {
+                    printLine(CommandParser.errorFor(line.orElseThrow(), role, legalActions));
+                    continue;
+                }
+
+                ActionResult result = controller.submit(action.orElseThrow());
+                if (result.events().isEmpty()) {
+                    printLine(result.message());
+                }
+                printEvents(result.events());
             }
 
             TurnEnd end = controller.endTurn();
@@ -80,6 +86,10 @@ public final class ConsoleUI {
         appendLine(text, "Turn " + snapshot.turn());
         appendLine(text, "Revenue: " + Money.format(snapshot.revenueCents()));
         appendLine(text, "Average satisfaction: " + average(snapshot.paidCount(), snapshot.satisfactionSum()));
+        // Only a Stage 3 turn starts in the HOST phase, so the Stage 1 and 2 display is unchanged.
+        if (snapshot.phase() == Phase.HOST) {
+            appendLine(text, "Happy Hour remaining: " + snapshot.happyHourRemaining());
+        }
 
         appendLine(text, "Queue:");
         if (snapshot.queue().isEmpty()) {
@@ -151,6 +161,36 @@ public final class ConsoleUI {
         printLine(text.toString());
     }
 
+    // Asks the manager until the answer is HAPPY_HOUR or SKIP; empty when input ends first.
+    private Optional<Boolean> readHappyHour() {
+        while (true) {
+            printLine(HAPPY_HOUR_CHOICES);
+            out.print("Manager> ");
+            Optional<String> line = readLine();
+            if (line.isEmpty()) {
+                return Optional.empty();
+            }
+            Optional<Boolean> choice = CommandParser.parseHappyHour(line.orElseThrow());
+            if (choice.isPresent()) {
+                return choice;
+            }
+            printLine(HAPPY_HOUR_ERROR);
+        }
+    }
+
+    // Reads the answer to the prompt just printed; empty, after the end-of-input message, when input has ended.
+    private Optional<String> readLine() {
+        out.flush();
+        if (!in.hasNextLine()) {
+            out.print('\n');
+            printLine("Input ended before the game finished.");
+            return Optional.empty();
+        }
+        String line = in.nextLine();
+        out.print('\n');
+        return Optional.of(line);
+    }
+
     private void printEvents(List<GameEvent> events) {
         for (GameEvent event : events) {
             printLine(event.text());
@@ -163,7 +203,11 @@ public final class ConsoleUI {
     }
 
     private static String prompt(StaffRole role) {
-        return role == StaffRole.WAITER ? "Waiter> " : "Chef> ";
+        return switch (role) {
+            case HOST -> "Host> ";
+            case WAITER -> "Waiter> ";
+            case CHEF -> "Chef> ";
+        };
     }
 
     private static void appendLine(StringBuilder text, String line) {
