@@ -42,3 +42,14 @@ skinparam sequenceReferenceBackgroundColor #E8F4ED
 skinparam sequenceReferenceBorderColor #527D63
 hide circle
 hide empty members
+<style>
+sequenceDiagram {
+  lifeLine {
+    LineColor #486581
+    LineThickness 2
+  }
+  arrow {
+    LineThickness 2
+  }
+}
+</style>
