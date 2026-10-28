@@ -1,20 +1,23 @@
 @startuml sequence-1-game
 !include style.iuml
 title Complete game and choice of outcome (1 of 4)
+mainframe sd PlayGame
 hide footbox
-actor Manager
+actor ":Manager" as Manager
 participant "ui : ConsoleUI" as UI <<boundary>>
-participant CommandParser as Parser
+participant ":CommandParser" as Parser
 participant "controller : TurnController" as TC <<control>>
 autonumber
-
+activate Manager
+[-> UI ++ : run(controller)
 note over Manager, TC
   Same configuration, arrivals and meal rules in both fixtures.
   Winning choices: host-combo-happy-hour.in. Alternative: defeat.in.
+  Static calls use class-qualified participants; routine accessors are compressed.
 end note
 loop turns 1..18; while !controller.isOver()
-  UI -> TC : snapshot()
-  TC --> UI : Snapshot
+  UI -> TC ++ : snapshot()
+  TC --> UI -- : Snapshot
   opt happyHourAvailable
     UI --> Manager : Manager> HAPPY_HOUR or SKIP
     alt winning scenario and turn == 7
@@ -22,45 +25,52 @@ loop turns 1..18; while !controller.isOver()
     else any other available turn
       Manager -> UI : SKIP
     end
-    UI -> Parser : parseHappyHour(line)
-    Parser --> UI : Optional<Boolean>
+    UI -> Parser ++ : parseHappyHour(line)
+    Parser --> UI -- : Optional<Boolean>
+    note over UI, Parser : Invalid manager text is retried before beginTurn.
   end
   UI -> TC ++ : beginTurn(activateHappyHour)
-  ref over UI, TC : Page 2 upper frame: activation and arrival.
+  ref over UI, TC : ArriveAndSeat: beginTurn portion (turn 7 expanded).
   TC --> UI -- : TurnStart(events, snapshot)
   UI --> Manager : arrival/state display; remaining duration
-  loop currentRole present; retry same role until accepted
-    UI -> TC : snapshot()
-    TC --> UI : role + legalActions
+  loop controller.currentRole().isPresent(); retry until accepted
+    UI -> TC ++ : currentRole()
+    TC --> UI -- : Optional<StaffRole>
+    UI -> TC ++ : snapshot()
+    TC --> UI -- : Snapshot (contains legalActions)
     UI --> Manager : numbered legal actions; role prompt
     Manager -> UI : winning fixture action / defeat WAIT
-    UI -> Parser : parse(line, role, legalActions)
-    Parser --> UI : Optional<Action>
+    UI -> Parser ++ : parse(line, role, legalActions)
+    Parser --> UI -- : Optional<Action>
     alt unparseable input
-      UI -> Parser : errorFor(line, role, legalActions)
-      Parser --> UI : reason; UI retries without submit
+      UI -> Parser ++ : errorFor(line, role, legalActions)
+      Parser --> UI -- : reason; UI retries without submit
     else parsed input
       UI -> TC ++ : submit(action)
-      ref over UI, TC : Page 2 lower frame and pages 3-4: staff/domain calls.
+      ref over UI, TC
+        ArriveAndSeat: Host action; TakeOrderAndPrepare: Waiter/Chef;
+        ServeAndPay: later preparation/service calls.
+      end ref
       TC --> UI -- : ActionResult
       note right of TC
         Accepted: HOST -> WAITER -> CHEF -> TURN_END.
-        Rejected: no mutation; retry same role.
+        Rejected: no mutation; UI retries same role.
         WAIT advances phase without a staff call.
       end note
     end
   end
   UI -> TC ++ : endTurn()
-  ref over UI, TC : Page 4 expands eating, payment and waiting loss.
+  ref over UI, TC : ServeAndPay: eating, payment and waiting loss.
   opt turn == 18
-    TC -> TC : isVictory()
+    TC -> TC ++ : isVictory()
+    TC --> TC -- : boolean
     note right of TC : paid >= 4 AND cents >= 4500\nAND satisfactionSum >= 60 * paid
   end
   TC --> UI -- : TurnEnd(events, summary, result)
-  UI -> UI : render(summary, result)
+  UI -> UI ++ : render(summary, result)
+  UI --> UI -- : String
   UI --> Manager : summary; final result on turn 18
 end
-
 alt winning fixture
   note over Manager, TC #E7F3E9
     VICTORY: 5 paid, 7494 cents, satisfaction sum 419, average 83.8.
@@ -74,4 +84,6 @@ else all-SKIP/all-WAIT fixture
     Both runs complete all 18 turns; only manager choices differ.
   end note
 end
+[<-- UI -- : true
+deactivate Manager
 @enduml

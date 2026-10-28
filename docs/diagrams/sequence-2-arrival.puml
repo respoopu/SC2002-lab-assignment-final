@@ -1,58 +1,77 @@
 @startuml sequence-2-arrival
 !include style.iuml
 title Turn 7: activate, arrive and seat (2 of 4)
+mainframe sd ArriveAndSeat
 hide footbox
 participant "ui : ConsoleUI" as UI <<boundary>>
-participant "controller : TurnController" as TC <<control>>
-participant "state : GameState" as State
-participant "arrivals : IntFunction<Customer>" as Factory
-participant "c3 : RegularCustomer" as C3
+participant "controller :\nTurnController" as TC <<control>>
+participant "state :\nGameState" as State
+participant "queue :\nWaitingQueue" as Q
+participant "arrivals :\nIntFunction<Customer>" as Factory
+participant "c3 :\nRegularCustomer" as C3
 participant "host : Host" as Host
-participant "Seating (static)" as Seating
+participant ":Seating" as Seating
 participant "t1 : Table" as T1
 autonumber
-
+[-> UI ++ : run(controller) [turn-7 excerpt]
 note over UI, T1
   Entry: turn 6 complete. C1 PAID; C2 READY_TO_PAY at T2. T1 is free.
-  UI parsed HAPPY_HOUR. Wrong phase/reuse is rejected before any mutation.
+  Wrong phase/reuse throws IllegalStateException before any change.
+  UI only offers HAPPY_HOUR when happyHourAvailable. Seating uses static methods.
 end note
-group beginTurn(true): valid TURN_START, unused Happy Hour
-  UI -> TC ++ : beginTurn(true)
-  TC -> State : setTurn(7)
-  TC -> State : activateHappyHour()
-  note right of State : happyHourTurn = 7; remaining = 2.
-  note left of TC : Adds "Happy Hour activated" to local events.
-  note over TC, C3
-    recoverWaitingCustomers calls recover(15) on existing C1/C2.
-    Their PAID/READY_TO_PAY states exclude recovery. C3 is not created yet.
-  end note
-  TC -> Factory : apply(3)
-  note right of Factory
-    Lambda calls GameSetup.arrival(3, 7):
-    new RegularCustomer("C3", 7, 3).
-  end note
-  Factory --> TC : c3 (WAITING, satisfaction 100)
-  TC -> State : addCustomer(c3); queue().add(c3)
-  note left of TC : Adds "C3 (Regular) arrives" to local events.
-  TC -> State : setPhase(HOST)
-  TC --> UI -- : TurnStart: activation then arrival event; remaining 2
-end
-group Host action: queued ID and free table required
-  UI -> TC ++ : submit(Action(HOST, SEAT, "C3"))
-  TC -> Host ++ : seat(state, "C3")
-  Host -> Seating ++ : seat(state, "C3")
-  Seating -> Seating : firstFreeTable(state)
-  Seating -> State : queue().remove("C3")
-  Seating -> T1 : seat("C3")
-  Seating -> C3 : seat()
-  note right of C3 : WAITING -> SEATED; satisfaction 100.
-  Seating --> Host -- : accepted; C3 seated at T1
-  Host --> TC -- : ActionResult
-  TC -> State : setPhase(WAITER)
-  TC --> UI -- : accepted ActionResult
-end
+== beginTurn(true): valid TURN_START, unused Happy Hour ==
+UI -> TC ++ : beginTurn(true)
+TC -> State ++ : setTurn(7)
+State --> TC -- : void
+TC -> State ++ : activateHappyHour()
+State --> TC -- : void
+note right of State : happyHourTurn = 7; remaining = 2.
+note left of TC : Adds "Happy Hour activated" to local events.
+note over TC, Factory
+  recoverWaitingCustomers calls recover(15) on existing C1/C2.
+  PAID/READY_TO_PAY exclude recovery; C3 does not exist yet.
+end note
+TC -> Factory ++ : apply(3)
+create C3
+Factory --> C3 ++ : new RegularCustomer("C3", 7, 3)
+C3 --> Factory -- : c3
+note right of Factory : Lambda delegates construction to GameSetup.arrival(3, 7).
+Factory --> TC -- : c3 (WAITING, satisfaction 100)
+TC -> State ++ : addCustomer(c3)
+State --> TC -- : void
+TC -> State ++ : queue()
+State --> TC -- : queue
+TC -> Q ++ : add(c3)
+Q --> TC -- : void
+note left of TC : Adds "C3 (Regular) arrives" to local events.
+TC -> State ++ : setPhase(HOST)
+State --> TC -- : void
+TC --> UI -- : TurnStart: activation then arrival event; remaining 2
+== Host action: queued ID and free table required ==
+UI -> TC ++ : submit(Action(HOST, SEAT, "C3"))
+TC -> Host ++ : seat(state, "C3")
+Host -> Seating ++ : seat(state, "C3")
+Seating -> Seating ++ : firstFreeTable(state)
+Seating --> Seating -- : Optional.of(t1)
+Seating -> State ++ : queue()
+State --> Seating -- : queue
+Seating -> Q ++ : remove("C3")
+Q --> Seating -- : c3
+Seating -> T1 ++ : seat("C3")
+T1 --> Seating -- : void
+Seating -> C3 ++ : seat()
+C3 --> Seating -- : void
+note right of C3 : WAITING -> SEATED; satisfaction 100.
+Seating --> Host -- : accepted; C3 seated at T1
+Host --> TC -- : ActionResult
+TC -> State ++ : setPhase(WAITER)
+State --> TC -- : void
+TC --> UI -- : accepted ActionResult
 note over UI, T1
   Failed seating preconditions return rejected before effects; phase remains HOST.
-  Host and Waiter share Seating. Page 3 continues with ORDER C3 in this same turn.
+  Routine checks/accessors are omitted. Host and Waiter share Seating.
+  TakeOrderAndPrepare continues with ORDER C3 in this same turn.
 end note
+note left of UI : run(controller) continues in PlayGame;\nthis diagram shows only the turn-7 excerpt.
+deactivate UI
 @enduml
