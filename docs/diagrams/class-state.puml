@@ -16,21 +16,33 @@ class GameState <<entity>> {
   -paidCount : int
   -revenueCents : int
   -satisfactionSum : int
+  +turn() : int
+  +setTurn(turn: int) : void
+  +setPhase(phase: Phase) : void
+  +addCustomer(customer: Customer) : void
+  +queue() : WaitingQueue
+  +menu() : Menu
+  +nextOrderId() : String
+  +addOrder(order: Order) : void
+  +recordServed() : void
   +happyHourUsed() : boolean
   +happyHourActive() : boolean
   +happyHourRemaining() : int
   +recordPayment(cents: int, satisfaction: int) : void
   ~activateHappyHour() : void
 }
-class GameConfig <<record>> {
+class GameConfig {
   -turns : int
   -tableCount : int
   -arrivalTurns : List<Integer>
   +{static} base() : GameConfig
 }
-class WaitingQueue <<domain view>>
-class Table <<domain view>>
-class Snapshot <<record>> {
+class WaitingQueue <<entity>>
+class Table <<entity>>
+class Menu <<entity>>
+abstract class "Customer\n{ abstract }" as Customer <<entity>>
+class Order <<entity>>
+class Snapshot {
   -turn : int
   -phase : Phase
   -customers : List<CustomerView>
@@ -41,22 +53,22 @@ class Snapshot <<record>> {
   -happyHourAvailable : boolean
   -happyHourRemaining : int
 }
-class Action <<record>> {
+class Action {
   -role : StaffRole
   -kind : ActionKind
   -targetId : String
 }
-class ActionResult <<record>> {
+class ActionResult {
   -accepted : boolean
   -message : String
   -events : List<GameEvent>
 }
-class TurnEnd <<record>> {
+class TurnEnd {
   -events : List<GameEvent>
   -summary : TurnSummary
   -result : Optional<GameResult>
 }
-enum Phase {
+enum Phase <<enumeration>> {
   TURN_START
   HOST
   WAITER
@@ -64,25 +76,28 @@ enum Phase {
   TURN_END
   GAME_OVER
 }
-enum StaffRole {
+enum StaffRole <<enumeration>> {
   HOST
   WAITER
   CHEF
 }
-enum ActionKind {
+enum ActionKind <<enumeration>> {
   SEAT
   ORDER
   SERVE
   PREPARE
   WAIT
 }
-enum GameResult {
+enum GameResult <<enumeration>> {
   VICTORY
   DEFEAT
 }
 GameState "1" *-- "1" WaitingQueue : creates
 GameState "1" *-- "0..*" Table : creates
 GameState "1" --> "1" GameConfig : config
+GameState "1" --> "1" Menu : menu
+GameState "1" --> "0..*" Customer : customers
+GameState "1" --> "0..*" Order : orders
 GameState --> Phase : phase
 Snapshot --> Phase : phase
 Snapshot "1" --> "0..*" Action : legalActions
@@ -95,7 +110,9 @@ legend bottom left
   GameState stores live domain references; Snapshot carries copied view records, not live objects.
   Black diamonds = internally created lifetime-owned parts (two Tables in the base setting).
   Record fields are private/final; generated accessors are public. List values are copied defensively.
+  GameConfig, Snapshot, Action, ActionResult and TurnEnd are Java records.
+  Queue/Table/Menu/Customer/Order boxes refer to the domain view; Customer is abstract.
   TurnStart, TurnSummary, GameEvent and the three *View records are supporting return values.
-  All types are in game except WaitingQueue (customer) and Table (staff).
+  Other packages: customer (Customer/WaitingQueue), staff (Table), menu (Menu/Order).
 endlegend
 @enduml

@@ -7,7 +7,7 @@ hide empty members
 class Main {
   +{static} main(args: String[]) : void
 }
-class GameSetup <<composition root>> {
+class GameSetup {
   +{static} baseGame() : TurnController
   +{static} stage3Menu() : Menu
   +{static} arrival(arrivalIndex: int, turn: int) : Customer
@@ -17,6 +17,7 @@ class ConsoleUI <<boundary>> {
   -out : PrintStream
   +run(controller: TurnController) : boolean
   +{static} render(snapshot: Snapshot) : String
+  +{static} render(summary: TurnSummary,\n  result: Optional<GameResult>) : String
 }
 class CommandParser <<boundary>> {
   +{static} parse(line: String, role: StaffRole,\n  legalActions: List<Action>) : Optional<Action>
@@ -35,30 +36,30 @@ class TurnController <<control>> {
   +isOver() : boolean
   -isVictory() : boolean
 }
-class GameState <<state; view 3>> {
+class GameState <<entity>> {
   -turn : int
   -phase : Phase
   -happyHourTurn : int
   +happyHourActive() : boolean
 }
-class Host {
+class Host <<control>> {
   +legalActions(state: GameState) : List<Action>
   +seat(state: GameState, customerId: String) : ActionResult
 }
-class Waiter {
+class Waiter <<control>> {
   +legalActions(state: GameState) : List<Action>
   +seat(state: GameState, customerId: String) : ActionResult
   +takeOrder(state: GameState, customerId: String) : ActionResult
   +serve(state: GameState, orderId: String) : ActionResult
 }
-class Chef {
+class Chef <<control>> {
   +legalActions(state: GameState) : List<Action>
   +prepare(state: GameState, orderId: String) : ActionResult
 }
-class Cashier {
+class Cashier <<control>> {
   +collect(state: GameState) : Optional<GameEvent>
 }
-class Seating <<package-private>> {
+class Seating <<control>> {
   ~{static} firstFreeTable(state: GameState) : Optional<Table>
   ~{static} seat(state: GameState, customerId: String) : ActionResult
 }
@@ -90,5 +91,6 @@ legend bottom left
   Solid arrow = retained reference; dashed = dependency. Selected key members only.
   CLI classes are in cli; staff operations/Seating in staff; other types in game.
   Legacy construction has no Host. State/message values are expanded in view 3.
+  GameSetup is the composition root. Seating is a package-private static helper.
 endlegend
 @enduml

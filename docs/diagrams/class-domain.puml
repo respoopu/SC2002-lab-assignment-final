@@ -4,7 +4,7 @@
 top to bottom direction
 title Domain objects (1 of 3)
 
-  abstract class Customer {
+  abstract class "Customer\n{ abstract }" as Customer <<entity>> {
     -id : String
     -arrivalTurn : int
     -arrivalIndex : int
@@ -13,10 +13,10 @@ title Domain objects (1 of 3)
     -order : Order
     -servedTurn : int
     -readyToPayTurn : int
-    {abstract} +typeName() : String
-    {abstract} +waitingLossPerTurn() : int
-    {abstract} +discountPercent() : int
-    {abstract} +chooseMeal(menu: Menu) : MenuItem
+    {abstract} +typeName() : String <U+007B>abstract<U+007D>
+    {abstract} +waitingLossPerTurn() : int <U+007B>abstract<U+007D>
+    {abstract} +discountPercent() : int <U+007B>abstract<U+007D>
+    {abstract} +chooseMeal(menu: Menu) : MenuItem <U+007B>abstract<U+007D>
     +seat() : void
     +attachOrder(order: Order) : void
     +startEating(turn: int) : void
@@ -26,29 +26,32 @@ title Domain objects (1 of 3)
     +loseSatisfaction() : int
     +recover(amount: int) : int
   }
-  class RegularCustomer {
+  class RegularCustomer <<entity>> {
+    +typeName() : String
     +waitingLossPerTurn() : int
     +discountPercent() : int
     +chooseMeal(menu: Menu) : MenuItem
   }
-  class VIPCustomer {
+  class VIPCustomer <<entity>> {
+    +typeName() : String
     +waitingLossPerTurn() : int
     +discountPercent() : int
     +chooseMeal(menu: Menu) : MenuItem
   }
-  class CriticCustomer {
+  class CriticCustomer <<entity>> {
+    +typeName() : String
     +waitingLossPerTurn() : int
     +discountPercent() : int
     +chooseMeal(menu: Menu) : MenuItem
   }
-  class WaitingQueue {
+  class WaitingQueue <<entity>> {
     -customers : List<Customer>
     +add(customer: Customer) : void
     +find(id: String) : Optional<Customer>
     +remove(id: String) : Customer
     +view() : List<Customer>
   }
-  enum CustomerStatus {
+  enum CustomerStatus <<enumeration>> {
     WAITING
     SEATED
     EATING
@@ -57,46 +60,48 @@ title Domain objects (1 of 3)
     LEFT
   }
 
-  class Menu {
+  class Menu <<entity>> {
     -items : List<MenuItem>
     +{static} base() : Menu
     +items() : List<MenuItem>
     +item(name: String) : MenuItem
     +cycleChoice(arrivalIndex: int) : MenuItem
   }
-  class MenuItem {
+  class MenuItem <<entity>> {
     -name : String
     -priceCents : int
     -preparationUnits : int
     +priceCents() : int
     +preparationUnits() : int
   }
-  class ComboMeal {
+  class ComboMeal <<entity>> {
     -first : MenuItem
     -second : MenuItem
     +ComboMeal(name: String, first: MenuItem, second: MenuItem)
     +first() : MenuItem
     +second() : MenuItem
   }
-  class Order {
+  class Order <<entity>> {
     -id : String
     -customerId : String
     -item : MenuItem
     -billCents : int
+    -placedTurn : int
     -status : OrderStatus
     -unitsDone : int
     -readyTurn : int
     -servedTurn : int
+    +Order(id: String, customerId: String, item: MenuItem,\n  customerDiscountPercent: int, placedTurn: int, happyHourActive: boolean)
     +advanceOneUnit(turn: int) : void
     +markServed(turn: int) : void
     +markPaid() : void
     +cancel() : void
   }
-  class Money <<utility, final>> {
+  class Money {
     +{static} applyDiscount(cents: int, percentOff: int) : int
     +{static} format(cents: int) : String
   }
-  enum OrderStatus {
+  enum OrderStatus <<enumeration>> {
     PLACED
     PREPARING
     READY
@@ -105,7 +110,7 @@ title Domain objects (1 of 3)
     CANCELLED
   }
 
-  class Table {
+  class Table <<entity>> {
     -id : String
     -occupantId : String
     +isFree() : boolean
@@ -126,11 +131,11 @@ ComboMeal "0..*" o-- "1..2" MenuItem : first, second
 WaitingQueue "0..1" --> "0..*" Customer : queued subset
 Order ..> Money : locks discounted bill
 ComboMeal ..> Money : 10% off component sum
-Table ..> Customer : occupantId (ID lookup; 0..1 occupant)
 
 legend bottom left
-  + public; - private. Italic operations are abstract; underlined operations are static.
-  Solid arrow = retained reference; dashed = call or explicit ID lookup.
+  + public; - private. {abstract} = abstract; underlined operations are static.
+  Solid arrow = retained reference; dashed = dependency. Money is a final utility class.
+  Table stores occupantId as a String; GameState.tableOf resolves table occupancy.
   Shared aggregation: ComboMeal has two references (first/second) to 1..2 distinct items.
   Encapsulation: Customer owns transitions/satisfaction; Order owns progress and the locked bill.
   Polymorphism: Regular loss8/cycle-or-combo; VIP loss5/10%/cycle; Critic loss12/Pasta.
