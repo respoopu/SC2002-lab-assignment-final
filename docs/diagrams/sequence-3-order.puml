@@ -1,6 +1,6 @@
 @startuml sequence-3-order
 !include style.iuml
-title Stage 3 | Turn 7: choose, lock price and prepare (3 of 4)
+title Turn 7: choose, lock price and prepare (3 of 4)
 hide footbox
 participant "ui : ConsoleUI" as UI <<boundary>>
 participant "controller : TurnController" as TC <<control>>

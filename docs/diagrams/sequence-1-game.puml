@@ -1,6 +1,6 @@
 @startuml sequence-1-game
 !include style.iuml
-title Stage 3 | Complete game and choice of outcome (1 of 4)
+title Complete game and choice of outcome (1 of 4)
 hide footbox
 actor Manager
 participant "ui : ConsoleUI" as UI <<boundary>>

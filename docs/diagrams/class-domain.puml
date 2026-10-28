@@ -2,7 +2,7 @@
 !include style.iuml
 !pragma layout smetana
 top to bottom direction
-title Stage 3 | Domain objects (1 of 3)
+title Domain objects (1 of 3)
 
   abstract class Customer {
     -id : String

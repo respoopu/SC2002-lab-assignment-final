@@ -1,6 +1,6 @@
 @startuml sequence-2-arrival
 !include style.iuml
-title Stage 3 | Turn 7: activate, arrive and seat (2 of 4)
+title Turn 7: activate, arrive and seat (2 of 4)
 hide footbox
 participant "ui : ConsoleUI" as UI <<boundary>>
 participant "controller : TurnController" as TC <<control>>

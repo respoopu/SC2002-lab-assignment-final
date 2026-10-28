@@ -1,6 +1,6 @@
 @startuml sequence-4-service
 !include style.iuml
-title Stage 3 | Recovery, READY, SERVED and payment (4 of 4)
+title Recovery, READY, SERVED and payment (4 of 4)
 hide footbox
 participant "controller : TurnController" as TC <<control>>
 participant "c3 : RegularCustomer" as C3

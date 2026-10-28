@@ -1,7 +1,7 @@
 @startuml class-state
 !include style.iuml
 !pragma layout smetana
-title Stage 3 | State and message values (3 of 3)
+title State and message values (3 of 3)
 
 class GameState <<entity>> {
   -config : GameConfig

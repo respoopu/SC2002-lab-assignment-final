@@ -1,7 +1,7 @@
 @startuml class-control
 !include style.iuml
 !pragma layout smetana
-title Stage 3 | Control and staff (2 of 3)
+title Control and staff (2 of 3)
 hide empty members
 
 class Main {
