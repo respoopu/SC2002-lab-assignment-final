@@ -1,129 +1,68 @@
 @startuml sequence-4-service
 !include style.iuml
-title Restaurant Rush | Turns 7-18: READY, SERVED, payment and result (sequence 4 of 4)
-caption Expands the winning run. Calls for other customers are omitted here; page 1 retains the full-game loop.
-boundary "ui : ConsoleUI" as UI
-control "controller : TurnController" as TC
-entity "state : GameState" as State
+title Stage 3 | Recovery, READY, SERVED and payment (4 of 4)
+hide footbox
+participant "controller : TurnController" as TC <<control>>
 participant "c3 : RegularCustomer" as C3
-entity "o3 : Order" as O3
+participant "o3 : Order" as O3
 participant "chef : Chef" as Chef
-participant "waiter : Waiter" as Waiter
+participant "waiter : Waiter" as W
 participant "cashier : Cashier" as Cashier
-entity "t1 : Table" as T1
+participant "state : GameState" as S
+participant "t1 : Table" as T1
 autonumber
 
-UI -> TC : endTurn() [turn 7]
-TC -> Cashier : collect(state)
-note right of Cashier : C2 pays this turn; no C3 payment yet.
-TC -> C3 : isWaitingForTableOrFood(); loseSatisfaction()
-C3 --> TC : true; 92
-TC --> UI : TurnEnd; TURN_START
-
-UI -> TC : beginTurn(false) [turn 8]
-TC -> State : setTurn(8); happyHourActive()
-State --> TC : true; remaining 1
-TC -> C3 : recover(15)
-C3 --> TC : 100 (actual recovery 8)
-TC --> UI : TurnStart; "C3 recovers 8 satisfaction (100)"
-loop turns 8 and 9: Host WAIT, Waiter WAIT, Chef PREPARE O3
-  opt turn 9
-    UI -> TC : beginTurn(false)
-    TC --> UI : TurnStart; remaining 0, no recovery
-  end
-  note over UI, TC
-    At turn 9: beginTurn(false) has remaining 0, so no recovery.
-    WAIT is handled in dispatch: no Host/Waiter method call.
-  end note
-  UI -> TC : submit(Action(HOST, WAIT, null))
-  TC --> UI : accepted; phase WAITER
-  UI -> TC : submit(Action(WAITER, WAIT, null))
-  TC --> UI : accepted; phase CHEF
-  UI -> TC : submit(Action(CHEF, PREPARE, "O3"))
-  TC -> Chef : prepare(state, "O3")
-  Chef -> O3 : advanceOneUnit(turn)
-  alt turn 8
-    note right of O3 : PREPARING, 2/3 units.
-  else turn 9
-    note right of O3 : READY, 3/3 units; readyTurn = 9.
-  end
-  Chef --> TC : accepted; progress or READY event
-  TC --> UI : ActionResult; phase TURN_END
-  UI -> TC : endTurn()
-  TC -> Cashier : collect(state)
-  TC -> C3 : loseSatisfaction()
-  C3 --> TC : 92 after turn 8; 84 after turn 9
-  TC --> UI : TurnEnd
+note over TC, T1
+  Expands page 1's beginTurn / submit / endTurn calls; UI entry calls are not repeated.
+  At turn-7 end C3 loses 8 -> 92. C2 pays, freeing T2. O3 remains PREPARING 1/3.
+end note
+group turn 8 beginTurn: Happy Hour remaining 1
+  TC -> C3 : recover(15)
+  C3 --> TC : 100 (actual increase 8)
 end
-
-UI -> TC : beginTurn(false) [turn 10]
-note over UI, Waiter : Host seats C4 at T2 before the Waiter action; C3 still occupies T1.
-UI -> TC : submit(Action(HOST, SEAT, "C4"))
-TC --> UI : accepted; phase WAITER (seating pattern from page 2)
-UI -> TC : submit(Action(WAITER, SERVE, "O3"))
-TC -> Waiter : serve(state, "O3")
-Waiter -> O3 : status(); readyTurn()
-O3 --> Waiter : READY; 9 < current turn 10
-Waiter -> C3 : startEating(10)
-Waiter -> O3 : markServed(10)
-Waiter -> State : recordServed()
-Waiter --> TC : accepted; "O3 served to C3"
-TC --> UI : ActionResult
-UI -> TC : submit(Action(CHEF, WAIT, null))
-TC --> UI : accepted; phase TURN_END
-UI -> TC : endTurn() [after Chef WAIT on turn 10]
-note right of TC
-  C3 servedTurn == current turn, so still EATING.
-  No waiting loss after serving; satisfaction stays 84.
+loop turns 8 and 9; Host WAIT, Waiter WAIT, Chef PREPARE O3
+  TC -> Chef ++ : prepare(state, "O3")
+  Chef -> O3 : advanceOneUnit(turn)
+  Chef --> TC -- : accepted progress / READY event
+  note over C3, O3
+    Turn 8: 2/3 units. Turn 9: READY, readyTurn = 9.
+    Turn 9 beginTurn has remaining 0, so no recovery.
+  end note
+  TC -> C3 : loseSatisfaction() (endTurn)
+  C3 --> TC : 92 on turn 8; 84 on turn 9
+end
+group turn 10: Host seats C4 at T2; Waiter SERVE O3
+  TC -> W ++ : serve(state, "O3")
+  note right of W : Guard: READY and readyTurn 9 < current turn 10.
+  W -> C3 : startEating(10)
+  W -> O3 : markServed(10)
+  W -> S : recordServed()
+  W --> TC -- : accepted; O3 served to C3
+  note over TC, O3
+    EATING / SERVED; no waiting loss. Satisfaction stays 84.
+    endTurn on turn 10 cannot finish eating: servedTurn == current turn.
+  end note
+end
+group turn 11 endTurn: finish one full eating turn
+  TC -> C3 : becomeReadyToPay(11)
+  note right of C3 : READY_TO_PAY; readyToPayTurn = 11.
+  TC -> Cashier ++ : collect(state)
+  Cashier --> TC -- : empty; C3 is not eligible until readyToPayTurn < turn
+end
+group turn 12 endTurn: oldest eligible payment
+  TC -> Cashier ++ : collect(state)
+  note right of Cashier : C3: readyToPayTurn 11 < 12.\nTie-break: ready turn, arrival turn, arrival index.
+  Cashier -> O3 : markPaid()
+  Cashier -> C3 : pay()
+  Cashier -> T1 : release()
+  Cashier -> S : recordPayment(1944, 84)
+  Cashier --> TC -- : C3 paid $19.44 (satisfaction 84), T1 free
+  note over TC, S : Cumulative: 4194 cents, 3 paid. O3 and C3 are PAID; bill still 1944.
+end
+note over TC, T1
+  Other customers use the same methods: C4 pays on 15 and C5 on 17.
+  Page 1 continues to endTurn on turn 18, integer result checks and VICTORY.
+  Alternative all-WAIT choices complete turn 18 with zero payments: DEFEAT.
+  Strict delay: READY 9 -> SERVED 10 -> READY_TO_PAY 11 -> PAID 12.
 end note
-TC -> Cashier : collect(state)
-TC --> UI : TurnEnd
-
-UI -> TC : beginTurn(false) [turn 11]
-note over UI, TC : Fixture: Host WAIT; ORDER C4; PREPARE O4, then endTurn.
-UI -> TC : endTurn()
-TC -> C3 : becomeReadyToPay(11) [EATING and servedTurn < 11]
-note right of C3 : READY_TO_PAY; readyToPayTurn = 11; satisfaction 84.
-TC -> Cashier : collect(state)
-note right of Cashier : Guard is readyToPayTurn < current turn: C3 cannot pay on 11.
-TC --> UI : TurnEnd; "C3 is ready to pay"
-
-UI -> TC : beginTurn(false) [turn 12]
-note over UI, TC : Fixture: Host WAIT; Waiter WAIT; PREPARE O4, then endTurn.
-UI -> TC : endTurn()
-TC -> Cashier : collect(state)
-Cashier -> State : customers()
-note right of Cashier
-  Oldest eligible READY_TO_PAY: C3, readyToPayTurn 11 < 12.
-  Tie-breaks: readyToPayTurn, arrivalTurn, arrivalIndex.
-end note
-Cashier -> C3 : order()
-C3 --> Cashier : o3
-Cashier -> State : tableOf("C3")
-State --> Cashier : t1
-Cashier -> O3 : markPaid()
-Cashier -> C3 : pay()
-Cashier -> T1 : release()
-Cashier -> State : recordPayment(1944, 84)
-Cashier --> TC : event "C3 paid $19.44 (satisfaction 84), T1 free"
-TC --> UI : TurnEnd (cumulative revenue 4194, paidCount 3)
-
-ref over UI, TC : Continue page 1's fixture loop: C4 pays on 15, C5 on 17; all turns complete.
-UI -> TC : endTurn() [turn 18, after all three staff choices]
-TC -> TC : isVictory()
-note right of TC
-  paidCount 5 >= 4; revenueCents 7494 >= 4500;
-  satisfactionSum 419 >= 60 * 5. Result: VICTORY.
-  In page 1's all-WAIT branch: paid/revenue/sum = 0 -> DEFEAT.
-end note
-TC -> State : setPhase(GAME_OVER)
-TC --> UI : TurnEnd(summary, Optional.of(VICTORY))
-UI --> UI : render(summary, result)
-
-legend bottom left
-  Call annotations in [brackets] are guards/context, not extra parameters.
-  Page 1 supplies repeated beginTurn/staff/endTurn calls omitted by ref/notes here.
-  Strict delays: ready on 9 -> served on 10 -> ready-to-pay on 11 -> paid on 12.
-endlegend
-footer O3 bill stays 1944 after Happy Hour expires; T1 is released only at turn-12 payment.
 @enduml

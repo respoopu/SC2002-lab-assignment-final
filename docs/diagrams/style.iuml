@@ -1,26 +1,44 @@
-' Shared presentation only; all UML model content lives in the .puml sources.
+' View index and evidence (baseline: merged integration d38231a).
+' class-domain: Customer/Menu/Order; class-control: CLI/controller/staff;
+' class-state: GameState ownership, snapshots/actions and relevant enums.
+' sequence-1-game: ConsoleUI.run, CommandParser and TurnController's full loop;
+' sequence-2-arrival: beginTurn, GameSetup.arrival and Host/Seating.seat;
+' sequence-3-order: Waiter.takeOrder, Customer.chooseMeal, Order/Money, Chef.prepare;
+' sequence-4-service: Customer.recover, Waiter.serve, eating step, Cashier.collect.
+' Scenario: fixtures/stage-3/host-combo-happy-hour.{in,expected}; comparison:
+' fixtures/stage-3/defeat.{in,expected}. No stage-3 tag is assumed to exist yet.
+' C3: order 7, READY 9, SERVED 10, READY_TO_PAY 11, PAID 12 (1944 cents/84).
+' Result: five payments, 7494 cents, satisfaction sum 419; alternative DEFEAT.
+' OO responsibilities and omitted repeated interactions are annotated in each view.
+' Render: see render.sh. Recheck scripts/replay.sh after design-changing fixes.
 skinparam backgroundColor #FFFFFF
-skinparam defaultFontName SansSerif
-skinparam defaultFontSize 14
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam defaultFontColor #172B3A
+skinparam titleFontSize 23
+skinparam titleFontColor #102A43
 skinparam shadowing false
-skinparam roundcorner 6
-skinparam ArrowColor #42566A
-skinparam ArrowThickness 1
-skinparam noteBackgroundColor #FFF7DE
-skinparam noteBorderColor #B99A45
+skinparam roundcorner 3
+skinparam nodesep 28
+skinparam ranksep 36
+skinparam ArrowColor #334E68
+skinparam ArrowThickness 1.4
 skinparam classAttributeIconSize 0
-skinparam classBackgroundColor #F3F7FB
-skinparam classBorderColor #536D86
-skinparam packageBackgroundColor #FFFFFF
-skinparam packageBorderColor #A4B3C2
+skinparam classBackgroundColor #FFFFFF
+skinparam classHeaderBackgroundColor #E7EFF7
+skinparam classBorderColor #486581
+skinparam classFontStyle bold
+skinparam noteBackgroundColor #FFF6D8
+skinparam noteBorderColor #B8923B
 skinparam sequenceMessageAlign center
-skinparam sequenceParticipantBackgroundColor #EAF2F8
-skinparam sequenceParticipantBorderColor #536D86
-skinparam sequenceLifeLineBorderColor #9CAEBE
-skinparam sequenceGroupBackgroundColor #F5F8FB
-skinparam sequenceGroupBorderColor #8FA2B5
-skinparam sequenceReferenceBackgroundColor #EEF5F2
-skinparam sequenceReferenceBorderColor #6E9984
-skinparam titleFontSize 20
-skinparam footerFontSize 11
+skinparam sequenceParticipantBackgroundColor #E7EFF7
+skinparam sequenceParticipantBorderColor #486581
+skinparam sequenceParticipantFontStyle bold
+skinparam sequenceLifeLineBorderColor #829AB1
+skinparam sequenceLifeLineBackgroundColor #EAF0F6
+skinparam sequenceGroupBackgroundColor #F3F6FA
+skinparam sequenceGroupBorderColor #486581
+skinparam sequenceReferenceBackgroundColor #E8F4ED
+skinparam sequenceReferenceBorderColor #527D63
+hide circle
 hide empty members

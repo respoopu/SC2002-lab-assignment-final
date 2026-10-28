@@ -1,72 +1,52 @@
 @startuml sequence-3-order
 !include style.iuml
-title Restaurant Rush | Turn 7: choose, price and prepare (sequence 3 of 4)
-caption Continues after page 2: the Waiter may order for a customer the Host seated this turn.
-boundary "ui : ConsoleUI" as UI
-control "controller : TurnController" as TC
-participant "waiter : Waiter" as Waiter
-entity "state : GameState" as State
+title Stage 3 | Turn 7: choose, lock price and prepare (3 of 4)
+hide footbox
+participant "ui : ConsoleUI" as UI <<boundary>>
+participant "controller : TurnController" as TC <<control>>
+participant "waiter : Waiter" as W
+participant "state : GameState" as S
 participant "c3 : RegularCustomer" as C3
-entity "o3 : Order" as O3
-participant "Money\n(static)" as Money
+participant "o3 : Order" as O3
+participant Money as M
 participant "chef : Chef" as Chef
 autonumber
 
-UI -> TC : submit(Action(WAITER, ORDER, "C3"))
-TC -> Waiter : takeOrder(state, "C3")
-Waiter -> State : customer("C3")
-State --> Waiter : c3
-Waiter -> C3 : order(); status()
-C3 --> Waiter : empty; SEATED
-Waiter -> State : menu()
-State --> Waiter : Stage 3 Menu
-Waiter -> C3 : chooseMeal(menu)
-note right of C3
-  Dynamic dispatch through Customer:
-  Regular index 3 is divisible by 3, so chooses the offered combo.
-  VIP would cycle; Critic would always choose Pasta.
-  No staff/controller customer-type checks.
+group WAITER phase; C3 seated with no order
+  UI -> TC ++ : submit(Action(WAITER, ORDER, "C3"))
+  TC -> W ++ : takeOrder(state, "C3")
+  W -> C3 : chooseMeal(state.menu())
+  C3 --> W : Salad + Pasta combo
+  note right of C3 : Polymorphic choice: Regular index 3 selects\nthe offered combo. No controller type check.
+  W -> S : nextOrderId(); happyHourActive()
+  S --> W : "O3"; true
+  W -> C3 : discountPercent()
+  C3 --> W : 0
+  create O3
+  W -> O3 ++ : new Order("O3", "C3", combo, 0, 7, true)
+  O3 -> M ++ : applyDiscount(2430, 0)
+  M --> O3 -- : 2430
+  O3 -> M ++ : applyDiscount(2430, 20)
+  M --> O3 -- : 1944
+  O3 --> W -- : constructed (billCents = 1944)
+  note right of O3 : PLACED; 0/3 units. Bill is final.\nCombo base: (900 + 1800) * 90% = 2430.
+  W -> S : addOrder(o3)
+  W -> C3 : attachOrder(o3)
+  W --> TC -- : accepted order event ($19.44)
+  TC -> S : setPhase(CHEF)
+  TC --> UI -- : ActionResult
+end
+group CHEF phase; same-turn order may be prepared
+  UI -> TC ++ : submit(Action(CHEF, PREPARE, "O3"))
+  TC -> Chef ++ : prepare(state, "O3")
+  Chef -> O3 : advanceOneUnit(7)
+  note right of O3 : PREPARING, 1/3 units; not servable.
+  Chef --> TC -- : accepted progress event
+  TC -> S : setPhase(TURN_END)
+  TC --> UI -- : ActionResult
+end
+note over W, O3
+  Checks precede nextOrderId(); rejected orders cannot skip an ID.
+  Customer stores Order but never calls it; Order/Money own bill arithmetic.
 end note
-C3 --> Waiter : shared ComboMeal("Salad + Pasta combo")
-Waiter -> State : nextOrderId()
-State --> Waiter : "O3"
-Waiter -> C3 : discountPercent()
-C3 --> Waiter : 0
-Waiter -> State : turn(); happyHourActive()
-State --> Waiter : 7; true
-create O3
-Waiter -> O3 : new Order("O3", "C3", combo, 0, 7, true)
-O3 -> Money : applyDiscount(2430, 0)
-Money --> O3 : 2430
-O3 -> Money : applyDiscount(2430, 20)
-Money --> O3 : 1944
-note right of O3
-  PLACED; unitsDone = 0; unitsRequired = 3.
-  Final billCents = 1944. Combo's 2430 price was computed
-  when GameSetup built the menu: (900 + 1800) * 90%.
-end note
-Waiter -> State : addOrder(o3)
-Waiter -> C3 : attachOrder(o3)
-Waiter --> TC : accepted; "C3 orders Salad + Pasta combo ($19.44) as O3"
-TC -> State : setPhase(CHEF)
-TC --> UI : accepted ActionResult
-UI -> TC : submit(Action(CHEF, PREPARE, "O3"))
-TC -> Chef : prepare(state, "O3")
-Chef -> State : order("O3")
-State --> Chef : o3
-Chef -> O3 : isPreparable()
-O3 --> Chef : true
-Chef -> O3 : advanceOneUnit(7)
-note right of O3 : PREPARING, 1/3 units; not yet servable.
-Chef --> TC : accepted; "O3 unit 1 of 3 done"
-TC -> State : setPhase(TURN_END)
-TC --> UI : accepted ActionResult
-ref over UI, TC : Page 4: end turn 7, recovery/preparation, serving, eating and payment.
-
-note over Waiter, O3
-  All legality checks precede nextOrderId(), so rejection cannot skip an ID.
-  Customer stores the order reference but never calls its methods.
-  Bill computation belongs to Order/Money, not the UI or customer.
-end note
-footer Constructor arrow abbreviates creation syntax; the complete price order is personal discount then Happy Hour, rounded per step.
 @enduml

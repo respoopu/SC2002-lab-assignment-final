@@ -1,72 +1,58 @@
 @startuml sequence-2-arrival
 !include style.iuml
-title Restaurant Rush | Turn 7: activate, arrive and seat (sequence 2 of 4)
-caption Expands beginTurn(true) and the Host action in the winning branch of page 1.
-boundary "ui : ConsoleUI" as UI
-control "controller : TurnController" as TC
-entity "state : GameState" as State
-participant "arrivals : IntFunction<Customer>\n(lambda wired by GameSetup)" as Factory
+title Stage 3 | Turn 7: activate, arrive and seat (2 of 4)
+hide footbox
+participant "ui : ConsoleUI" as UI <<boundary>>
+participant "controller : TurnController" as TC <<control>>
+participant "state : GameState" as State
+participant "arrivals : IntFunction<Customer>" as Factory
 participant "c3 : RegularCustomer" as C3
 participant "host : Host" as Host
-participant "Seating\n(package-private static)" as Seating
-entity "t1 : Table" as T1
+participant "Seating (static)" as Seating
+participant "t1 : Table" as T1
 autonumber
 
-note over TC, T1
-  Entry: turn 6 completed; C1 PAID, C2 READY_TO_PAY.
-  T1 is free; T2 still contains C2 (payment happens later in turn 7).
-  UI has parsed HAPPY_HOUR. Failed phase/reuse checks throw before mutation.
+note over UI, T1
+  Entry: turn 6 complete. C1 PAID; C2 READY_TO_PAY at T2. T1 is free.
+  UI parsed HAPPY_HOUR. Wrong phase/reuse is rejected before any mutation.
 end note
-UI -> TC : beginTurn(true)
-TC -> TC : requirePhase("beginTurn", TURN_START)
-TC -> State : happyHourUsed()
-State --> TC : false
-TC -> State : setTurn(7)
-TC -> State : activateHappyHour()
-note right of State : Records happyHourTurn = 7; event "Happy Hour activated".
-TC -> State : happyHourActive()
-State --> TC : true (remaining 2)
-TC -> TC : recoverWaitingCustomers(events)
-note right of TC
-  Iterates existing customers in arrival order:
-  C1.recover(15) and C2.recover(15) leave PAID/READY_TO_PAY unchanged.
-  C3 does not exist yet. No recovery event at turn 7.
+group beginTurn(true): valid TURN_START, unused Happy Hour
+  UI -> TC ++ : beginTurn(true)
+  TC -> State : setTurn(7)
+  TC -> State : activateHappyHour()
+  note right of State : happyHourTurn = 7; remaining = 2.
+  note left of TC : Adds "Happy Hour activated" to local events.
+  note over TC, C3
+    recoverWaitingCustomers calls recover(15) on existing C1/C2.
+    Their PAID/READY_TO_PAY states exclude recovery. C3 is not created yet.
+  end note
+  TC -> Factory : apply(3)
+  note right of Factory
+    Lambda calls GameSetup.arrival(3, 7):
+    new RegularCustomer("C3", 7, 3).
+  end note
+  Factory --> TC : c3 (WAITING, satisfaction 100)
+  TC -> State : addCustomer(c3); queue().add(c3)
+  note left of TC : Adds "C3 (Regular) arrives" to local events.
+  TC -> State : setPhase(HOST)
+  TC --> UI -- : TurnStart: activation then arrival event; remaining 2
+end
+group Host action: queued ID and free table required
+  UI -> TC ++ : submit(Action(HOST, SEAT, "C3"))
+  TC -> Host ++ : seat(state, "C3")
+  Host -> Seating ++ : seat(state, "C3")
+  Seating -> Seating : firstFreeTable(state)
+  Seating -> State : queue().remove("C3")
+  Seating -> T1 : seat("C3")
+  Seating -> C3 : seat()
+  note right of C3 : WAITING -> SEATED; satisfaction 100.
+  Seating --> Host -- : accepted; C3 seated at T1
+  Host --> TC -- : ActionResult
+  TC -> State : setPhase(WAITER)
+  TC --> UI -- : accepted ActionResult
+end
+note over UI, T1
+  Failed seating preconditions return rejected before effects; phase remains HOST.
+  Host and Waiter share Seating. Page 3 continues with ORDER C3 in this same turn.
 end note
-TC -> Factory : apply(3)
-note right of Factory
-  Lambda calls GameSetup.arrival(3, 7), which constructs
-  new RegularCustomer("C3", 7, 3) through the composition root.
-end note
-Factory --> TC : c3 (WAITING, satisfaction 100)
-TC -> State : addCustomer(c3)
-TC -> State : queue().add(c3)
-note right of State : Arrival event: "C3 (Regular) arrives".
-TC -> State : setPhase(HOST)
-TC -> TC : snapshot()
-TC --> UI : TurnStart(events, snapshot); remaining 2
-UI -> TC : submit(Action(HOST, SEAT, "C3"))
-TC -> Host : seat(state, "C3")
-Host -> Seating : seat(state, "C3")
-Seating -> State : queue().find("C3")
-State --> Seating : present
-Seating -> Seating : firstFreeTable(state)
-note right of Seating : Finds T1 from state.tables(), in creation order.
-Seating -> State : queue().remove("C3")
-State --> Seating : c3
-Seating -> T1 : seat("C3")
-Seating -> C3 : seat()
-note right of C3 : WAITING -> SEATED; satisfaction still 100.
-Seating --> Host : accepted; "C3 seated at T1"
-Host --> TC : ActionResult
-TC -> State : setPhase(WAITER)
-TC --> UI : accepted ActionResult
-ref over UI, TC : Page 3 continues in the same turn: ORDER C3, then PREPARE O3.
-
-note over State, T1
-  Queue and tables are separate: a queued customer can be selected by ID.
-  If the ID is not queued or no table is free, Seating returns rejected
-  before removal/seating; submit leaves HOST unchanged so UI retries.
-  Host uses the same Seating implementation as Waiter.
-end note
-footer Exact method responsibility matters: Controller calls the arrival factory; Host delegates table selection to Seating.
 @enduml

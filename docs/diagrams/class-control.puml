@@ -1,196 +1,94 @@
 @startuml class-control
 !include style.iuml
 !pragma layout smetana
-top to bottom direction
-title Restaurant Rush | Stage 3 control and boundary (view 2 of 2)
-caption Domain relationships continue in view 1. Selected key members; records expose generated public accessors.
+title Stage 3 | Control and staff (2 of 3)
+hide empty members
 
-package cli {
-  class ConsoleUI <<boundary, final>> {
-    -in : Scanner {readOnly reference}
-    -out : PrintStream {readOnly reference}
-    +run(controller: TurnController) : boolean
-    +{static} render(snapshot: Snapshot) : String
-    +{static} render(summary: TurnSummary, result: Optional<GameResult>) : String
-  }
-  class CommandParser <<boundary, final>> {
-    +{static} parse(line: String, role: StaffRole,\n  legalActions: List<Action>) : Optional<Action>
-    +{static} errorFor(line: String, role: StaffRole,\n  legalActions: List<Action>) : String
-    +{static} parseHappyHour(line: String) : Optional<Boolean>
-  }
+class Main {
+  +{static} main(args: String[]) : void
 }
-package game {
-  class Main <<entry point, final>> {
-    +{static} main(args: String[]) : void
-  }
-  class GameSetup <<composition root, final>> {
-    +{static} baseGame() : TurnController
-    +{static} stage3Menu() : Menu
-    +{static} arrival(arrivalIndex: int, turn: int) : Customer
-  }
-  class TurnController <<control, final>> {
-    -state : GameState {readOnly reference}
-    -host : Host {readOnly reference}
-    -waiter : Waiter {readOnly reference}
-    -chef : Chef {readOnly reference}
-    -cashier : Cashier {readOnly reference}
-    -arrivals : IntFunction<Customer> {readOnly reference}
-    +TurnController(state: GameState, host: Host, waiter: Waiter,\n  chef: Chef, cashier: Cashier, arrivals: IntFunction<Customer>)
-    +beginTurn(activateHappyHour: boolean) : TurnStart
-    +submit(action: Action) : ActionResult
-    +endTurn() : TurnEnd
-    +snapshot() : Snapshot
-    +currentRole() : Optional<StaffRole>
-    +isOver() : boolean
-    -isVictory() : boolean
-    -abandon(customer: Customer) : GameEvent
-  }
-  class GameState <<entity store, final>> {
-    -turn : int
-    -phase : Phase
-    -happyHourTurn : int
-    -paidCount : int
-    -revenueCents : int
-    -satisfactionSum : int
-    +setTurn(turn: int) : void
-    +setPhase(phase: Phase) : void
-    +nextOrderId() : String
-    +recordPayment(cents: int, satisfaction: int) : void
-    +happyHourUsed() : boolean
-    +happyHourActive() : boolean
-    +happyHourRemaining() : int
-    ~activateHappyHour() : void
-  }
-  class GameConfig <<record>> {
-    -turns : int {readOnly}
-    -tableCount : int {readOnly}
-    -arrivalTurns : List<Integer> {readOnly}
-    +{static} base() : GameConfig
-  }
-  class Snapshot <<record>> {
-    -turn : int {readOnly}
-    -phase : Phase {readOnly}
-    -customers : List<CustomerView> {readOnly}
-    -queue : List<CustomerView> {readOnly}
-    -tables : List<TableView> {readOnly}
-    -orders : List<OrderView> {readOnly}
-    -legalActions : List<Action> {readOnly}
-    -happyHourAvailable : boolean {readOnly}
-    -happyHourRemaining : int {readOnly}
-  }
-  class Action <<record>> {
-    -role : StaffRole {readOnly}
-    -kind : ActionKind {readOnly}
-    -targetId : String {readOnly}
-  }
-  class ActionResult <<record>> {
-    -accepted : boolean {readOnly}
-    -message : String {readOnly}
-    -events : List<GameEvent> {readOnly}
-    +{static} rejected(reason: String) : ActionResult
-  }
-  enum Phase {
-    TURN_START
-    HOST
-    WAITER
-    CHEF
-    TURN_END
-    GAME_OVER
-  }
-  enum StaffRole {
-    HOST
-    WAITER
-    CHEF
-  }
-  enum ActionKind {
-    SEAT
-    ORDER
-    SERVE
-    PREPARE
-    WAIT
-  }
-  enum GameResult {
-    VICTORY
-    DEFEAT
-  }
+class GameSetup <<composition root>> {
+  +{static} baseGame() : TurnController
+  +{static} stage3Menu() : Menu
+  +{static} arrival(arrivalIndex: int, turn: int) : Customer
 }
-package staff {
-  class Host <<final>> {
-    +legalActions(state: GameState) : List<Action>
-    +seat(state: GameState, customerId: String) : ActionResult
-  }
-  class Waiter <<final>> {
-    +legalActions(state: GameState) : List<Action>
-    +seat(state: GameState, customerId: String) : ActionResult
-    +takeOrder(state: GameState, customerId: String) : ActionResult
-    +serve(state: GameState, orderId: String) : ActionResult
-  }
-  class Chef <<final>> {
-    +legalActions(state: GameState) : List<Action>
-    +prepare(state: GameState, orderId: String) : ActionResult
-  }
-  class Cashier <<final>> {
-    +collect(state: GameState) : Optional<GameEvent>
-  }
-  class Seating <<package-private, final>> {
-    ~{static} firstFreeTable(state: GameState) : Optional<Table>
-    ~{static} seat(state: GameState, customerId: String) : ActionResult
-  }
+class ConsoleUI <<boundary>> {
+  -in : Scanner
+  -out : PrintStream
+  +run(controller: TurnController) : boolean
+  +{static} render(snapshot: Snapshot) : String
+}
+class CommandParser <<boundary>> {
+  +{static} parse(line: String, role: StaffRole,\n  legalActions: List<Action>) : Optional<Action>
+  +{static} errorFor(line: String, role: StaffRole,\n  legalActions: List<Action>) : String
+  +{static} parseHappyHour(line: String) : Optional<Boolean>
+}
+class TurnController <<control>> {
+  -state : GameState
+  -host : Host
+  -arrivals : IntFunction<Customer>
+  +beginTurn(activateHappyHour: boolean) : TurnStart
+  +submit(action: Action) : ActionResult
+  +endTurn() : TurnEnd
+  +snapshot() : Snapshot
+  +currentRole() : Optional<StaffRole>
+  +isOver() : boolean
+  -isVictory() : boolean
+}
+class GameState <<state; view 3>> {
+  -turn : int
+  -phase : Phase
+  -happyHourTurn : int
+  +happyHourActive() : boolean
+}
+class Host {
+  +legalActions(state: GameState) : List<Action>
+  +seat(state: GameState, customerId: String) : ActionResult
+}
+class Waiter {
+  +legalActions(state: GameState) : List<Action>
+  +seat(state: GameState, customerId: String) : ActionResult
+  +takeOrder(state: GameState, customerId: String) : ActionResult
+  +serve(state: GameState, orderId: String) : ActionResult
+}
+class Chef {
+  +legalActions(state: GameState) : List<Action>
+  +prepare(state: GameState, orderId: String) : ActionResult
+}
+class Cashier {
+  +collect(state: GameState) : Optional<GameEvent>
+}
+class Seating <<package-private>> {
+  ~{static} firstFreeTable(state: GameState) : Optional<Table>
+  ~{static} seat(state: GameState, customerId: String) : ActionResult
 }
 
-Main ..> GameSetup : constructs game
-Main ..> ConsoleUI : constructs and runs
-GameSetup ..> TurnController : creates and wires collaborators
-ConsoleUI ..> TurnController : run parameter / calls
-ConsoleUI ..> CommandParser : parses choices
-ConsoleUI ..> Snapshot : renders values, no rules
+Main ..> GameSetup : builds
+Main ..> ConsoleUI : runs
+GameSetup ..> TurnController : wires
+ConsoleUI ..> CommandParser : parses
+ConsoleUI ..> TurnController : calls
 TurnController "1" --> "1" GameState : state
-TurnController "1" --> "0..1" Host : absent in legacy construction
+TurnController "1" --> "0..1" Host
 TurnController "1" --> "1" Waiter
 TurnController "1" --> "1" Chef
 TurnController "1" --> "1" Cashier
-GameState "1" --> "1" GameConfig : config
-GameState --> Phase : phase
-TurnController ..> Snapshot : builds defensive views
-TurnController ..> ActionResult : returns
-TurnController ..> Action : consumes
-TurnController ..> GameResult : final result
-Action --> StaffRole
-Action --> ActionKind
-Host ..> Seating : delegates seating
-Waiter ..> Seating : delegates seating
-Host ..> GameState : reads/mutates through helper
-Waiter ..> GameState : reads/mutates
-Chef ..> GameState : reads orders
-Cashier ..> GameState : records payment
-Host -[hidden]down-> Waiter
-Waiter -[hidden]down-> Chef
-Chef -[hidden]down-> Cashier
-Action -[hidden]down-> ActionResult
-ActionResult -[hidden]down-> Snapshot
+Host ..> Seating : seat
+Waiter ..> Seating : seat
+Host -[hidden]right-> Waiter
+Chef -[hidden]right-> Cashier
+Host -[hidden]down-> Chef
+Waiter -[hidden]down-> Cashier
 
-note bottom of ConsoleUI
-  Boundary: numbered staff choices and manager text input.
-  Reads currentRole(), legalActions and Happy Hour fields;
-  never computes prices, eligibility or satisfaction.
-end note
-note bottom of TurnController
-  Only this control object advances phases and turns.
-  Accepted action: HOST -> WAITER -> CHEF -> TURN_END.
-  Rejection leaves state/capacity unchanged; retry same role.
-  Legacy constructor (without Host) and beginTurn() remain.
-end note
-note bottom of Snapshot
-  Record accessors are public (e.g. turn(), legalActions()).
-  TurnStart, TurnEnd, TurnSummary, CustomerView,
-  TableView, OrderView and GameEvent are value records;
-  omitted members are detailed in the Java source / contract.
-  Every record containing a list copies it defensively.
-end note
 legend bottom left
-  + public; - private; ~ package-private. Solid arrows: retained object references.
-  Dashed arrows: calls, construction, parameters or returned values; they are not retained fields.
-  Fields/methods are selected for design evidence; this is not a complete API listing.
+  |= Responsibility |= Boundary |
+  | ConsoleUI / CommandParser | Collect, parse and retry input; render values. No game rules. |
+  | TurnController | Own phase order, rejection guarantees, recovery timing and result check. |
+  | Host / Waiter / Chef / Cashier | Check legality and perform their domain operation. |
+  | GameState / Snapshot | Store authoritative state / expose copied view data. |
+  + public   - private   ~ package-private. Underlined operations are static.
+  Solid arrow = retained reference; dashed = dependency. Selected key members only.
+  CLI classes are in cli; staff operations/Seating in staff; other types in game.
+  Legacy construction has no Host. State/message values are expanded in view 3.
 endlegend
-footer Source baseline: d38231a. Happy Hour is state plus behavior, not a separate policy class in this implementation.
 @enduml
