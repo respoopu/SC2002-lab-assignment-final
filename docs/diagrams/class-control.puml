@@ -1,0 +1,97 @@
+@startuml class-control
+!include style.iuml
+!pragma layout smetana
+title Control and staff (2 of 3)
+hide empty members
+
+class Main {
+  +{static} main(args: String[]) : void
+}
+class GameSetup {
+  +{static} baseGame() : TurnController
+  +{static} stage3Menu() : Menu
+  +{static} arrival(arrivalIndex: int, turn: int) : Customer
+}
+class ConsoleUI <<boundary>> {
+  -in : Scanner
+  -out : PrintStream
+  +run(controller: TurnController) : boolean
+  +{static} render(snapshot: Snapshot) : String
+  +{static} render(summary: TurnSummary,\n  result: Optional<GameResult>) : String
+}
+class CommandParser <<boundary>> {
+  +{static} parse(line: String, role: StaffRole,\n  legalActions: List<Action>) : Optional<Action>
+  +{static} errorFor(line: String, role: StaffRole,\n  legalActions: List<Action>) : String
+  +{static} parseHappyHour(line: String) : Optional<Boolean>
+}
+class TurnController <<control>> {
+  -{static} HAPPY_HOUR_RECOVERY : int = 15
+  -state : GameState
+  -host : Host
+  -arrivals : IntFunction<Customer>
+  +beginTurn(activateHappyHour: boolean) : TurnStart
+  +submit(action: Action) : ActionResult
+  +endTurn() : TurnEnd
+  +snapshot() : Snapshot
+  +currentRole() : Optional<StaffRole>
+  +isOver() : boolean
+  -isVictory() : boolean
+}
+class GameState <<entity>> {
+  -turn : int
+  -phase : Phase
+  -happyHourTurn : int
+  +happyHourActive() : boolean
+}
+class Host <<control>> {
+  +legalActions(state: GameState) : List<Action>
+  +seat(state: GameState, customerId: String) : ActionResult
+}
+class Waiter <<control>> {
+  +legalActions(state: GameState) : List<Action>
+  +seat(state: GameState, customerId: String) : ActionResult
+  +takeOrder(state: GameState, customerId: String) : ActionResult
+  +serve(state: GameState, orderId: String) : ActionResult
+}
+class Chef <<control>> {
+  +legalActions(state: GameState) : List<Action>
+  +prepare(state: GameState, orderId: String) : ActionResult
+}
+class Cashier <<control>> {
+  +collect(state: GameState) : Optional<GameEvent>
+}
+class Seating <<control>> {
+  ~{static} firstFreeTable(state: GameState) : Optional<Table>
+  ~{static} seat(state: GameState, customerId: String) : ActionResult
+}
+
+Main ..> GameSetup : builds
+Main ..> ConsoleUI : runs
+GameSetup ..> TurnController : wires
+ConsoleUI ..> CommandParser : parses
+ConsoleUI ..> TurnController : calls
+TurnController "1    " --> "1    " GameState : state
+TurnController "1    " --> "0..1    " Host
+TurnController "1    " --> "1        " Waiter
+TurnController "1    " --> "1    " Chef
+TurnController "1    " --> "1    " Cashier
+Host ..> Seating : seat
+Waiter ..> Seating : seat
+Host -[hidden]right-> Waiter
+Chef -[hidden]right-> Cashier
+Host -[hidden]down-> Chef
+Waiter -[hidden]down-> Cashier
+
+legend bottom left
+  |= Class |= Responsibility |
+  | ConsoleUI / CommandParser | Collect, parse and retry input; render values. No game rules. |
+  | TurnController | Own phase order, rejection guarantees, recovery timing and result check. |
+  | Host / Waiter / Chef / Cashier | Check legality and perform their domain operation. |
+  | GameState / Snapshot | Store authoritative state / expose copied view data. |
+  + public   - private   ~ package-private. Underlined members are static.
+  Solid arrow = retained reference; dashed = dependency. Selected key members only.
+  CLI classes are in cli; staff operations/Seating in staff; other types in game.
+  Legacy construction has no Host. State/message values are expanded in view 3.
+  GameSetup is the composition root. Seating is a package-private static helper.
+endlegend
+@enduml

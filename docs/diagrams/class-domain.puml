@@ -1,0 +1,153 @@
+@startuml class-domain
+!include style.iuml
+!pragma layout smetana
+top to bottom direction
+title Domain objects (1 of 3)
+
+  abstract class "Customer\n{ abstract }" as Customer <<entity>> {
+    -{static} START_SATISFACTION : int = 100
+    -id : String
+    -arrivalTurn : int
+    -arrivalIndex : int
+    -status : CustomerStatus
+    -satisfaction : int
+    -order : Order
+    -servedTurn : int
+    -readyToPayTurn : int
+    #Customer(id: String, arrivalTurn: int, arrivalIndex: int)
+    {abstract} +typeName() : String <U+007B>abstract<U+007D>
+    {abstract} +waitingLossPerTurn() : int <U+007B>abstract<U+007D>
+    {abstract} +discountPercent() : int <U+007B>abstract<U+007D>
+    {abstract} +chooseMeal(menu: Menu) : MenuItem <U+007B>abstract<U+007D>
+    +seat() : void
+    +attachOrder(order: Order) : void
+    +startEating(turn: int) : void
+    +becomeReadyToPay(turn: int) : void
+    +pay() : void
+    +leave() : void
+    +loseSatisfaction() : int
+    +recover(amount: int) : int
+  }
+  class RegularCustomer <<entity>> {
+    +RegularCustomer(id: String, arrivalTurn: int, arrivalIndex: int)
+    +typeName() : String
+    +waitingLossPerTurn() : int
+    +discountPercent() : int
+    +chooseMeal(menu: Menu) : MenuItem
+  }
+  class VIPCustomer <<entity>> {
+    +VIPCustomer(id: String, arrivalTurn: int, arrivalIndex: int)
+    +typeName() : String
+    +waitingLossPerTurn() : int
+    +discountPercent() : int
+    +chooseMeal(menu: Menu) : MenuItem
+  }
+  class CriticCustomer <<entity>> {
+    +CriticCustomer(id: String, arrivalTurn: int, arrivalIndex: int)
+    +typeName() : String
+    +waitingLossPerTurn() : int
+    +discountPercent() : int
+    +chooseMeal(menu: Menu) : MenuItem
+  }
+  class WaitingQueue <<entity>> {
+    -customers : List<Customer>
+    +add(customer: Customer) : void
+    +find(id: String) : Optional<Customer>
+    +remove(id: String) : Customer
+    +view() : List<Customer>
+  }
+  enum CustomerStatus <<enumeration>> {
+    WAITING
+    SEATED
+    EATING
+    READY_TO_PAY
+    PAID
+    LEFT
+  }
+
+  class Menu <<entity>> {
+    -items : List<MenuItem>
+    +{static} base() : Menu
+    +items() : List<MenuItem>
+    +item(name: String) : MenuItem
+    +cycleChoice(arrivalIndex: int) : MenuItem
+  }
+  class MenuItem <<entity>> {
+    -name : String
+    -priceCents : int
+    -preparationUnits : int
+    +priceCents() : int
+    +preparationUnits() : int
+  }
+  class ComboMeal <<entity>> {
+    -{static} COMBO_DISCOUNT_PERCENT : int = 10
+    -first : MenuItem
+    -second : MenuItem
+    +ComboMeal(name: String, first: MenuItem, second: MenuItem)
+    +first() : MenuItem
+    +second() : MenuItem
+  }
+  class Order <<entity>> {
+    -{static} HAPPY_HOUR_DISCOUNT_PERCENT : int = 20
+    -id : String
+    -customerId : String
+    -item : MenuItem
+    -billCents : int
+    -placedTurn : int
+    -status : OrderStatus
+    -unitsDone : int
+    -readyTurn : int
+    -servedTurn : int
+    +Order(id: String, customerId: String, item: MenuItem,\n  customerDiscountPercent: int, placedTurn: int, happyHourActive: boolean)
+    +advanceOneUnit(turn: int) : void
+    +markServed(turn: int) : void
+    +markPaid() : void
+    +cancel() : void
+  }
+  class Money {
+    +{static} applyDiscount(cents: int, percentOff: int) : int
+    +{static} format(cents: int) : String
+  }
+  enum OrderStatus <<enumeration>> {
+    PLACED
+    PREPARING
+    READY
+    SERVED
+    PAID
+    CANCELLED
+  }
+
+  class Table <<entity>> {
+    -id : String
+    -occupantId : String
+    +isFree() : boolean
+    +seat(customerId: String) : void
+    +release() : void
+  }
+
+Customer <|-- RegularCustomer
+Customer <|-- VIPCustomer
+Customer <|-- CriticCustomer
+MenuItem <|-- ComboMeal
+Customer "1" -right-> "0..1" Order : order
+Customer --> CustomerStatus : status
+Order --> OrderStatus : status
+Order "0..*    " --> "1    " MenuItem : item
+Menu "0..*    " o-- "3..*    " MenuItem : items
+ComboMeal "0..*    " o-- "1..2    " MenuItem : first, second
+WaitingQueue "0..1    " --> "0..*    " Customer : queued subset
+Order ..> Money : locks discounted bill
+ComboMeal ..> Money : 10% off component sum
+
+legend bottom left
+  + public; - private; # protected. {abstract} = abstract; underlined members are static.
+  Selected key members only; routine accessors are omitted.
+  Solid arrow = retained reference; dashed = dependency. Money is a final utility class.
+  Table stores occupantId as a String; GameState.tableOf resolves table occupancy.
+  Shared aggregation: ComboMeal has two references (first/second) to 1..2 distinct items.
+  Encapsulation: Customer owns transitions/satisfaction; Order owns progress and the locked bill.
+  Polymorphism: Regular loss8/cycle-or-combo; VIP loss5/10%/cycle; Critic loss12/Pasta.
+  GameState owns the queue/tables; its relationships are in view 3.
+  Packages: customer (customers/queue/status), menu (catalog/items/order/money/status), staff (Table).
+endlegend
+@enduml

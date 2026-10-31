@@ -1,0 +1,55 @@
+' View index and evidence (baseline: merged integration d38231a).
+' class-domain: Customer/Menu/Order; class-control: CLI/controller/staff;
+' class-state: GameState ownership, snapshots/actions and relevant enums.
+' sequence-1-game: ConsoleUI.run, CommandParser and TurnController's full loop;
+' sequence-2-arrival: beginTurn, GameSetup.arrival and Host/Seating.seat;
+' sequence-3-order: Waiter.takeOrder, Customer.chooseMeal, Order/Money, Chef.prepare;
+' sequence-4-service: Customer.recover, Waiter.serve, eating step, Cashier.collect.
+' Scenario: fixtures/stage-3/host-combo-happy-hour.{in,expected}; comparison:
+' fixtures/stage-3/defeat.{in,expected}. No stage-3 tag is assumed to exist yet.
+' C3: order 7, READY 9, SERVED 10, READY_TO_PAY 11, PAID 12 (1944 cents/84).
+' Result: five payments, 7494 cents, satisfaction sum 419; alternative DEFEAT.
+' OO responsibilities and omitted repeated interactions are annotated in each view.
+' Render: see render.sh. Recheck scripts/replay.sh after design-changing fixes.
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam defaultFontColor #172B3A
+skinparam titleFontSize 23
+skinparam titleFontColor #102A43
+skinparam shadowing false
+skinparam roundcorner 3
+skinparam nodesep 28
+skinparam ranksep 36
+skinparam ArrowColor #334E68
+skinparam ArrowThickness 1.4
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #FFFFFF
+skinparam classHeaderBackgroundColor #E7EFF7
+skinparam classBorderColor #486581
+skinparam classFontStyle bold
+skinparam noteBackgroundColor #FFF6D8
+skinparam noteBorderColor #B8923B
+skinparam sequenceMessageAlign center
+skinparam sequenceParticipantBackgroundColor #E7EFF7
+skinparam sequenceParticipantBorderColor #486581
+skinparam sequenceParticipantFontStyle bold
+skinparam sequenceLifeLineBorderColor #829AB1
+skinparam sequenceLifeLineBackgroundColor #EAF0F6
+skinparam sequenceGroupBackgroundColor #F3F6FA
+skinparam sequenceGroupBorderColor #486581
+skinparam sequenceReferenceBackgroundColor #E8F4ED
+skinparam sequenceReferenceBorderColor #527D63
+hide circle
+hide empty members
+<style>
+sequenceDiagram {
+  lifeLine {
+    LineColor #486581
+    LineThickness 2
+  }
+  arrow {
+    LineThickness 2
+  }
+}
+</style>
