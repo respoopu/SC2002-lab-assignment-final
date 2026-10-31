@@ -12,49 +12,49 @@ participant "o3 : Order" as O3
 participant ":Money" as M
 participant "chef : Chef" as Chef
 autonumber
-[-> UI ++ : run(controller) [turn-7 excerpt]
+[o-> UI ++ : run(controller)
 == WAITER phase; C3 seated with no order ==
 UI -> TC ++ : submit(Action(WAITER, ORDER, "C3"))
 TC -> W ++ : takeOrder(state, "C3")
 W -> S ++ : menu()
-S --> W -- : menu
+S -->> W -- : menu
 W -> C3 ++ : chooseMeal(menu)
-C3 --> W -- : Salad + Pasta combo
+C3 -->> W -- : Salad + Pasta combo
 note right of C3 : Polymorphic choice: Regular index 3 selects\nthe offered combo. No controller type check.
 W -> S ++ : nextOrderId()
-S --> W -- : "O3"
+S -->> W -- : "O3"
 W -> C3 ++ : discountPercent()
-C3 --> W -- : 0
+C3 -->> W -- : 0
 W -> S ++ : turn()
-S --> W -- : 7
+S -->> W -- : 7
 W -> S ++ : happyHourActive()
-S --> W -- : true
+S -->> W -- : true
 create O3
-W --> O3 ++ : new Order("O3", "C3", combo, 0, 7, true)
+W -->> O3 ++ : new Order("O3", "C3", combo, 0, 7, true)
 O3 -> M ++ : applyDiscount(2430, 0)
-M --> O3 -- : 2430
+M -->> O3 -- : 2430
 O3 -> M ++ : applyDiscount(2430, 20)
-M --> O3 -- : 1944
-O3 --> W -- : constructed (billCents = 1944)
+M -->> O3 -- : 1944
+O3 -->> W -- : constructed (billCents = 1944)
 note right of O3 : PLACED; 0/3 units. Bill is final.\nCombo base: (900 + 1800) * 90% = 2430.
 W -> S ++ : addOrder(o3)
-S --> W -- : void
+S -->> W -- : void
 W -> C3 ++ : attachOrder(o3)
-C3 --> W -- : void
-W --> TC -- : accepted order event ($19.44)
+C3 -->> W -- : void
+W -->> TC -- : accepted order event ($19.44)
 TC -> S ++ : setPhase(CHEF)
-S --> TC -- : void
-TC --> UI -- : ActionResult
+S -->> TC -- : void
+TC -->> UI -- : ActionResult
 == CHEF phase; same-turn order may be prepared ==
 UI -> TC ++ : submit(Action(CHEF, PREPARE, "O3"))
 TC -> Chef ++ : prepare(state, "O3")
 Chef -> O3 ++ : advanceOneUnit(7)
-O3 --> Chef -- : void
+O3 -->> Chef -- : void
 note right of O3 : PREPARING, 1/3 units; not servable.
-Chef --> TC -- : accepted progress event
+Chef -->> TC -- : accepted progress event
 TC -> S ++ : setPhase(TURN_END)
-S --> TC -- : void
-TC --> UI -- : ActionResult
+S -->> TC -- : void
+TC -->> UI -- : ActionResult
 note over W, O3
   Checks precede nextOrderId(); rejected orders cannot skip an ID.
   Routine eligibility/accessor calls are omitted. Money methods are static.

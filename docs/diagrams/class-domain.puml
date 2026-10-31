@@ -5,6 +5,7 @@ top to bottom direction
 title Domain objects (1 of 3)
 
   abstract class "Customer\n{ abstract }" as Customer <<entity>> {
+    -{static} START_SATISFACTION : int = 100
     -id : String
     -arrivalTurn : int
     -arrivalIndex : int
@@ -13,6 +14,7 @@ title Domain objects (1 of 3)
     -order : Order
     -servedTurn : int
     -readyToPayTurn : int
+    #Customer(id: String, arrivalTurn: int, arrivalIndex: int)
     {abstract} +typeName() : String <U+007B>abstract<U+007D>
     {abstract} +waitingLossPerTurn() : int <U+007B>abstract<U+007D>
     {abstract} +discountPercent() : int <U+007B>abstract<U+007D>
@@ -27,18 +29,21 @@ title Domain objects (1 of 3)
     +recover(amount: int) : int
   }
   class RegularCustomer <<entity>> {
+    +RegularCustomer(id: String, arrivalTurn: int, arrivalIndex: int)
     +typeName() : String
     +waitingLossPerTurn() : int
     +discountPercent() : int
     +chooseMeal(menu: Menu) : MenuItem
   }
   class VIPCustomer <<entity>> {
+    +VIPCustomer(id: String, arrivalTurn: int, arrivalIndex: int)
     +typeName() : String
     +waitingLossPerTurn() : int
     +discountPercent() : int
     +chooseMeal(menu: Menu) : MenuItem
   }
   class CriticCustomer <<entity>> {
+    +CriticCustomer(id: String, arrivalTurn: int, arrivalIndex: int)
     +typeName() : String
     +waitingLossPerTurn() : int
     +discountPercent() : int
@@ -75,6 +80,7 @@ title Domain objects (1 of 3)
     +preparationUnits() : int
   }
   class ComboMeal <<entity>> {
+    -{static} COMBO_DISCOUNT_PERCENT : int = 10
     -first : MenuItem
     -second : MenuItem
     +ComboMeal(name: String, first: MenuItem, second: MenuItem)
@@ -82,6 +88,7 @@ title Domain objects (1 of 3)
     +second() : MenuItem
   }
   class Order <<entity>> {
+    -{static} HAPPY_HOUR_DISCOUNT_PERCENT : int = 20
     -id : String
     -customerId : String
     -item : MenuItem
@@ -125,15 +132,16 @@ MenuItem <|-- ComboMeal
 Customer "1" -right-> "0..1" Order : order
 Customer --> CustomerStatus : status
 Order --> OrderStatus : status
-Order "0..*" --> "1" MenuItem : item
-Menu "0..*" o-- "3..*" MenuItem : items
-ComboMeal "0..*" o-- "1..2" MenuItem : first, second
-WaitingQueue "0..1" --> "0..*" Customer : queued subset
+Order "0..*    " --> "1    " MenuItem : item
+Menu "0..*    " o-- "3..*    " MenuItem : items
+ComboMeal "0..*    " o-- "1..2    " MenuItem : first, second
+WaitingQueue "0..1    " --> "0..*    " Customer : queued subset
 Order ..> Money : locks discounted bill
 ComboMeal ..> Money : 10% off component sum
 
 legend bottom left
-  + public; - private. {abstract} = abstract; underlined operations are static.
+  + public; - private; # protected. {abstract} = abstract; underlined members are static.
+  Selected key members only; routine accessors are omitted.
   Solid arrow = retained reference; dashed = dependency. Money is a final utility class.
   Table stores occupantId as a String; GameState.tableOf resolves table occupancy.
   Shared aggregation: ComboMeal has two references (first/second) to 1..2 distinct items.

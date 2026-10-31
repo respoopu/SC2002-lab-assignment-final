@@ -9,81 +9,78 @@ participant ":CommandParser" as Parser
 participant "controller : TurnController" as TC <<control>>
 autonumber
 activate Manager
-[-> UI ++ : run(controller)
+UI <-o] ++ : run(controller)
 note over Manager, TC
   Same configuration, arrivals and meal rules in both fixtures.
   Winning choices: host-combo-happy-hour.in. Alternative: defeat.in.
-  Static calls use class-qualified participants; routine accessors are compressed.
+  Main.main calls run(controller). Static methods are sent to anonymous class
+  participants (e.g. :CommandParser); routine accessors are compressed.
 end note
-loop turns 1..18; while !controller.isOver()
+loop !controller.isOver()
   UI -> TC ++ : snapshot()
-  TC --> UI -- : Snapshot
+  TC -->> UI -- : Snapshot
   opt happyHourAvailable
-    UI --> Manager : Manager> HAPPY_HOUR or SKIP
-    alt winning scenario and turn == 7
-      Manager -> UI : HAPPY_HOUR
-    else any other available turn
-      Manager -> UI : SKIP
-    end
+    UI -->> Manager : Manager> HAPPY_HOUR or SKIP
+    Manager -> UI : HAPPY_HOUR | SKIP
+    note right of Manager : Winning run: HAPPY_HOUR on turn 7,\nSKIP otherwise. Defeat run: always SKIP.
     UI -> Parser ++ : parseHappyHour(line)
-    Parser --> UI -- : Optional<Boolean>
+    Parser -->> UI -- : Optional<Boolean>
     note over UI, Parser : Invalid manager text is retried before beginTurn.
   end
   UI -> TC ++ : beginTurn(activateHappyHour)
-  ref over UI, TC : ArriveAndSeat: beginTurn portion (turn 7 expanded).
-  TC --> UI -- : TurnStart(events, snapshot)
-  UI --> Manager : arrival/state display; remaining duration
-  loop controller.currentRole().isPresent(); retry until accepted
+  note right of TC : turn-7 example: see sd ArriveAndSeat
+  TC -->> UI -- : TurnStart(events, snapshot)
+  UI -->> Manager : arrival/state display; remaining duration
+  loop controller.currentRole().isPresent()
     UI -> TC ++ : currentRole()
-    TC --> UI -- : Optional<StaffRole>
+    TC -->> UI -- : Optional<StaffRole>
     UI -> TC ++ : snapshot()
-    TC --> UI -- : Snapshot (contains legalActions)
-    UI --> Manager : numbered legal actions; role prompt
-    Manager -> UI : winning fixture action / defeat WAIT
+    TC -->> UI -- : Snapshot (contains legalActions)
+    UI -->> Manager : numbered legal actions; role prompt
+    Manager -> UI : action command
+    note right of Manager : Winning run: fixture actions.\nDefeat run: WAIT for every role.
     UI -> Parser ++ : parse(line, role, legalActions)
-    Parser --> UI -- : Optional<Action>
+    Parser -->> UI -- : Optional<Action>
     alt unparseable input
       UI -> Parser ++ : errorFor(line, role, legalActions)
-      Parser --> UI -- : reason; UI retries without submit
+      Parser -->> UI -- : reason; UI retries without submit
     else parsed input
       UI -> TC ++ : submit(action)
-      ref over UI, TC
-        ArriveAndSeat: Host action; TakeOrderAndPrepare: Waiter/Chef;
-        ServeAndPay: later preparation/service calls.
-      end ref
-      TC --> UI -- : ActionResult
+      TC -->> UI -- : ActionResult
       note right of TC
         Accepted: HOST -> WAITER -> CHEF -> TURN_END.
         Rejected: no mutation; UI retries same role.
         WAIT advances phase without a staff call.
+        turn-7 examples: see sd ArriveAndSeat (Host),
+        sd TakeOrderAndPrepare (Waiter/Chef); later turns: sd ServeAndPay.
       end note
     end
   end
   UI -> TC ++ : endTurn()
-  ref over UI, TC : ServeAndPay: eating, payment and waiting loss.
+  note right of TC : eating, payment and waiting loss:\nsee sd ServeAndPay
   opt turn == 18
     TC -> TC ++ : isVictory()
-    TC --> TC -- : boolean
+    TC -->> TC -- : boolean
     note right of TC : paid >= 4 AND cents >= 4500\nAND satisfactionSum >= 60 * paid
+    alt isVictory()
+      note over UI, TC #E7F3E9
+        result = VICTORY. Winning run: 5 paid, 7494 cents, satisfaction sum 419,
+        average 83.8. Payments: C1@4 900/92; C2@7 1350/95; C3@12 1944/84;
+        C4@15 1800/64; C5@17 1500/84 (cents/satisfaction).
+      end note
+    else else
+      note over UI, TC #FAE9E5
+        result = DEFEAT. All-SKIP/all-WAIT run: 0 paid, 0 revenue, 2 departures;
+        average N/A. C1 leaves on 13, C4 on 18. C2/C3/C5/C6 wait at 25/4/52/76.
+        Both runs complete all 18 turns; only manager choices differ.
+      end note
+    end
   end
-  TC --> UI -- : TurnEnd(events, summary, result)
+  TC -->> UI -- : TurnEnd(events, summary, result)
   UI -> UI ++ : render(summary, result)
-  UI --> UI -- : String
-  UI --> Manager : summary; final result on turn 18
+  UI -->> UI -- : String
+  UI -->> Manager : summary; final result on turn 18
 end
-alt winning fixture
-  note over Manager, TC #E7F3E9
-    VICTORY: 5 paid, 7494 cents, satisfaction sum 419, average 83.8.
-    Payments: C1@4 900/92; C2@7 1350/95; C3@12 1944/84;
-    C4@15 1800/64; C5@17 1500/84 (cents/satisfaction).
-  end note
-else all-SKIP/all-WAIT fixture
-  note over Manager, TC #FAE9E5
-    DEFEAT: 0 paid, 0 revenue, 2 departures; average N/A.
-    C1 leaves on 13, C4 on 18. C2/C3/C5/C6 wait at 25/4/52/76.
-    Both runs complete all 18 turns; only manager choices differ.
-  end note
-end
-[<-- UI -- : true
+UI -->>] -- : true
 deactivate Manager
 @enduml

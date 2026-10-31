@@ -25,6 +25,7 @@ class CommandParser <<boundary>> {
   +{static} parseHappyHour(line: String) : Optional<Boolean>
 }
 class TurnController <<control>> {
+  -{static} HAPPY_HOUR_RECOVERY : int = 15
   -state : GameState
   -host : Host
   -arrivals : IntFunction<Customer>
@@ -69,11 +70,11 @@ Main ..> ConsoleUI : runs
 GameSetup ..> TurnController : wires
 ConsoleUI ..> CommandParser : parses
 ConsoleUI ..> TurnController : calls
-TurnController "1" --> "1" GameState : state
-TurnController "1" --> "0..1" Host
-TurnController "1" --> "1" Waiter
-TurnController "1" --> "1" Chef
-TurnController "1" --> "1" Cashier
+TurnController "1    " --> "1    " GameState : state
+TurnController "1    " --> "0..1    " Host
+TurnController "1    " --> "1        " Waiter
+TurnController "1    " --> "1    " Chef
+TurnController "1    " --> "1    " Cashier
 Host ..> Seating : seat
 Waiter ..> Seating : seat
 Host -[hidden]right-> Waiter
@@ -82,12 +83,12 @@ Host -[hidden]down-> Chef
 Waiter -[hidden]down-> Cashier
 
 legend bottom left
-  |= Responsibility |= Boundary |
+  |= Class |= Responsibility |
   | ConsoleUI / CommandParser | Collect, parse and retry input; render values. No game rules. |
   | TurnController | Own phase order, rejection guarantees, recovery timing and result check. |
   | Host / Waiter / Chef / Cashier | Check legality and perform their domain operation. |
   | GameState / Snapshot | Store authoritative state / expose copied view data. |
-  + public   - private   ~ package-private. Underlined operations are static.
+  + public   - private   ~ package-private. Underlined members are static.
   Solid arrow = retained reference; dashed = dependency. Selected key members only.
   CLI classes are in cli; staff operations/Seating in staff; other types in game.
   Legacy construction has no Host. State/message values are expanded in view 3.

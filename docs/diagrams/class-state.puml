@@ -4,6 +4,7 @@
 title State and message values (3 of 3)
 
 class GameState <<entity>> {
+  -{static} HAPPY_HOUR_TURNS : int = 2
   -config : GameConfig
   -queue : WaitingQueue
   -tables : List<Table>
@@ -12,6 +13,9 @@ class GameState <<entity>> {
   -menu : Menu
   -turn : int
   -phase : Phase
+  -nextOrderNumber : int
+  -servedCount : int
+  -leftCount : int
   -happyHourTurn : int
   -paidCount : int
   -revenueCents : int
@@ -24,7 +28,9 @@ class GameState <<entity>> {
   +menu() : Menu
   +nextOrderId() : String
   +addOrder(order: Order) : void
+  +tableOf(customerId: String) : Optional<Table>
   +recordServed() : void
+  +recordLeft() : void
   +happyHourUsed() : boolean
   +happyHourActive() : boolean
   +happyHourRemaining() : int
@@ -45,10 +51,14 @@ class Order <<entity>>
 class Snapshot {
   -turn : int
   -phase : Phase
-  -customers : List<CustomerView>
+  -revenueCents : int
+  -paidCount : int
+  -satisfactionSum : int
   -queue : List<CustomerView>
   -tables : List<TableView>
+  -customers : List<CustomerView>
   -orders : List<OrderView>
+  -currentRole : Optional<StaffRole>
   -legalActions : List<Action>
   -happyHourAvailable : boolean
   -happyHourRemaining : int
@@ -92,25 +102,26 @@ enum GameResult <<enumeration>> {
   VICTORY
   DEFEAT
 }
-GameState "1" *-- "1" WaitingQueue : creates
-GameState "1" *-- "0..*" Table : creates
-GameState "1" --> "1" GameConfig : config
-GameState "1" --> "1" Menu : menu
-GameState "1" --> "0..*" Customer : customers
-GameState "1" --> "0..*" Order : orders
+GameState *-- "1    " WaitingQueue : creates
+GameState *-- "0..*    " Table : creates
+GameState "1    " --> "1    " GameConfig : config
+GameState "1    " --> "1    " Menu : menu
+GameState "1    " --> "0..*    " Customer : customers
+GameState "1    " --> "0..*    " Order : orders
 GameState --> Phase : phase
 Snapshot --> Phase : phase
-Snapshot "1" --> "0..*" Action : legalActions
+Snapshot "1    " --> "0..*    " Action : legalActions
 Action --> StaffRole : role
 Action --> ActionKind : kind
-TurnEnd --> GameResult : optional result
+TurnEnd --> "0..1    " GameResult : result
 ActionResult -[hidden]right-> TurnEnd
 
 legend bottom left
   GameState stores live domain references; Snapshot carries copied view records, not live objects.
   Black diamonds = internally created lifetime-owned parts (two Tables in the base setting).
   Record fields are private/final; generated accessors are public. List values are copied defensively.
-  GameConfig, Snapshot, Action, ActionResult and TurnEnd are Java records.
+  GameConfig, Snapshot, Action, ActionResult and TurnEnd are Java records. Underlined members are static.
+  GameState shows its key operations; routine accessors are omitted.
   Queue/Table/Menu/Customer/Order boxes refer to the domain view; Customer is abstract.
   TurnStart, TurnSummary, GameEvent and the three *View records are supporting return values.
   Other packages: customer (Customer/WaitingQueue), staff (Table), menu (Menu/Order).

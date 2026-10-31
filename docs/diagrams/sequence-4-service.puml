@@ -20,51 +20,53 @@ note over TC, T1
 end note
 == turn 8 beginTurn: Happy Hour remaining 1 ==
 TC -> C3 ++ : recover(15)
-C3 --> TC -- : 100 (actual increase 8)
-loop turns 8 and 9; Host WAIT, Waiter WAIT, Chef PREPARE O3
+C3 -->> TC -- : 100 (actual increase 8)
+loop O3 not READY
   TC -> Chef ++ : prepare(state, "O3")
   Chef -> O3 ++ : advanceOneUnit(turn)
-  O3 --> Chef -- : void
-  Chef --> TC -- : accepted progress / READY event
+  O3 -->> Chef -- : void
+  Chef -->> TC -- : accepted progress / READY event
   note over C3, O3
+    Each turn: Host WAIT, Waiter WAIT, Chef PREPARE O3.
     Turn 8: 2/3 units. Turn 9: READY, readyTurn = 9.
     Turn 9 beginTurn has remaining 0, so no recovery.
+    loseSatisfaction() runs in each turn's endTurn.
   end note
-  TC -> C3 ++ : loseSatisfaction() [endTurn]
-  C3 --> TC -- : 92 on turn 8; 84 on turn 9
+  TC -> C3 ++ : loseSatisfaction()
+  C3 -->> TC -- : 92 on turn 8; 84 on turn 9
 end
 == turn 10: Host seats C4 at T2; Waiter SERVE O3 ==
 TC -> W ++ : serve(state, "O3")
 note right of W : Guard: READY and readyTurn 9 < current turn 10.
 W -> C3 ++ : startEating(10)
-C3 --> W -- : void
+C3 -->> W -- : void
 W -> O3 ++ : markServed(10)
-O3 --> W -- : void
+O3 -->> W -- : void
 W -> S ++ : recordServed()
-S --> W -- : void
-W --> TC -- : accepted; O3 served to C3
+S -->> W -- : void
+W -->> TC -- : accepted; O3 served to C3
 note over TC, O3
   EATING / SERVED; no waiting loss. Satisfaction stays 84.
   endTurn on turn 10 cannot finish eating: servedTurn == current turn.
 end note
 == turn 11 endTurn: finish one full eating turn ==
 TC -> C3 ++ : becomeReadyToPay(11)
-C3 --> TC -- : void
+C3 -->> TC -- : void
 note right of C3 : READY_TO_PAY; readyToPayTurn = 11.
 TC -> Cashier ++ : collect(state)
-Cashier --> TC -- : empty; C3 is not eligible until readyToPayTurn < turn
+Cashier -->> TC -- : empty; C3 is not eligible until readyToPayTurn < turn
 == turn 12 endTurn: oldest eligible payment ==
 TC -> Cashier ++ : collect(state)
 note right of Cashier : C3: readyToPayTurn 11 < 12.\nTie-break: ready turn, arrival turn, arrival index.
 Cashier -> O3 ++ : markPaid()
-O3 --> Cashier -- : void
+O3 -->> Cashier -- : void
 Cashier -> C3 ++ : pay()
-C3 --> Cashier -- : void
+C3 -->> Cashier -- : void
 Cashier -> T1 ++ : release()
-T1 --> Cashier -- : void
+T1 -->> Cashier -- : void
 Cashier -> S ++ : recordPayment(1944, 84)
-S --> Cashier -- : void
-Cashier --> TC -- : C3 paid $19.44 (satisfaction 84), T1 free
+S -->> Cashier -- : void
+Cashier -->> TC -- : C3 paid $19.44 (satisfaction 84), T1 free
 note over TC, S : Cumulative: 4194 cents, 3 paid. O3 and C3 are PAID; bill still 1944.
 note over TC, T1
   Eligibility checks and routine accessor calls are omitted.
