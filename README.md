@@ -256,7 +256,7 @@ The table lists the complete transition from `stage-2` to `stage-3`, including t
 
 | Path | Status | Reason | PR |
 | --- | --- | --- | --- |
-| `README.md` | Modified | Describe the Stage 3 rules, runs, comparison, and gate, and point the Stage 2 run and replay instructions at the `stage-2` tag. | [#21](https://github.com/respoopu/SC2002-lab-assignment-final/issues/21) |
+| `README.md` | Modified | Describe the Stage 3 rules, runs, comparison, and gate, and point the Stage 2 run and replay instructions at the `stage-2` tag. | [#39](https://github.com/respoopu/SC2002-lab-assignment-final/pull/39) |
 | `docs/component-contract.md` | Modified | Specify the Stage 3 shared Java API and issue waves (Sections 7.10 to 7.12), and let the README/stage-gate PR use `Refs` so its issue stays open until the tag is pushed (Section 5, Stage gate step 1). | [#24](https://github.com/respoopu/SC2002-lab-assignment-final/pull/24) |
 | `docs/diagrams/class-control.puml` | Added | Class diagram source: CLI boundary, `TurnController`, and staff, with associations and multiplicities. | [#38](https://github.com/respoopu/SC2002-lab-assignment-final/pull/38) |
 | `docs/diagrams/class-domain.puml` | Added | Class diagram source: customers, menu items, `ComboMeal`, and orders, with inheritance and composition. | [#38](https://github.com/respoopu/SC2002-lab-assignment-final/pull/38) |
@@ -281,7 +281,7 @@ The table lists the complete transition from `stage-2` to `stage-3`, including t
 | `docs/diagrams/sequence-3-order.puml` | Added | Sequence diagram source: turn 7, with C3's combo choice, the Happy Hour price locked at order time, and the first preparation unit. | [#38](https://github.com/respoopu/SC2002-lab-assignment-final/pull/38) |
 | `docs/diagrams/sequence-4-service.puml` | Added | Sequence diagram source: C3's recovery on turn 8, the combo becoming READY, then serving, eating, and payment on turn 12. | [#38](https://github.com/respoopu/SC2002-lab-assignment-final/pull/38) |
 | `docs/diagrams/style.iuml` | Added | Shared diagram styling, with comments indexing the views, the methods, and the fixture they trace. | [#38](https://github.com/respoopu/SC2002-lab-assignment-final/pull/38) |
-| `fixtures/README.md` | Modified | Describe the Stage 3 input shape (the `Manager> ` and `Host> ` lines) and the two Stage 3 fixtures, and link the README's Stage 3 section. | [#37](https://github.com/respoopu/SC2002-lab-assignment-final/pull/37), [#21](https://github.com/respoopu/SC2002-lab-assignment-final/issues/21) |
+| `fixtures/README.md` | Modified | Describe the Stage 3 input shape (the `Manager> ` and `Host> ` lines) and the two Stage 3 fixtures, and link the README's Stage 3 section. | [#37](https://github.com/respoopu/SC2002-lab-assignment-final/pull/37), [#39](https://github.com/respoopu/SC2002-lab-assignment-final/pull/39) |
 | `fixtures/stage-3/defeat.expected` | Added | Record the all-`SKIP`, all-`WAIT` Stage 3 transcript. | [#37](https://github.com/respoopu/SC2002-lab-assignment-final/pull/37) |
 | `fixtures/stage-3/defeat.in` | Added | Supply the 18 `SKIP` and 54 `WAIT` commands for Stage 3 Defeat. | [#37](https://github.com/respoopu/SC2002-lab-assignment-final/pull/37) |
 | `fixtures/stage-3/host-combo-happy-hour.expected` | Added | Record the Host, combo, and Happy Hour victory transcript. | [#37](https://github.com/respoopu/SC2002-lab-assignment-final/pull/37) |
