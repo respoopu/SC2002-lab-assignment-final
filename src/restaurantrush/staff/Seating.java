@@ -30,7 +30,7 @@ final class Seating {
         Customer customer = state.queue().remove(customerId);
         table.get().seat(customerId);
         customer.seat();
-        String text = customerId + " seated at " + table.get().id();
+        String text = "Customer " + customerId + " is seated at table " + table.get().id();
         return ActionResult.accepted(text + ".", List.of(new GameEvent(state.turn(), text)));
     }
 }

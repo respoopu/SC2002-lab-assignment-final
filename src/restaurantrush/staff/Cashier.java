@@ -32,7 +32,7 @@ public final class Cashier {
         customer.pay();
         table.release();
         state.recordPayment(order.billCents(), customer.satisfaction());
-        return Optional.of(new GameEvent(state.turn(), customer.id() + " paid " + Money.format(order.billCents())
-                + " (satisfaction " + customer.satisfaction() + "), " + table.id() + " free"));
+        return Optional.of(new GameEvent(state.turn(), "Customer " + customer.id() + " paid " + Money.format(order.billCents())
+                + " (satisfaction " + customer.satisfaction() + "); table " + table.id() + " is free"));
     }
 }

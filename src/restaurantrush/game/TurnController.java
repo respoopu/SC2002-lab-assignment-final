@@ -116,7 +116,7 @@ public final class TurnController {
         for (Customer customer : state.customers()) {
             if (customer.status() == CustomerStatus.EATING && customer.servedTurn() < turn) {
                 customer.becomeReadyToPay(turn);
-                events.add(new GameEvent(turn, customer.id() + " is ready to pay"));
+                events.add(new GameEvent(turn, "Customer " + customer.id() + " finished eating and is ready to pay"));
             }
         }
         cashier.collect(state).ifPresent(events::add);
@@ -197,7 +197,7 @@ public final class TurnController {
             int after = customer.recover(HAPPY_HOUR_RECOVERY);
             if (after > before) {
                 events.add(new GameEvent(state.turn(),
-                        customer.id() + " recovers " + (after - before) + " satisfaction (" + after + ")"));
+                        "Customer " + customer.id() + " recovers " + (after - before) + " satisfaction (now " + after + ")"));
             }
         }
     }
@@ -217,7 +217,7 @@ public final class TurnController {
         customer.order().ifPresent(Order::cancel);
         customer.leave();
         state.recordLeft();
-        return new GameEvent(state.turn(), customer.id() + " left unhappy");
+        return new GameEvent(state.turn(), "Customer " + customer.id() + " left unhappy");
     }
 
     private boolean isVictory() {
