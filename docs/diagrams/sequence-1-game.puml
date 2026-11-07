@@ -20,33 +20,33 @@ loop !controller.isOver()
   UI -> TC ++ : snapshot()
   TC -->> UI -- : Snapshot
   opt happyHourAvailable
-    UI -->> Manager : Manager> HAPPY_HOUR or SKIP
+    UI -->> Manager : START OF TURN heading; Manager> HAPPY_HOUR or SKIP
     Manager -> UI : HAPPY_HOUR | SKIP
     note right of Manager : Winning run: HAPPY_HOUR on turn 7,\nSKIP otherwise. Defeat run: always SKIP.
     UI -> Parser ++ : parseHappyHour(line)
     Parser -->> UI -- : Optional<Boolean>
-    note over UI, Parser : Invalid manager text is retried before beginTurn.
+    note over UI, Parser : Invalid manager text prints "!!" and the reason,\nthen is retried before beginTurn.
   end
   UI -> TC ++ : beginTurn(activateHappyHour)
   note right of TC : turn-7 example: see sd ArriveAndSeat
   TC -->> UI -- : TurnStart(events, snapshot)
-  UI -->> Manager : arrival/state display; remaining duration
+  UI -->> Manager : TURN banner (Happy Hour turns left), NEWS events,\nqueue, tables, customers and orders
   loop controller.currentRole().isPresent()
     UI -> TC ++ : currentRole()
     TC -->> UI -- : Optional<StaffRole>
     UI -> TC ++ : snapshot()
     TC -->> UI -- : Snapshot (contains legalActions)
-    UI -->> Manager : numbered legal actions; role prompt
+    UI -->> Manager : role heading; numbered legal actions with\ndescriptions; role prompt
     Manager -> UI : action command
     note right of Manager : Winning run: fixture actions.\nDefeat run: WAIT for every role.
     UI -> Parser ++ : parse(line, role, legalActions)
     Parser -->> UI -- : Optional<Action>
     alt unparseable input
       UI -> Parser ++ : errorFor(line, role, legalActions)
-      Parser -->> UI -- : reason; UI retries without submit
+      Parser -->> UI -- : reason; UI prints "!!" reason, retries without submit
     else parsed input
       UI -> TC ++ : submit(action)
-      TC -->> UI -- : ActionResult
+      TC -->> UI -- : ActionResult; UI prints ">>" events or message
       note right of TC
         Accepted: HOST -> WAITER -> CHEF -> TURN_END.
         Rejected: no mutation; UI retries same role.
@@ -77,9 +77,10 @@ loop !controller.isOver()
     end
   end
   TC -->> UI -- : TurnEnd(events, summary, result)
+  UI -->> Manager : END OF TURN heading; ">>" events
   UI -> UI ++ : render(summary, result)
   UI -->> UI -- : String
-  UI -->> Manager : summary; final result on turn 18
+  UI -->> Manager : served, departures, revenue, average, turns used;\nVICTORY or DEFEAT banner on turn 18
 end
 UI -->>] -- : true
 deactivate Manager
