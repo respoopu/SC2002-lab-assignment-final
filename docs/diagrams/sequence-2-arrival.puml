@@ -62,7 +62,7 @@ T1 -->> Seating -- : void
 Seating -> C3 ++ : seat()
 C3 -->> Seating -- : void
 note right of C3 : WAITING -> SEATED; satisfaction 100.
-Seating -->> Host -- : accepted; C3 seated at T1
+Seating -->> Host -- : accepted; "Customer C3 is seated at table T1"
 Host -->> TC -- : ActionResult
 TC -> State ++ : setPhase(WAITER)
 State -->> TC -- : void

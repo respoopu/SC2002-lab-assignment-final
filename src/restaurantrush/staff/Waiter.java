@@ -64,7 +64,8 @@ public final class Waiter {
                 state.happyHourActive());
         state.addOrder(order);
         customer.attachOrder(order);
-        String text = customerId + " orders " + item.name() + " (" + Money.format(order.billCents()) + ") as " + order.id();
+        String text = "Customer " + customerId + " orders " + item.name() + " for " + Money.format(order.billCents())
+                + " (order " + order.id() + ")";
         return ActionResult.accepted(text + ".", List.of(new GameEvent(state.turn(), text)));
     }
 
@@ -86,7 +87,7 @@ public final class Waiter {
         customer.startEating(state.turn());
         order.markServed(state.turn());
         state.recordServed();
-        String text = orderId + " served to " + customer.id();
+        String text = "Order " + orderId + " is served to customer " + customer.id();
         return ActionResult.accepted(text + ".", List.of(new GameEvent(state.turn(), text)));
     }
 }

@@ -39,8 +39,8 @@ public final class Chef {
 
         order.advanceOneUnit(state.turn());
         String text = order.status() == OrderStatus.READY
-                ? orderId + " is READY"
-                : orderId + " unit " + order.unitsDone() + " of " + order.unitsRequired() + " done";
+                ? "Order " + orderId + " is READY to serve"
+                : "Order " + orderId + ": preparation unit " + order.unitsDone() + " of " + order.unitsRequired() + " done";
         return ActionResult.accepted(text + ".", List.of(new GameEvent(state.turn(), text)));
     }
 }

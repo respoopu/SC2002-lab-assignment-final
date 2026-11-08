@@ -25,7 +25,7 @@ loop O3 not READY
   TC -> Chef ++ : prepare(state, "O3")
   Chef -> O3 ++ : advanceOneUnit(turn)
   O3 -->> Chef -- : void
-  Chef -->> TC -- : accepted progress / READY event
+  Chef -->> TC -- : accepted; "Order O3: preparation unit n of 3 done"\nor "Order O3 is READY to serve"
   note over C3, O3
     Each turn: Host WAIT, Waiter WAIT, Chef PREPARE O3.
     Turn 8: 2/3 units. Turn 9: READY, readyTurn = 9.
@@ -44,7 +44,7 @@ W -> O3 ++ : markServed(10)
 O3 -->> W -- : void
 W -> S ++ : recordServed()
 S -->> W -- : void
-W -->> TC -- : accepted; O3 served to C3
+W -->> TC -- : accepted; "Order O3 is served to customer C3"
 note over TC, O3
   EATING / SERVED; no waiting loss. Satisfaction stays 84.
   endTurn on turn 10 cannot finish eating: servedTurn == current turn.
@@ -66,7 +66,7 @@ Cashier -> T1 ++ : release()
 T1 -->> Cashier -- : void
 Cashier -> S ++ : recordPayment(1944, 84)
 S -->> Cashier -- : void
-Cashier -->> TC -- : C3 paid $19.44 (satisfaction 84), T1 free
+Cashier -->> TC -- : "Customer C3 paid $19.44 (satisfaction 84);\ntable T1 is free"
 note over TC, S : Cumulative: 4194 cents, 3 paid. O3 and C3 are PAID; bill still 1944.
 note over TC, T1
   Eligibility checks and routine accessor calls are omitted.
