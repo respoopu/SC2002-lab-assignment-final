@@ -1,634 +1,1154 @@
-Happy Hour available: HAPPY_HOUR or SKIP
+================================================================
+                 R E S T A U R A N T   R U S H
+================================================================
+ You are the manager. The game lasts 18 turns, and each turn you
+ choose what your staff do.
+
+ At each prompt, type the number next to an action, or type
+ the command itself, such as SEAT C1. 0 means wait.
+
+----------------------------------------------------------------
+ START OF TURN 1 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-C1 (Regular) arrives
-Turn 1
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 100, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [0] WAIT
+
+================================================================
+ TURN 1 of 18                                    Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ NEWS
+   * C1 (Regular) arrives
+
+ WAITING QUEUE
+   C1  Regular  [##########] 100
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [##########] 100 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 1
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 1
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 1
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 1 of 18
+
+----------------------------------------------------------------
+ START OF TURN 2 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 2
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 92, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [0] WAIT
+
+================================================================
+ TURN 2 of 18                                    Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C1  Regular  [#########-]  92
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [#########-]  92 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 2
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 2
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 2
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 2 of 18
+
+----------------------------------------------------------------
+ START OF TURN 3 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 3
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 84, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [0] WAIT
+
+================================================================
+ TURN 3 of 18                                    Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C1  Regular  [########--]  84
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [########--]  84 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 3
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 3
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 3
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 3 of 18
+
+----------------------------------------------------------------
+ START OF TURN 4 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-C2 (VIP) arrives
-Turn 4
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 76, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 100, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [0] WAIT
+
+================================================================
+ TURN 4 of 18                                    Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ NEWS
+   * C2 (VIP) arrives
+
+ WAITING QUEUE
+   C1  Regular  [#######---]  76
+   C2  VIP      [##########] 100
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [#######---]  76 -      Waiting for a table
+   C2  VIP      [##########] 100 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 4
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 4
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 4
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 4 of 18
+
+----------------------------------------------------------------
+ START OF TURN 5 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 5
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 68, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 95, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [0] WAIT
+
+================================================================
+ TURN 5 of 18                                    Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C1  Regular  [######----]  68
+   C2  VIP      [#########-]  95
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [######----]  68 -      Waiting for a table
+   C2  VIP      [#########-]  95 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 5
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 5
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 5
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 5 of 18
+
+----------------------------------------------------------------
+ START OF TURN 6 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 6
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 60, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 90, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [0] WAIT
+
+================================================================
+ TURN 6 of 18                                    Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C1  Regular  [######----]  60
+   C2  VIP      [#########-]  90
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [######----]  60 -      Waiting for a table
+   C2  VIP      [#########-]  90 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 6
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 6
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 6
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 6 of 18
+
+----------------------------------------------------------------
+ START OF TURN 7 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-C3 (Regular) arrives
-Turn 7
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-  C3 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 52, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 85, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 100, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [0] WAIT
+
+================================================================
+ TURN 7 of 18                                    Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ NEWS
+   * C3 (Regular) arrives
+
+ WAITING QUEUE
+   C1  Regular  [#####-----]  52
+   C2  VIP      [########--]  85
+   C3  Regular  [##########] 100
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [#####-----]  52 -      Waiting for a table
+   C2  VIP      [########--]  85 -      Waiting for a table
+   C3  Regular  [##########] 100 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 7
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 7
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 7
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 7 of 18
+
+----------------------------------------------------------------
+ START OF TURN 8 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 8
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-  C3 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 44, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 80, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 92, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [0] WAIT
+
+================================================================
+ TURN 8 of 18                                    Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C1  Regular  [####------]  44
+   C2  VIP      [########--]  80
+   C3  Regular  [#########-]  92
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [####------]  44 -      Waiting for a table
+   C2  VIP      [########--]  80 -      Waiting for a table
+   C3  Regular  [#########-]  92 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 8
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 8
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 8
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 8 of 18
+
+----------------------------------------------------------------
+ START OF TURN 9 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 9
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-  C3 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 36, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 75, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 84, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [0] WAIT
+
+================================================================
+ TURN 9 of 18                                    Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C1  Regular  [###-------]  36
+   C2  VIP      [#######---]  75
+   C3  Regular  [########--]  84
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [###-------]  36 -      Waiting for a table
+   C2  VIP      [#######---]  75 -      Waiting for a table
+   C3  Regular  [########--]  84 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 9
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 9
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 9
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 9 of 18
+
+----------------------------------------------------------------
+ START OF TURN 10 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-C4 (Critic) arrives
-Turn 10
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-  C3 (Regular)
-  C4 (Critic)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 28, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 70, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 76, order NO_ORDER
-  C4 (Critic): WAITING, satisfaction 100, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [0] WAIT
+
+================================================================
+ TURN 10 of 18                                   Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ NEWS
+   * C4 (Critic) arrives
+
+ WAITING QUEUE
+   C1  Regular  [##--------]  28
+   C2  VIP      [#######---]  70
+   C3  Regular  [#######---]  76
+   C4  Critic   [##########] 100
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [##--------]  28 -      Waiting for a table
+   C2  VIP      [#######---]  70 -      Waiting for a table
+   C3  Regular  [#######---]  76 -      Waiting for a table
+   C4  Critic   [##########] 100 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [4] SEAT C4      Seat customer C4 (Critic)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [4] SEAT C4      Seat customer C4 (Critic)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 10
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 10
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 10
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 10 of 18
+
+----------------------------------------------------------------
+ START OF TURN 11 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 11
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-  C3 (Regular)
-  C4 (Critic)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 20, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 65, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 68, order NO_ORDER
-  C4 (Critic): WAITING, satisfaction 88, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [0] WAIT
+
+================================================================
+ TURN 11 of 18                                   Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C1  Regular  [##--------]  20
+   C2  VIP      [######----]  65
+   C3  Regular  [######----]  68
+   C4  Critic   [########--]  88
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [##--------]  20 -      Waiting for a table
+   C2  VIP      [######----]  65 -      Waiting for a table
+   C3  Regular  [######----]  68 -      Waiting for a table
+   C4  Critic   [########--]  88 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [4] SEAT C4      Seat customer C4 (Critic)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [4] SEAT C4      Seat customer C4 (Critic)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 11
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 11
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 11
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 11 of 18
+
+----------------------------------------------------------------
+ START OF TURN 12 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 12
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-  C3 (Regular)
-  C4 (Critic)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 12, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 60, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 60, order NO_ORDER
-  C4 (Critic): WAITING, satisfaction 76, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [0] WAIT
+
+================================================================
+ TURN 12 of 18                                   Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C1  Regular  [#---------]  12
+   C2  VIP      [######----]  60
+   C3  Regular  [######----]  60
+   C4  Critic   [#######---]  76
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [#---------]  12 -      Waiting for a table
+   C2  VIP      [######----]  60 -      Waiting for a table
+   C3  Regular  [######----]  60 -      Waiting for a table
+   C4  Critic   [#######---]  76 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [4] SEAT C4      Seat customer C4 (Critic)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [4] SEAT C4      Seat customer C4 (Critic)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 12
-Served: 0
-Unhappy departures: 0
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 12
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 12
+ Served: 0   Unhappy departures: 0   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 12 of 18
+
+----------------------------------------------------------------
+ START OF TURN 13 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-C5 (Regular) arrives
-Turn 13
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C1 (Regular)
-  C2 (VIP)
-  C3 (Regular)
-  C4 (Critic)
-  C5 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): WAITING, satisfaction 4, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 55, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 52, order NO_ORDER
-  C4 (Critic): WAITING, satisfaction 64, order NO_ORDER
-  C5 (Regular): WAITING, satisfaction 100, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [5] SEAT C5, [0] WAIT
+
+================================================================
+ TURN 13 of 18                                   Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ NEWS
+   * C5 (Regular) arrives
+
+ WAITING QUEUE
+   C1  Regular  [----------]   4
+   C2  VIP      [#####-----]  55
+   C3  Regular  [#####-----]  52
+   C4  Critic   [######----]  64
+   C5  Regular  [##########] 100
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [----------]   4 -      Waiting for a table
+   C2  VIP      [#####-----]  55 -      Waiting for a table
+   C3  Regular  [#####-----]  52 -      Waiting for a table
+   C4  Critic   [######----]  64 -      Waiting for a table
+   C5  Regular  [##########] 100 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [4] SEAT C4      Seat customer C4 (Critic)
+   [5] SEAT C5      Seat customer C5 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C1, [2] SEAT C2, [3] SEAT C3, [4] SEAT C4, [5] SEAT C5, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C1      Seat customer C1 (Regular)
+   [2] SEAT C2      Seat customer C2 (VIP)
+   [3] SEAT C3      Seat customer C3 (Regular)
+   [4] SEAT C4      Seat customer C4 (Critic)
+   [5] SEAT C5      Seat customer C5 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-C1 left unhappy
-End of turn 13
-Served: 0
-Unhappy departures: 1
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 13
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 13
+   >> Customer C1 left unhappy
+ Served: 0   Unhappy departures: 1   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 13 of 18
+
+----------------------------------------------------------------
+ START OF TURN 14 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 14
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C2 (VIP)
-  C3 (Regular)
-  C4 (Critic)
-  C5 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 50, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 44, order NO_ORDER
-  C4 (Critic): WAITING, satisfaction 52, order NO_ORDER
-  C5 (Regular): WAITING, satisfaction 92, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [0] WAIT
+
+================================================================
+ TURN 14 of 18                                   Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C2  VIP      [#####-----]  50
+   C3  Regular  [####------]  44
+   C4  Critic   [#####-----]  52
+   C5  Regular  [#########-]  92
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [----------]   0 -      Left unhappy
+   C2  VIP      [#####-----]  50 -      Waiting for a table
+   C3  Regular  [####------]  44 -      Waiting for a table
+   C4  Critic   [#####-----]  52 -      Waiting for a table
+   C5  Regular  [#########-]  92 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 14
-Served: 0
-Unhappy departures: 1
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 14
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 14
+ Served: 0   Unhappy departures: 1   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 14 of 18
+
+----------------------------------------------------------------
+ START OF TURN 15 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 15
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C2 (VIP)
-  C3 (Regular)
-  C4 (Critic)
-  C5 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 45, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 36, order NO_ORDER
-  C4 (Critic): WAITING, satisfaction 40, order NO_ORDER
-  C5 (Regular): WAITING, satisfaction 84, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [0] WAIT
+
+================================================================
+ TURN 15 of 18                                   Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C2  VIP      [####------]  45
+   C3  Regular  [###-------]  36
+   C4  Critic   [####------]  40
+   C5  Regular  [########--]  84
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [----------]   0 -      Left unhappy
+   C2  VIP      [####------]  45 -      Waiting for a table
+   C3  Regular  [###-------]  36 -      Waiting for a table
+   C4  Critic   [####------]  40 -      Waiting for a table
+   C5  Regular  [########--]  84 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 15
-Served: 0
-Unhappy departures: 1
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 15
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 15
+ Served: 0   Unhappy departures: 1   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 15 of 18
+
+----------------------------------------------------------------
+ START OF TURN 16 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-C6 (Regular) arrives
-Turn 16
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C2 (VIP)
-  C3 (Regular)
-  C4 (Critic)
-  C5 (Regular)
-  C6 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 40, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 28, order NO_ORDER
-  C4 (Critic): WAITING, satisfaction 28, order NO_ORDER
-  C5 (Regular): WAITING, satisfaction 76, order NO_ORDER
-  C6 (Regular): WAITING, satisfaction 100, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [5] SEAT C6, [0] WAIT
+
+================================================================
+ TURN 16 of 18                                   Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ NEWS
+   * C6 (Regular) arrives
+
+ WAITING QUEUE
+   C2  VIP      [####------]  40
+   C3  Regular  [##--------]  28
+   C4  Critic   [##--------]  28
+   C5  Regular  [#######---]  76
+   C6  Regular  [##########] 100
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [----------]   0 -      Left unhappy
+   C2  VIP      [####------]  40 -      Waiting for a table
+   C3  Regular  [##--------]  28 -      Waiting for a table
+   C4  Critic   [##--------]  28 -      Waiting for a table
+   C5  Regular  [#######---]  76 -      Waiting for a table
+   C6  Regular  [##########] 100 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [5] SEAT C6      Seat customer C6 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [5] SEAT C6, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [5] SEAT C6      Seat customer C6 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 16
-Served: 0
-Unhappy departures: 1
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 16
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 16
+ Served: 0   Unhappy departures: 1   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 16 of 18
+
+----------------------------------------------------------------
+ START OF TURN 17 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 17
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C2 (VIP)
-  C3 (Regular)
-  C4 (Critic)
-  C5 (Regular)
-  C6 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 35, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 20, order NO_ORDER
-  C4 (Critic): WAITING, satisfaction 16, order NO_ORDER
-  C5 (Regular): WAITING, satisfaction 68, order NO_ORDER
-  C6 (Regular): WAITING, satisfaction 92, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [5] SEAT C6, [0] WAIT
+
+================================================================
+ TURN 17 of 18                                   Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C2  VIP      [###-------]  35
+   C3  Regular  [##--------]  20
+   C4  Critic   [#---------]  16
+   C5  Regular  [######----]  68
+   C6  Regular  [#########-]  92
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [----------]   0 -      Left unhappy
+   C2  VIP      [###-------]  35 -      Waiting for a table
+   C3  Regular  [##--------]  20 -      Waiting for a table
+   C4  Critic   [#---------]  16 -      Waiting for a table
+   C5  Regular  [######----]  68 -      Waiting for a table
+   C6  Regular  [#########-]  92 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [5] SEAT C6      Seat customer C6 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [5] SEAT C6, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [5] SEAT C6      Seat customer C6 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-End of turn 17
-Served: 0
-Unhappy departures: 1
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 17
-Happy Hour available: HAPPY_HOUR or SKIP
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 17
+ Served: 0   Unhappy departures: 1   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 17 of 18
+
+----------------------------------------------------------------
+ START OF TURN 18 - MANAGER'S DECISION
+ Happy Hour is available.
+ Type HAPPY_HOUR to start it now, or SKIP.
 Manager> 
-Turn 18
-Revenue: $0.00
-Average satisfaction: N/A
-Happy Hour remaining: 0
-Queue:
-  C2 (VIP)
-  C3 (Regular)
-  C4 (Critic)
-  C5 (Regular)
-  C6 (Regular)
-Tables:
-  T1: free
-  T2: free
-Customers:
-  C1 (Regular): LEFT, satisfaction 0, order NO_ORDER
-  C2 (VIP): WAITING, satisfaction 30, order NO_ORDER
-  C3 (Regular): WAITING, satisfaction 12, order NO_ORDER
-  C4 (Critic): WAITING, satisfaction 4, order NO_ORDER
-  C5 (Regular): WAITING, satisfaction 60, order NO_ORDER
-  C6 (Regular): WAITING, satisfaction 84, order NO_ORDER
-Orders:
-  (none)
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [5] SEAT C6, [0] WAIT
+
+================================================================
+ TURN 18 of 18                                   Happy Hour: off
+================================================================
+ Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A
+
+ WAITING QUEUE
+   C2  VIP      [###-------]  30
+   C3  Regular  [#---------]  12
+   C4  Critic   [----------]   4
+   C5  Regular  [######----]  60
+   C6  Regular  [########--]  84
+
+ TABLES
+   Table T1  free
+   Table T2  free
+
+ CUSTOMERS
+   ID  Type     Satisfaction     Order  Status
+   C1  Regular  [----------]   0 -      Left unhappy
+   C2  VIP      [###-------]  30 -      Waiting for a table
+   C3  Regular  [#---------]  12 -      Waiting for a table
+   C4  Critic   [----------]   4 -      Waiting for a table
+   C5  Regular  [######----]  60 -      Waiting for a table
+   C6  Regular  [########--]  84 -      Waiting for a table
+
+ ORDERS
+   (no orders yet)
+
+----------------------------------------------------------------
+ HOST'S TURN
+ What should the Host do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [5] SEAT C6      Seat customer C6 (Regular)
+   [0] WAIT         Do nothing
 Host> 
-Host waits.
-Legal actions: [1] SEAT C2, [2] SEAT C3, [3] SEAT C4, [4] SEAT C5, [5] SEAT C6, [0] WAIT
+   >> Host waits.
+
+----------------------------------------------------------------
+ WAITER'S TURN
+ What should the Waiter do?
+   [1] SEAT C2      Seat customer C2 (VIP)
+   [2] SEAT C3      Seat customer C3 (Regular)
+   [3] SEAT C4      Seat customer C4 (Critic)
+   [4] SEAT C5      Seat customer C5 (Regular)
+   [5] SEAT C6      Seat customer C6 (Regular)
+   [0] WAIT         Do nothing
 Waiter> 
-Waiter waits.
-Legal actions: [0] WAIT
+   >> Waiter waits.
+
+----------------------------------------------------------------
+ CHEF'S TURN
+ What should the Chef do?
+   [0] WAIT         Do nothing
 Chef> 
-Chef waits.
-C4 left unhappy
-End of turn 18
-Served: 0
-Unhappy departures: 2
-Revenue: $0.00
-Average satisfaction: N/A
-Turns used: 18
-Result: DEFEAT
+   >> Chef waits.
+
+----------------------------------------------------------------
+ END OF TURN 18
+   >> Customer C4 left unhappy
+ Served: 0   Unhappy departures: 2   Revenue: $0.00
+ Average satisfaction: N/A   Turns used: 18 of 18
+
+================================================================
+                         *** DEFEAT ***
+                Better luck next time, manager.
+================================================================
+ Paid customers: 0   Revenue: $0.00   Average satisfaction: N/A
+ Result: DEFEAT

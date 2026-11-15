@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Scanner;
 import restaurantrush.cli.CommandParser;
@@ -17,6 +18,7 @@ import restaurantrush.game.GameConfig;
 import restaurantrush.game.GameResult;
 import restaurantrush.game.GameSetup;
 import restaurantrush.game.GameState;
+import restaurantrush.game.OrderView;
 import restaurantrush.game.Phase;
 import restaurantrush.game.Snapshot;
 import restaurantrush.game.StaffRole;
@@ -24,14 +26,22 @@ import restaurantrush.game.TableView;
 import restaurantrush.game.TurnController;
 import restaurantrush.game.TurnSummary;
 import restaurantrush.menu.Menu;
+import restaurantrush.menu.OrderStatus;
 import restaurantrush.staff.Cashier;
 import restaurantrush.staff.Chef;
 import restaurantrush.staff.Waiter;
 
 public final class CliCheck {
     private static final String OUT_OF_RANGE = "That number is not in the list. Choose a number from the list, or type a command.";
-    private static final String MANAGER_PROMPT = "Happy Hour available: HAPPY_HOUR or SKIP\nManager> \n";
-    private static final String MANAGER_ERROR = "Invalid manager command. Use HAPPY_HOUR or SKIP.\n";
+    private static final String HEAVY_RULE = "=".repeat(64);
+    private static final String LIGHT_RULE = "-".repeat(64);
+    private static final String TITLE = HEAVY_RULE + "\n                 R E S T A U R A N T   R U S H\n" + HEAVY_RULE + "\n"
+            + " You are the manager. The game lasts 18 turns, and each turn you\n choose what your staff do.\n\n"
+            + " At each prompt, type the number next to an action, or type\n the command itself, such as SEAT C1. 0 means wait.\n";
+    private static final String RESULT = "   >> ";
+    private static final String ERROR = "   !! ";
+    private static final String MANAGER_PROMPT = "Manager> \n";
+    private static final String MANAGER_ERROR = ERROR + "Invalid manager command. Use HAPPY_HOUR or SKIP.\n";
     private static final String INPUT_ENDED = "Input ended before the game finished.\n";
 
     private CliCheck() {
@@ -204,53 +214,71 @@ public final class CliCheck {
                 List.of(customer), List.of(), Optional.of(StaffRole.WAITER),
                 List.of(new Action(StaffRole.WAITER, ActionKind.SEAT, "C1")));
         String firstDisplay = ConsoleUI.render(firstTurn);
-        assert firstDisplay.contains("Turn 1");
-        assert firstDisplay.contains("$0.00");
-        assert firstDisplay.contains("N/A");
-        assert firstDisplay.contains("C1 (Regular)");
-        assert firstDisplay.contains("WAITING");
-        assert firstDisplay.contains("100");
-        assert firstDisplay.contains("NO_ORDER");
-        assert firstDisplay.contains("T1: free");
-        assert firstDisplay.contains("T2: free");
+        assert firstDisplay.startsWith("\n" + HEAVY_RULE + "\n TURN 1 of 18\n" + HEAVY_RULE + "\n"
+                + " Revenue $0.00  |  Paid customers 0  |  Average satisfaction N/A\n") : firstDisplay;
+        assert firstDisplay.contains("\n WAITING QUEUE\n   C1  Regular  [##########] 100\n") : firstDisplay;
+        assert firstDisplay.contains("\n TABLES\n   Table T1  free\n   Table T2  free\n") : firstDisplay;
+        assert firstDisplay.contains("   C1  Regular  [##########] 100 -      Waiting for a table\n") : firstDisplay;
+        assert firstDisplay.endsWith("\n ORDERS\n   (no orders yet)\n") : firstDisplay;
+        assert !firstDisplay.contains("NEWS");
         assertOutput(firstDisplay);
 
-        assert ConsoleUI.render(emptySnapshot(2, 2, 160)).contains("80.0");
+        // A seated customer shows at the table, and each order its progress and bill.
+        CustomerView seated = new CustomerView("C2", "VIP", CustomerStatus.SEATED, 95, Optional.of("O2"));
+        Snapshot later = new Snapshot(4, Phase.WAITER, 900, 1, 92, List.of(),
+                List.of(new TableView("T1", Optional.empty()), new TableView("T2", Optional.of("C2"))),
+                List.of(seated), List.of(new OrderView("O2", "C2", "Burger", OrderStatus.READY, 1, 1, 1350)),
+                Optional.of(StaffRole.WAITER), List.of());
+        String laterDisplay = ConsoleUI.render(later);
+        assert laterDisplay.contains(" Revenue $9.00  |  Paid customers 1  |  Average satisfaction 92.0\n\n"
+                + " WAITING QUEUE\n   (nobody is waiting)\n") : laterDisplay;
+        assert laterDisplay.contains("   Table T2  Customer C2 - Waiting for food\n") : laterDisplay;
+        assert laterDisplay.contains("   C2  VIP      [#########-]  95 O2     Waiting for food\n") : laterDisplay;
+        assert laterDisplay.contains("   O2  Burger                C2   1/1     $13.50  Ready\n") : laterDisplay;
+        assertOutput(laterDisplay);
+
+        assert ConsoleUI.render(emptySnapshot(2, 2, 160)).contains("Average satisfaction 80.0");
         String average = ConsoleUI.render(emptySnapshot(3, 3, 229));
-        assert average.contains("76.3");
+        assert average.contains("Average satisfaction 76.3");
         assertOutput(ConsoleUI.render(emptySnapshot(2, 2, 160)));
         assertOutput(average);
 
         TurnSummary summary = new TurnSummary(2, 4, 1, 4520, 0, 0);
         String noResult = ConsoleUI.render(summary, Optional.empty());
-        assert noResult.contains("End of turn 2");
-        assert noResult.contains("Served: 4");
-        assert noResult.contains("Unhappy departures: 1");
-        assert noResult.contains("$45.20");
-        assert noResult.contains("N/A");
-        assert noResult.endsWith("Turns used: 2\n");
+        assert noResult.equals(" Served: 4   Unhappy departures: 1   Revenue: $45.20\n"
+                + " Average satisfaction: N/A   Turns used: 2 of 18\n") : noResult;
         assertOutput(noResult);
 
         String victory = ConsoleUI.render(new TurnSummary(18, 5, 1, 8000, 5, 400), Optional.of(GameResult.VICTORY));
         String defeat = ConsoleUI.render(new TurnSummary(18, 2, 4, 2500, 2, 120), Optional.of(GameResult.DEFEAT));
-        assert victory.endsWith("Turns used: 18\nResult: VICTORY\n");
-        assert defeat.endsWith("Turns used: 18\nResult: DEFEAT\n");
+        assert victory.contains("Turns used: 18 of 18\n\n" + HEAVY_RULE + "\n") : victory;
+        assert victory.contains("*** VICTORY ***\n") : victory;
+        assert victory.endsWith(" Paid customers: 5   Revenue: $80.00   Average satisfaction: 80.0\n Result: VICTORY\n")
+                : victory;
+        assert defeat.contains("*** DEFEAT ***\n") : defeat;
+        assert defeat.endsWith("\n Result: DEFEAT\n") : defeat;
         assertOutput(victory);
         assertOutput(defeat);
     }
 
-    // A HOST-phase start snapshot shows the remaining Happy Hour duration, including 0; other snapshots render as before.
+    // A HOST-phase start snapshot shows the remaining Happy Hour duration, including 0; other snapshots show no Happy Hour status.
     private static void checkHappyHourRendering() {
         CustomerView customer = new CustomerView("C1", "Regular", CustomerStatus.WAITING, 100, Optional.empty());
         List<TableView> tables = List.of(new TableView("T1", Optional.empty()), new TableView("T2", Optional.empty()));
         List<Action> hostActions = List.of(new Action(StaffRole.HOST, ActionKind.SEAT, "C1"),
                 new Action(StaffRole.HOST, ActionKind.WAIT, null));
+        String[] banners = {
+            " TURN 7 of 18                                    Happy Hour: off",
+            " TURN 7 of 18                      HAPPY HOUR ON (turns left: 1)",
+            " TURN 7 of 18                      HAPPY HOUR ON (turns left: 2)",
+        };
         for (int remaining : new int[] {2, 1, 0}) {
             Snapshot host = new Snapshot(7, Phase.HOST, 900, 1, 92, List.of(customer), tables, List.of(customer),
                     List.of(), Optional.of(StaffRole.HOST), hostActions, false, remaining);
             String display = ConsoleUI.render(host);
-            assert display.startsWith("Turn 7\nRevenue: $9.00\nAverage satisfaction: 92.0\nHappy Hour remaining: "
-                    + remaining + "\nQueue:\n") : display;
+            assert display.startsWith("\n" + HEAVY_RULE + "\n" + banners[remaining] + "\n" + HEAVY_RULE + "\n"
+                    + " Revenue $9.00  |  Paid customers 1  |  Average satisfaction 92.0\n") : display;
+            assert banners[remaining].length() == HEAVY_RULE.length();
             assertOutput(display);
         }
 
@@ -261,8 +289,8 @@ public final class CliCheck {
         assert legacy.equals(new Snapshot(1, Phase.WAITER, 0, 0, 0, List.of(customer), tables, List.of(customer),
                 List.of(), Optional.of(StaffRole.WAITER), waiterActions, false, 0));
         String legacyDisplay = ConsoleUI.render(legacy);
-        assert legacyDisplay.startsWith("Turn 1\nRevenue: $0.00\nAverage satisfaction: N/A\nQueue:\n") : legacyDisplay;
-        assert !legacyDisplay.contains("Happy Hour");
+        assert legacyDisplay.startsWith("\n" + HEAVY_RULE + "\n TURN 1 of 18\n" + HEAVY_RULE + "\n") : legacyDisplay;
+        assert !legacyDisplay.contains("Happy Hour") && !legacyDisplay.contains("HAPPY HOUR");
     }
 
     private static void checkRunEndsEarly() {
@@ -270,6 +298,7 @@ public final class CliCheck {
         String transcript = playLegacyUntilInputEnds("WAIT\nWAIT\nWAIT\nWAIT\n");
         String[] lines = transcript.split("\n");
         assert lines[lines.length - 1].equals("Input ended before the game finished.");
+        assert transcript.startsWith(TITLE) : transcript;
         assertTwoRoles(transcript);
     }
 
@@ -277,15 +306,19 @@ public final class CliCheck {
         // Turn 1: 2 and 99 are not in the list, so the Waiter is asked again; 1 seats C1 and the Chef waits with 0.
         // Turn 2: 1 takes C1's order and 1 prepares it.
         String numbers = playLegacyUntilInputEnds("2\n99\n1\n0\n1\n1\n");
-        String retry = OUT_OF_RANGE + "\n";
-        String turnOneWaiter = "Legal actions: [1] SEAT C1, [0] WAIT\nWaiter> \n";
-        assert numbers.contains(turnOneWaiter + retry + turnOneWaiter + retry + turnOneWaiter
-                + "C1 seated at T1\nLegal actions: [0] WAIT\nChef> \nChef waits.\n") : numbers;
-        assert numbers.contains("Legal actions: [1] ORDER C1, [0] WAIT\nWaiter> \nC1 orders Salad ($9.00) as O1\n"
-                + "Legal actions: [1] PREPARE O1, [0] WAIT\nChef> \nO1 is READY\n") : numbers;
+        String retry = ERROR + OUT_OF_RANGE + "\n";
+        String seatList = "   [1] SEAT C1      Seat customer C1 (Regular)\n   [0] WAIT         Do nothing\nWaiter> \n";
+        assert numbers.contains(heading("Waiter") + seatList + retry + seatList + retry + seatList
+                + RESULT + "Customer C1 is seated at table T1\n" + heading("Chef")
+                + "   [0] WAIT         Do nothing\nChef> \n" + RESULT + "Chef waits.\n") : numbers;
+        assert numbers.contains(heading("Waiter") + "   [1] ORDER C1     Take customer C1's order\n"
+                + "   [0] WAIT         Do nothing\nWaiter> \n" + RESULT + "Customer C1 orders Salad for $9.00 (order O1)\n"
+                + heading("Chef") + "   [1] PREPARE O1   Prepare order O1 (Salad, 0/1)\n"
+                + "   [0] WAIT         Do nothing\nChef> \n" + RESULT + "Order O1 is READY to serve\n") : numbers;
 
         String waits = playLegacyUntilInputEnds("0\n");
-        assert waits.contains(turnOneWaiter + "Waiter waits.\nLegal actions: [0] WAIT\nChef> \n") : waits;
+        assert waits.contains(seatList + RESULT + "Waiter waits.\n" + heading("Chef")
+                + "   [0] WAIT         Do nothing\nChef> \n") : waits;
         assertTwoRoles(numbers);
         assertTwoRoles(waits);
     }
@@ -299,37 +332,54 @@ public final class CliCheck {
                 + "happy_hour\n" + "0\nWAIT\nPREPARE O1\n";
         String transcript = playUntilInputEnds(GameSetup.baseGame(), input);
 
-        String hostTurnOne = "Legal actions: [1] SEAT C1, [0] WAIT\nHost> \n";
-        assert transcript.startsWith(MANAGER_PROMPT + MANAGER_ERROR + MANAGER_PROMPT
-                + "C1 (Regular) arrives\nTurn 1\nRevenue: $0.00\nAverage satisfaction: N/A\nHappy Hour remaining: 0\nQueue:\n")
+        String hostList = "   [1] SEAT C1      Seat customer C1 (Regular)\n   [0] WAIT         Do nothing\nHost> \n";
+        assert transcript.startsWith(TITLE + managerHeading(1) + MANAGER_PROMPT + MANAGER_ERROR + MANAGER_PROMPT
+                + "\n" + HEAVY_RULE + "\n TURN 1 of 18                                    Happy Hour: off\n") : transcript;
+        assert transcript.contains(heading("Host") + hostList + ERROR + "ORDER is not available to Host.\n"
+                + hostList + ERROR + "Nothing was entered. Enter a command for Host.\n"
+                + hostList + ERROR + "C9 is not in the waiting queue.\n"
+                + hostList + ERROR + OUT_OF_RANGE + "\n"
+                + hostList + RESULT + "Customer C1 is seated at table T1\n"
+                + heading("Waiter") + "   [1] ORDER C1     Take customer C1's order\n   [0] WAIT         Do nothing\n"
+                + "Waiter> \n" + RESULT + "Customer C1 orders Salad for $9.00 (order O1)\n"
+                + heading("Chef") + "   [1] PREPARE O1   Prepare order O1 (Salad, 0/1)\n   [0] WAIT         Do nothing\n"
+                + "Chef> \n" + RESULT + "Chef waits.\n") : transcript;
+        assert transcript.contains("Turns used: 1 of 18\n" + managerHeading(2) + MANAGER_PROMPT + "\n" + HEAVY_RULE
+                + "\n TURN 2 of 18                      HAPPY HOUR ON (turns left: 2)\n") : transcript;
+        assert transcript.contains("\n NEWS\n   * Happy Hour activated\n   * Customer C1 recovers 8 satisfaction (now 100)\n")
                 : transcript;
-        assert transcript.contains(hostTurnOne + "ORDER is not available to Host.\n"
-                + hostTurnOne + "Nothing was entered. Enter a command for Host.\n"
-                + hostTurnOne + "C9 is not in the waiting queue.\n"
-                + hostTurnOne + OUT_OF_RANGE + "\n"
-                + hostTurnOne + "C1 seated at T1\n"
-                + "Legal actions: [1] ORDER C1, [0] WAIT\nWaiter> \nC1 orders Salad ($9.00) as O1\n"
-                + "Legal actions: [1] PREPARE O1, [0] WAIT\nChef> \nChef waits.\n") : transcript;
-        assert transcript.contains("Turns used: 1\n" + MANAGER_PROMPT
-                + "Happy Hour activated\nC1 recovers 8 satisfaction (100)\nTurn 2\nRevenue: $0.00\n"
-                + "Average satisfaction: N/A\nHappy Hour remaining: 2\n") : transcript;
-        assert transcript.contains("Legal actions: [0] WAIT\nHost> \nHost waits.\n"
-                + "Legal actions: [0] WAIT\nWaiter> \nWaiter waits.\n") : transcript;
-        assert transcript.contains("O1 is READY\n") : transcript;
-        assert transcript.contains("Turns used: 2\nC1 recovers 8 satisfaction (100)\nTurn 3\n"
-                + "Revenue: $0.00\nAverage satisfaction: N/A\nHappy Hour remaining: 1\n") : transcript;
+        assert transcript.contains(heading("Host") + "   [0] WAIT         Do nothing\nHost> \n" + RESULT + "Host waits.\n"
+                + heading("Waiter") + "   [0] WAIT         Do nothing\nWaiter> \n" + RESULT + "Waiter waits.\n") : transcript;
+        assert transcript.contains(RESULT + "Order O1 is READY to serve\n") : transcript;
+        assert transcript.contains("Turns used: 2 of 18\n\n" + HEAVY_RULE
+                + "\n TURN 3 of 18                      HAPPY HOUR ON (turns left: 1)\n") : transcript;
+        assert transcript.contains("\n NEWS\n   * Customer C1 recovers 8 satisfaction (now 100)\n\n WAITING QUEUE\n")
+                : transcript;
         assert transcript.endsWith("Host> \n" + INPUT_ENDED) : transcript;
         assert transcript.split("Manager> ", -1).length - 1 == 3;
     }
 
     // Input that ends at the Manager prompt, after a manager retry, or at the Host prompt stops the run with the usual message.
     private static void checkStage3InputEnds() {
-        assert playUntilInputEnds(GameSetup.baseGame(), "").equals(MANAGER_PROMPT + INPUT_ENDED);
+        assert playUntilInputEnds(GameSetup.baseGame(), "").equals(TITLE + managerHeading(1) + MANAGER_PROMPT + INPUT_ENDED);
         assert playUntilInputEnds(GameSetup.baseGame(), "maybe\n")
-                .equals(MANAGER_PROMPT + MANAGER_ERROR + MANAGER_PROMPT + INPUT_ENDED);
+                .equals(TITLE + managerHeading(1) + MANAGER_PROMPT + MANAGER_ERROR + MANAGER_PROMPT + INPUT_ENDED);
         String atHost = playUntilInputEnds(GameSetup.baseGame(), "SKIP\n");
-        assert atHost.startsWith(MANAGER_PROMPT + "C1 (Regular) arrives\nTurn 1\n") : atHost;
-        assert atHost.endsWith("Legal actions: [1] SEAT C1, [0] WAIT\nHost> \n" + INPUT_ENDED) : atHost;
+        assert atHost.startsWith(TITLE + managerHeading(1) + MANAGER_PROMPT + "\n" + HEAVY_RULE + "\n TURN 1 of 18 ")
+                : atHost;
+        assert atHost.contains("\n NEWS\n   * C1 (Regular) arrives\n") : atHost;
+        assert atHost.endsWith(heading("Host") + "   [1] SEAT C1      Seat customer C1 (Regular)\n"
+                + "   [0] WAIT         Do nothing\nHost> \n" + INPUT_ENDED) : atHost;
+    }
+
+    private static String heading(String role) {
+        return "\n" + LIGHT_RULE + "\n " + role.toUpperCase(Locale.ROOT) + "'S TURN\n What should the " + role
+                + " do?\n";
+    }
+
+    private static String managerHeading(int turn) {
+        return "\n" + LIGHT_RULE + "\n START OF TURN " + turn + " - MANAGER'S DECISION\n Happy Hour is available.\n"
+                + " Type HAPPY_HOUR to start it now, or SKIP.\n";
     }
 
     // The Stage 1 and 2 flow, built without a Host as earlier stages' GameCheck traces are.

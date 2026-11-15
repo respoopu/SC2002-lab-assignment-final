@@ -352,7 +352,7 @@ public final class GameCheck {
         assert !game.submit(action(StaffRole.HOST, "WAIT")).accepted();
         assert game.snapshot().legalActions().equals(List.of(action(StaffRole.WAITER, "SEAT C1"), action(StaffRole.WAITER, "WAIT")));
         ActionResult seat = game.submit(action(StaffRole.WAITER, "SEAT C1"));
-        assert seat.events().equals(List.of(new GameEvent(1, "C1 seated at T1")));
+        assert seat.events().equals(List.of(new GameEvent(1, "Customer C1 is seated at table T1")));
         assert game.phase() == Phase.CHEF;
         accept(game, StaffRole.CHEF, "WAIT");
         assert game.phase() == Phase.TURN_END && game.currentRole().isEmpty();
@@ -371,10 +371,10 @@ public final class GameCheck {
         }
         game.beginTurn(false);
         assert ids(game.snapshot().queue()).equals(List.of("C1", "C2"));
-        assert game.submit(action(StaffRole.HOST, "SEAT C2")).events().equals(List.of(new GameEvent(4, "C2 seated at T1")));
+        assert game.submit(action(StaffRole.HOST, "SEAT C2")).events().equals(List.of(new GameEvent(4, "Customer C2 is seated at table T1")));
         assert game.snapshot().legalActions().equals(List.of(action(StaffRole.WAITER, "SEAT C1"),
                 action(StaffRole.WAITER, "ORDER C2"), action(StaffRole.WAITER, "WAIT")));
-        assert game.submit(action(StaffRole.WAITER, "SEAT C1")).events().equals(List.of(new GameEvent(4, "C1 seated at T2")));
+        assert game.submit(action(StaffRole.WAITER, "SEAT C1")).events().equals(List.of(new GameEvent(4, "Customer C1 is seated at table T2")));
         accept(game, StaffRole.CHEF, "WAIT");
         game.endTurn();
 
@@ -413,7 +413,7 @@ public final class GameCheck {
         assert game.snapshot().happyHourAvailable() && !state.happyHourActive();
         TurnStart activation = game.beginTurn(true);
         assert activation.events().equals(List.of(new GameEvent(2, "Happy Hour activated"),
-                new GameEvent(2, "C1 recovers 8 satisfaction (100)")));
+                new GameEvent(2, "Customer C1 recovers 8 satisfaction (now 100)")));
         assert activation.snapshot().happyHourRemaining() == 2 && !activation.snapshot().happyHourAvailable();
         assert state.happyHourUsed() && state.happyHourActive() && state.happyHourRemaining() == 2;
         accept(game, StaffRole.HOST, "WAIT");
@@ -426,7 +426,7 @@ public final class GameCheck {
         assertThrows(() -> game.beginTurn(true));
         assert game.snapshot().equals(between);
         TurnStart next = game.beginTurn(false);
-        assert next.events().equals(List.of(new GameEvent(3, "C1 recovers 8 satisfaction (100)")));
+        assert next.events().equals(List.of(new GameEvent(3, "Customer C1 recovers 8 satisfaction (now 100)")));
         assert next.snapshot().happyHourRemaining() == 1 && state.happyHourActive();
     }
 
@@ -445,11 +445,11 @@ public final class GameCheck {
 
         TurnStart turn4 = game.beginTurn(true);
         assert turn4.events().equals(List.of(new GameEvent(4, "Happy Hour activated"),
-                new GameEvent(4, "C1 recovers 15 satisfaction (91)"), new GameEvent(4, "C2 (VIP) arrives")));
+                new GameEvent(4, "Customer C1 recovers 15 satisfaction (now 91)"), new GameEvent(4, "C2 (VIP) arrives")));
         assert customer(turn4.snapshot(), "C2").satisfaction() == 100;
         accept(game, StaffRole.HOST, "SEAT C2");
         ActionResult vipOrder = game.submit(action(StaffRole.WAITER, "ORDER C2"));
-        assert vipOrder.events().equals(List.of(new GameEvent(4, "C2 orders Burger ($10.80) as O2")));
+        assert vipOrder.events().equals(List.of(new GameEvent(4, "Customer C2 orders Burger for $10.80 (order O2)")));
         accept(game, StaffRole.CHEF, "PREPARE O1");
         game.endTurn();
         assert order(game.snapshot(), "O1").billCents() == 900;
@@ -457,8 +457,8 @@ public final class GameCheck {
 
         // Turn 5: still active, so both seated customers recover; C2's 5 points reach the cap of 100.
         TurnStart turn5 = game.beginTurn(false);
-        assert turn5.events().equals(List.of(new GameEvent(5, "C1 recovers 15 satisfaction (98)"),
-                new GameEvent(5, "C2 recovers 5 satisfaction (100)")));
+        assert turn5.events().equals(List.of(new GameEvent(5, "Customer C1 recovers 15 satisfaction (now 98)"),
+                new GameEvent(5, "Customer C2 recovers 5 satisfaction (now 100)")));
         assert turn5.snapshot().happyHourRemaining() == 1;
         accept(game, StaffRole.HOST, "WAIT");
         accept(game, StaffRole.WAITER, "SERVE O1");
@@ -470,8 +470,8 @@ public final class GameCheck {
         playStage3Turn(game, false, "WAIT", "WAIT", "WAIT", log);
         playStage3Turn(game, false, "WAIT", "WAIT", "WAIT", log);
         assert log.stream().filter(line -> line.contains(" recovers ")).toList().isEmpty();
-        assert log.contains("7: C1 paid $9.00 (satisfaction 98), T1 free") : log;
-        assert log.contains("8: C2 paid $10.80 (satisfaction 95), T2 free") : log;
+        assert log.contains("7: Customer C1 paid $9.00 (satisfaction 98); table T1 is free") : log;
+        assert log.contains("8: Customer C2 paid $10.80 (satisfaction 95); table T2 is free") : log;
         assert order(game.snapshot(), "O1").billCents() == 900 && order(game.snapshot(), "O2").billCents() == 1080;
         assert game.snapshot().revenueCents() == 1980;
     }
@@ -487,11 +487,11 @@ public final class GameCheck {
         assert game.snapshot().happyHourAvailable();
         TurnStart last = game.beginTurn(true);
         assert last.events().equals(List.of(new GameEvent(18, "Happy Hour activated"),
-                new GameEvent(18, "C2 recovers 15 satisfaction (45)"),
-                new GameEvent(18, "C3 recovers 15 satisfaction (27)"),
-                new GameEvent(18, "C4 recovers 15 satisfaction (19)"),
-                new GameEvent(18, "C5 recovers 15 satisfaction (75)"),
-                new GameEvent(18, "C6 recovers 15 satisfaction (99)")));
+                new GameEvent(18, "Customer C2 recovers 15 satisfaction (now 45)"),
+                new GameEvent(18, "Customer C3 recovers 15 satisfaction (now 27)"),
+                new GameEvent(18, "Customer C4 recovers 15 satisfaction (now 19)"),
+                new GameEvent(18, "Customer C5 recovers 15 satisfaction (now 75)"),
+                new GameEvent(18, "Customer C6 recovers 15 satisfaction (now 99)")));
         CustomerView c1 = customer(last.snapshot(), "C1");
         assert c1.status() == CustomerStatus.LEFT && c1.satisfaction() == 0;
         assert last.snapshot().happyHourRemaining() == 2;
@@ -542,7 +542,7 @@ public final class GameCheck {
         assert starts.stream().map(Snapshot::happyHourRemaining).toList()
                 .equals(List.of(0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
         assert log.stream().filter(line -> line.contains("Happy Hour") || line.contains(" recovers ")).toList()
-                .equals(List.of("7: Happy Hour activated", "8: C3 recovers 8 satisfaction (100)"));
+                .equals(List.of("7: Happy Hour activated", "8: Customer C3 recovers 8 satisfaction (now 100)"));
         assert log.indexOf("7: Happy Hour activated") == log.indexOf("7: C3 (Regular) arrives") - 1;
         // Only waiting or seated customers recover: on turn 7 C1 has paid and C2 is ready to pay, so neither changes.
         CustomerView c1AtActivation = customer(starts.get(6), "C1");
@@ -554,14 +554,14 @@ public final class GameCheck {
         assert satisfactionByTurn(ends, "C3", 7, 9).equals(List.of(92, 92, 84));
 
         assert log.stream().filter(line -> line.contains(" seated at ")).toList().equals(List.of(
-                "1: C1 seated at T1", "4: C2 seated at T2", "7: C3 seated at T1", "10: C4 seated at T2",
-                "13: C5 seated at T1"));
+                "1: Customer C1 is seated at table T1", "4: Customer C2 is seated at table T2", "7: Customer C3 is seated at table T1", "10: Customer C4 is seated at table T2",
+                "13: Customer C5 is seated at table T1"));
         // A payment at the end of a turn frees its table only after that turn's Host has acted.
-        assert log.indexOf("4: C2 seated at T2") < log.indexOf("4: C1 paid $9.00 (satisfaction 92), T1 free");
-        assert log.indexOf("7: C3 seated at T1") < log.indexOf("7: C2 paid $13.50 (satisfaction 95), T2 free");
+        assert log.indexOf("4: Customer C2 is seated at table T2") < log.indexOf("4: Customer C1 paid $9.00 (satisfaction 92); table T1 is free");
+        assert log.indexOf("7: Customer C3 is seated at table T1") < log.indexOf("7: Customer C2 paid $13.50 (satisfaction 95); table T2 is free");
 
-        assert log.contains("7: C3 orders Salad + Pasta combo ($19.44) as O3");
-        assert log.containsAll(List.of("7: O3 unit 1 of 3 done", "8: O3 unit 2 of 3 done", "9: O3 is READY"));
+        assert log.contains("7: Customer C3 orders Salad + Pasta combo for $19.44 (order O3)");
+        assert log.containsAll(List.of("7: Order O3: preparation unit 1 of 3 done", "8: Order O3: preparation unit 2 of 3 done", "9: Order O3 is READY to serve"));
         Snapshot last = ends.get(17);
         OrderView o3 = order(last, "O3");
         assert o3.itemName().equals("Salad + Pasta combo") && o3.unitsRequired() == 3 && o3.billCents() == 1944;
@@ -573,11 +573,11 @@ public final class GameCheck {
 
         List<String> payments = log.stream().filter(line -> line.contains(" paid ")).toList();
         assert payments.equals(List.of(
-                "4: C1 paid $9.00 (satisfaction 92), T1 free",
-                "7: C2 paid $13.50 (satisfaction 95), T2 free",
-                "12: C3 paid $19.44 (satisfaction 84), T1 free",
-                "15: C4 paid $18.00 (satisfaction 64), T2 free",
-                "17: C5 paid $15.00 (satisfaction 84), T1 free")) : payments;
+                "4: Customer C1 paid $9.00 (satisfaction 92); table T1 is free",
+                "7: Customer C2 paid $13.50 (satisfaction 95); table T2 is free",
+                "12: Customer C3 paid $19.44 (satisfaction 84); table T1 is free",
+                "15: Customer C4 paid $18.00 (satisfaction 64); table T2 is free",
+                "17: Customer C5 paid $15.00 (satisfaction 84); table T1 is free")) : payments;
         for (String id : List.of("C1", "C2", "C3", "C4", "C5")) {
             assert customer(last, id).status() == CustomerStatus.PAID : id;
         }
@@ -609,7 +609,7 @@ public final class GameCheck {
         assert accepted == 72;
         assert !state.happyHourUsed();
         assert log.stream().filter(line -> line.contains(" left ")).toList()
-                .equals(List.of("13: C1 left unhappy", "18: C4 left unhappy"));
+                .equals(List.of("13: Customer C1 left unhappy", "18: Customer C4 left unhappy"));
         assert log.stream().noneMatch(line -> line.contains("Happy Hour") || line.contains(" recovers ")
                 || line.contains(" orders ") || line.contains(" served ") || line.contains(" paid "));
 
@@ -682,7 +682,7 @@ public final class GameCheck {
         satisfaction.add(c1Satisfaction(game));
         playTurn(game, "ORDER C1", "PREPARE O1", log);
         satisfaction.add(c1Satisfaction(game));
-        assert log.contains("2: C1 orders Pasta ($18.00) as O1");
+        assert log.contains("2: Customer C1 orders Pasta for $18.00 (order O1)");
 
         game.beginTurn();
         Snapshot before = game.snapshot();
@@ -699,11 +699,11 @@ public final class GameCheck {
         assert satisfaction.equals(List.of(92, 84, 76, 76)) : satisfaction;
 
         TurnEnd turn5 = playTurn(game, "WAIT", "WAIT", log);
-        assert turn5.events().contains(new GameEvent(5, "C1 is ready to pay"));
+        assert turn5.events().contains(new GameEvent(5, "Customer C1 finished eating and is ready to pay"));
         assert turn5.summary().paidCount() == 0;
 
         TurnEnd turn6 = playTurn(game, "WAIT", "WAIT", log);
-        assert turn6.events().contains(new GameEvent(6, "C1 paid $18.00 (satisfaction 76), T1 free"));
+        assert turn6.events().contains(new GameEvent(6, "Customer C1 paid $18.00 (satisfaction 76); table T1 is free"));
         assert turn6.summary().revenueCents() == 1800;
         assert turn6.summary().satisfactionSum() == 76;
         assert turn6.summary().paidCount() == 1;
@@ -725,7 +725,7 @@ public final class GameCheck {
                 assert customer(game.snapshot(), "C1").status() == CustomerStatus.WAITING;
             }
         }
-        assert end.events().contains(new GameEvent(13, "C1 left unhappy"));
+        assert end.events().contains(new GameEvent(13, "Customer C1 left unhappy"));
         assert end.summary().leftCount() == 1;
         Snapshot snapshot = game.snapshot();
         assert customer(snapshot, "C1").status() == CustomerStatus.LEFT;
@@ -743,7 +743,7 @@ public final class GameCheck {
         for (int turn = 3; turn <= 13; turn++) {
             end = playTurn(game, "WAIT", "WAIT", log);
         }
-        assert end.events().contains(new GameEvent(13, "C1 left unhappy"));
+        assert end.events().contains(new GameEvent(13, "Customer C1 left unhappy"));
         Snapshot snapshot = game.snapshot();
         assert customer(snapshot, "C1").status() == CustomerStatus.LEFT;
         assert snapshot.orders().get(0).status() == OrderStatus.CANCELLED;
@@ -764,13 +764,13 @@ public final class GameCheck {
 
         List<String> payments = log.stream().filter(line -> line.contains(" paid ")).toList();
         assert payments.equals(List.of(
-                "5: C1 paid $9.00 (satisfaction 84), T1 free",
-                "8: C2 paid $15.00 (satisfaction 84), T2 free",
-                "12: C3 paid $18.00 (satisfaction 76), T1 free",
-                "15: C4 paid $9.00 (satisfaction 76), T2 free",
-                "18: C5 paid $15.00 (satisfaction 76), T1 free")) : payments;
-        assert log.contains("11: C4 seated at T2");
-        assert log.contains("14: C5 seated at T1");
+                "5: Customer C1 paid $9.00 (satisfaction 84); table T1 is free",
+                "8: Customer C2 paid $15.00 (satisfaction 84); table T2 is free",
+                "12: Customer C3 paid $18.00 (satisfaction 76); table T1 is free",
+                "15: Customer C4 paid $9.00 (satisfaction 76); table T2 is free",
+                "18: Customer C5 paid $15.00 (satisfaction 76); table T1 is free")) : payments;
+        assert log.contains("11: Customer C4 is seated at table T2");
+        assert log.contains("14: Customer C5 is seated at table T1");
 
         Snapshot snapshot = game.snapshot();
         assert customer(snapshot, "C6").status() == CustomerStatus.WAITING;
@@ -798,7 +798,7 @@ public final class GameCheck {
         assert last.summary().paidCount() == 0;
         assert last.summary().leftCount() == 2;
         assert log.stream().filter(line -> line.contains(" left ")).toList()
-                .equals(List.of("13: C1 left unhappy", "16: C2 left unhappy"));
+                .equals(List.of("13: Customer C1 left unhappy", "16: Customer C2 left unhappy"));
         assert game.isOver();
     }
 
@@ -828,13 +828,13 @@ public final class GameCheck {
 
         List<String> payments = log.stream().filter(line -> line.contains(" paid ")).toList();
         assert payments.equals(List.of(
-                "5: C1 paid $9.00 (satisfaction 84), T1 free",
-                "8: C2 paid $13.50 (satisfaction 90), T2 free",
-                "12: C3 paid $18.00 (satisfaction 76), T1 free",
-                "16: C4 paid $18.00 (satisfaction 52), T2 free",
-                "18: C5 paid $15.00 (satisfaction 76), T1 free")) : payments;
-        assert log.contains("11: C4 seated at T2");
-        assert log.contains("13: C5 seated at T1");
+                "5: Customer C1 paid $9.00 (satisfaction 84); table T1 is free",
+                "8: Customer C2 paid $13.50 (satisfaction 90); table T2 is free",
+                "12: Customer C3 paid $18.00 (satisfaction 76); table T1 is free",
+                "16: Customer C4 paid $18.00 (satisfaction 52); table T2 is free",
+                "18: Customer C5 paid $15.00 (satisfaction 76); table T1 is free")) : payments;
+        assert log.contains("11: Customer C4 is seated at table T2");
+        assert log.contains("13: Customer C5 is seated at table T1");
 
         assert customer(snapshot, "C6").status() == CustomerStatus.WAITING;
         assert customer(snapshot, "C6").satisfaction() == 76;
@@ -856,7 +856,7 @@ public final class GameCheck {
         List<TurnEnd> ends = playGame(game, allWait(), Map.of(), log);
 
         assert log.stream().filter(line -> line.contains(" left ")).toList()
-                .equals(List.of("13: C1 left unhappy", "18: C4 left unhappy"));
+                .equals(List.of("13: Customer C1 left unhappy", "18: Customer C4 left unhappy"));
         TurnEnd last = ends.get(17);
         assert last.summary().leftCount() == 2;
         assert last.summary().paidCount() == 0;

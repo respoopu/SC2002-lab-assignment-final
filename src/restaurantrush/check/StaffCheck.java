@@ -94,7 +94,7 @@ public final class StaffCheck {
         assert first.accepted();
         assert first.events().size() == 1;
         assert first.events().get(0).turn() == 1;
-        assert first.events().get(0).text().equals("C2 seated at T1");
+        assert first.events().get(0).text().equals("Customer C2 is seated at table T1");
         assert state.queue().find("C2").isEmpty();
         assert state.queue().view().size() == 2;
         assert "C2".equals(occupant(state, "T1"));
@@ -155,7 +155,7 @@ public final class StaffCheck {
         assert result.accepted();
         assert result.events().size() == 1;
         assert result.events().get(0).turn() == 2;
-        assert result.events().get(0).text().equals("C2 orders Burger ($15.00) as O1");
+        assert result.events().get(0).text().equals("Customer C2 orders Burger for $15.00 (order O1)");
         assert state.orders().size() == 1;
         Order order = state.order("O1").orElseThrow();
         assert order.customerId().equals("C2");
@@ -237,7 +237,7 @@ public final class StaffCheck {
         ActionResult first = chef.prepare(state, "O1");
         assert first.accepted();
         assert first.events().size() == 1;
-        assert first.events().get(0).text().equals("O1 unit 1 of 2 done");
+        assert first.events().get(0).text().equals("Order O1: preparation unit 1 of 2 done");
         assert order.status() == OrderStatus.PREPARING;
         assert order.unitsDone() == 1;
         assert order.readyTurn() == 0;
@@ -246,7 +246,7 @@ public final class StaffCheck {
         ActionResult second = chef.prepare(state, "O1");
         assert second.accepted();
         assert second.events().get(0).turn() == 3;
-        assert second.events().get(0).text().equals("O1 is READY");
+        assert second.events().get(0).text().equals("Order O1 is READY to serve");
         assert order.status() == OrderStatus.READY;
         assert order.unitsDone() == 2;
         assert order.readyTurn() == 3;
@@ -293,7 +293,7 @@ public final class StaffCheck {
         assert served.accepted();
         assert served.events().size() == 1;
         assert served.events().get(0).turn() == 4;
-        assert served.events().get(0).text().equals("O1 served to C3");
+        assert served.events().get(0).text().equals("Order O1 is served to customer C3");
         assert state.order("O1").orElseThrow().status() == OrderStatus.SERVED;
         assert state.order("O1").orElseThrow().servedTurn() == 4;
         assert customer(state, "C3").status() == CustomerStatus.EATING;
@@ -357,7 +357,7 @@ public final class StaffCheck {
         Optional<GameEvent> first = cashier.collect(state);
         assert first.isPresent();
         assert first.get().turn() == 6;
-        assert first.get().text().equals("C1 paid $9.00 (satisfaction 92), T2 free");
+        assert first.get().text().equals("Customer C1 paid $9.00 (satisfaction 92); table T2 is free");
         assert customer(state, "C1").status() == CustomerStatus.PAID;
         assert state.order("O2").orElseThrow().status() == OrderStatus.PAID;
         assert state.table("T2").orElseThrow().isFree();
@@ -371,7 +371,7 @@ public final class StaffCheck {
 
         state.setTurn(7);
         Optional<GameEvent> second = cashier.collect(state);
-        assert second.orElseThrow().text().equals("C2 paid $15.00 (satisfaction 100), T1 free");
+        assert second.orElseThrow().text().equals("Customer C2 paid $15.00 (satisfaction 100); table T1 is free");
         assert state.paidCount() == 2;
         assert state.revenueCents() == 2400;
         assert state.satisfactionSum() == 192;
@@ -524,8 +524,8 @@ public final class StaffCheck {
 
         ActionResult first = host.seat(state, "C2");
         assert first.accepted();
-        assert first.message().equals("C2 seated at T1.");
-        assert first.events().equals(List.of(new GameEvent(1, "C2 seated at T1")));
+        assert first.message().equals("Customer C2 is seated at table T1.");
+        assert first.events().equals(List.of(new GameEvent(1, "Customer C2 is seated at table T1")));
         assert state.queue().find("C2").isEmpty();
         assert "C2".equals(occupant(state, "T1"));
         assert customer(state, "C2").status() == CustomerStatus.SEATED;
@@ -592,13 +592,13 @@ public final class StaffCheck {
         Host host = new Host();
         Waiter waiter = new Waiter();
 
-        assert host.seat(state, "C3").events().equals(List.of(new GameEvent(4, "C3 seated at T1")));
+        assert host.seat(state, "C3").events().equals(List.of(new GameEvent(4, "Customer C3 is seated at table T1")));
         assert waiter.legalActions(state).equals(List.of(
                 waiter(ActionKind.SEAT, "C1"),
                 waiter(ActionKind.SEAT, "C2"),
                 waiter(ActionKind.ORDER, "C3"),
                 waiter(ActionKind.WAIT, null)));
-        assert waiter.seat(state, "C1").events().equals(List.of(new GameEvent(4, "C1 seated at T2")));
+        assert waiter.seat(state, "C1").events().equals(List.of(new GameEvent(4, "Customer C1 is seated at table T2")));
 
         assert "C3".equals(occupant(state, "T1"));
         assert "C1".equals(occupant(state, "T2"));
