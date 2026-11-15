@@ -4,10 +4,6 @@ Repository: https://github.com/respoopu/SC2002-lab-assignment-final
 
 Java command-line restaurant management game for the SC2002 group assignment.
 
-The [assignment brief](SC2002_Restaurant_Rush_Group_Assignment.docx.pdf) is the source of truth for the game rules and submission requirements.
-
-The [component contract](docs/component-contract.md) records the team's agreed rules, responsibilities, turn timing, implementation decisions, and the shared Java API that every workstream issue builds against.
-
 ## Project status
 
 Stage 3 is the final playable stage. It adds the Host, the Salad + Pasta combo, and Happy Hour to the Stage 2 game and has reproducible victory and defeat runs. Stage 1 and Stage 2 are preserved at the `stage-1` and `stage-2` tags. The final UML class and sequence diagrams are in [`docs/diagrams`](docs/diagrams). The `stage-3` tag is created after the [Stage 3 gate](#stage-3-gate) passes. The report, video, declarations, and submission package are separate from the stage tags.
@@ -326,6 +322,18 @@ Before this README merged, `scripts/replay.sh` passed from a fresh clone of `mai
 The post-merge gate is recorded on [#21](https://github.com/respoopu/SC2002-lab-assignment-final/issues/21): the fresh-clone replay on the merge commit and at both earlier tags, a teammate's manual 18-turn play-through against the brief with its date and any deviations, a check that the diagrams match the final source, and the `stage-3` tag. The team tags the tested commit `stage-3`, pushes the tag, and checks that `git rev-parse stage-3` is that commit and that the comparison link above resolves. Any deviation becomes a fix issue; its PR updates the comparison above, and the gate is repeated before tagging. The `stage-1` and `stage-2` tags do not move. #21 is closed by hand after this evidence and the pushed tag are recorded.
 
 **Tag move for the console display.** After the gate, [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) ([#40](https://github.com/respoopu/SC2002-lab-assignment-final/issues/40)) made the output readable without changing any rule: the same events in the same order, the same end-of-turn figures, and the same result in both Stage 3 transcripts. Because no later stage exists, contract Stage gate step 6 lets `stage-3` move: it was first placed at `90a2d3b` (the #39 merge) and moves to the merge commit of [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) once `scripts/replay.sh` passes from a fresh clone there. Refresh a clone with `git fetch --tags --force`.
+
+## Video timestamps
+
+The timestamps below locate the required segments in `SC2002_Demo_Vid_Final.mp4`.
+
+- 1 - The game launching from the submitted project - Block 1 (Rayden) - 0:00
+- 2 - Meaningful manager choices, including a decision where staff are constrained - Block 1 (Rayden) - 1:05
+- 3 - A dish going READY → SERVED → payment - Block 2 (Isaac) - 2:38
+- 4 - A VIP or Critic behaviour - Block 3 (Advay) - 4:52
+- 5 - A Stage 3 feature - Block 4 (Zachary) - 6:40
+- 6 - One victory and one defeat - Block 4 (Zachary) - 8:03
+- 7 - The stage tag comparisons and the diagrams - Block 5 (Jethro) - 9:02
 
 ## Team workflow
 
