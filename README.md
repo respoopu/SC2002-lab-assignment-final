@@ -4,6 +4,29 @@ Repository: `https://github.com/respoopu/SC2002-lab-assignment-final`
 
 A Java command-line restaurant management game for the SC2002 group assignment. The player is the manager and decides what the staff do each turn.
 
+## Contents
+
+- [Project status](#project-status)
+- [Stage 1](#stage-1)
+  - [Build and run](#build-and-run)
+  - [Arrivals and meals](#arrivals-and-meals)
+  - [Reproducible runs](#reproducible-runs)
+  - [Testing](#testing)
+- [Stage 2](#stage-2)
+  - [Customer types](#customer-types)
+  - [Reproducible runs](#reproducible-runs-1)
+  - [Stage 1 to Stage 2](#stage-1-to-stage-2)
+  - [Testing](#testing-1)
+- [Stage 3](#stage-3)
+  - [Build and run](#build-and-run-1)
+  - [Host](#host)
+  - [Combo meal](#combo-meal)
+  - [Happy Hour](#happy-hour)
+  - [Reproducible runs](#reproducible-runs-2)
+  - [Stage 2 to Stage 3](#stage-2-to-stage-3)
+  - [Testing](#testing-2)
+- [Video timestamps](#video-timestamps)
+
 ## Project status
 
 The game was built in three stages, and each one is tagged in GitHub:
