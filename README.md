@@ -52,7 +52,7 @@ javac --release 17 -d out $(find src -name '*.java')
 java -cp out restaurantrush.game.Main
 ```
 
-To play an earlier stage, check out its tag first and build again, for example `git checkout stage-1`. Use `git checkout main` to return to Stage 3.
+On `main` this plays Stage 3. To play an earlier stage, check out its tag first and build again, for example `git checkout stage-1`. Use `git checkout main` to return to Stage 3. The rest of this section describes the game at the `stage-1` tag.
 
 The game always lasts 18 turns. Each turn shows any new arrival, the restaurant status and the numbered actions available. It then asks the Waiter for one command at `Waiter> ` and the Chef for one command at `Chef> `. Type either the command or its number. Commands are not case-sensitive.
 
@@ -184,7 +184,7 @@ The team ran `scripts/replay.sh` on a fresh copy of the repository for both Stag
 
 Build and run the same way as in Stage 1. On `main`, the game plays Stage 3. The setting, arrival turns, VIP and Critic rules, service steps, and win and lose rules are the same as in Stage 2.
 
-The console groups each turn into clear sections. Before each turn, until Happy Hour has been used, the game asks the manager whether to start Happy Hour. The turn banner shows the turn number and whether Happy Hour is on. Then come the turn's events (`NEWS`), the `WAITING QUEUE`, `TABLES`, `CUSTOMERS` and `ORDERS`. The Host, the Waiter and the Chef are then asked in that order, each with a numbered list of what they can do.
+The console groups each turn into clear sections. Before each turn, until Happy Hour has been used, the game asks the manager whether to start Happy Hour. The turn banner shows the turn number and whether Happy Hour is on. Then come any new events such as arrivals (`NEWS`), the `WAITING QUEUE`, `TABLES`, `CUSTOMERS` and `ORDERS`. The Host, the Waiter and the Chef are then asked in that order, each with a numbered list of what they can do.
 
 | Prompt | Commands | Numbers |
 | --- | --- | --- |
@@ -268,7 +268,7 @@ Compare: `https://github.com/respoopu/SC2002-lab-assignment-final/compare/stage-
 | `src/restaurantrush/staff/Cashier.java`, `Chef.java`, `Seating.java` | Modified | Console display update: name the customer, order and table in their messages. |
 | `src/restaurantrush/cli/CommandParser.java` | Modified | Read the `Manager> ` answer, and only allow `SEAT` and `WAIT` for the Host. |
 | `src/restaurantrush/cli/ConsoleUI.java` | Modified | Add the `Manager> ` and `Host> ` prompts, ask each role in turn, and lay out the console display. |
-| `src/restaurantrush/check/*.java` | Modified | Check the Host, the combo, Happy Hour, recovery and both full Stage 3 games, and keep the Stage 1 and 2 checks. |
+| `src/restaurantrush/check/CliCheck.java`, `CustomerCheck.java`, `GameCheck.java`, `MenuCheck.java`, `StaffCheck.java` | Modified | Check the Host, the combo, Happy Hour, recovery and both full Stage 3 games, and keep the Stage 1 and 2 checks. |
 | `fixtures/stage-3/host-combo-happy-hour.in`, `.expected` | Added | The Stage 3 victory run. |
 | `fixtures/stage-3/defeat.in`, `.expected` | Added | The Stage 3 defeat run. |
 | `docs/diagrams/*.puml`, `style.iuml` | Added | The UML class and sequence diagram sources. |
