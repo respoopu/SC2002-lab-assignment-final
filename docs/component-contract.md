@@ -2,7 +2,7 @@
 
 **Status:** Game rules, component responsibilities, the decisions in Section 6, and the shared Java API in Section 7 are agreed by the team. Workstream issues reference Section 7 instead of inventing types. Any PR that changes Section 7 updates it in the same PR.
 
-The [assignment brief](../SC2002_Restaurant_Rush_Group_Assignment.docx.pdf) takes precedence over this document. This contract defines the boundaries between workstreams so that independently developed parts can be integrated. The behavioral decisions and the public Java surface in Section 7 are binding.
+The assignment brief takes precedence over this document. This contract defines the boundaries between workstreams so that independently developed parts can be integrated. The behavioral decisions and the public Java surface in Section 7 are binding.
 
 ## 1. Shared game rules
 
@@ -131,7 +131,7 @@ The brief leaves these choices to the group. The team has accepted the following
 | IDs | Plain strings: customers `C1`..`C6` in arrival order, orders `O1`.. in the order taken, tables `T1` and `T2`; input is uppercased before parsing | Stable targets for actions and fixtures without wrapper types. |
 | Prompting | Every role is prompted every turn even when only `WAIT` is legal; Stage 3 adds the `Manager> ` Happy Hour prompt before `beginTurn` on each turn until used, answered `HAPPY_HOUR` or `SKIP`; remaining duration shows 2 on the activation turn and 1 on the next | Fixture shapes are predictable and the sequence diagram has a fixed form. |
 | Display | Money as dollars with two decimals; satisfaction as an integer; paid-customer average with one decimal in `Locale.ROOT`, or `N/A` | Transcripts are byte-identical across machines. |
-| Branches and PRs | Branch `<issue-number>-<short-slug>`, one PR per issue, PR body is the filled template, commits authored by the teammate only with no agent co-author trailers | Every PR links to its issue and the contributor list shows the team. |
+| Branches and PRs | Branch `<issue-number>-<short-slug>`, one PR per issue, PR body is the filled template, commits authored by the teammate | Every PR links to its issue and the contributor list shows the team. |
 | Skeleton depth | The API skeleton fully implements enums, records, `MenuItem`, `Menu`, `Money`, `Table`, and `GameState`; rule-bearing classes are stubs that throw `UnsupportedOperationException` naming the owning workstream | Wave 1 self-checks run against real collaborators instead of stubs. |
 | Host/Waiter order | Host acts before Waiter, so the Waiter may take the order of a customer seated by the Host that turn | Makes their separate capacities useful and gives a deterministic turn sequence. |
 | Happy Hour at turn start | Activate and recover before the scheduled arrival, then display the actionable snapshot | Customers arriving that turn already have 100 satisfaction; the order does not change their recovery. |
@@ -442,8 +442,6 @@ The `vip-critic` trace shows both behaviors through payment: C2 (VIP) orders Bur
 
 ### 7.10 Stage 3 shared interface
 
-<!-- Generated planning addition: maintain alongside the implementing work items. -->
-
 These additions make Section 7.8's Stage 3 row concrete; Sections 1 to 6 already define the game rules. Existing constructors and methods remain available. Stage 3 source changes merge only after the `stage-2` tag; contract-only planning may merge earlier. Detailed inputs, expected transcripts, checks, and diagrams belong to the linked issues in 7.12. Submission requirements remain in the assignment brief.
 
 **Menu and customers (#17, #18).** Add these signatures in the named classes/packages:
@@ -520,4 +518,4 @@ Issue #19 specifies the complete turn-by-turn inputs, output wording and derived
 | 4 | Final UML diagrams and design evidence (#20) | #19 merged; update for design-changing fixes |
 | 5 | README comparison and stage gate (#21) | #19, #20 and any fixes merged; write comparison last |
 
-Issue #19 coordinates Host/enums, controller/state/snapshot/setup, the Waiter pricing call, parser/UI, affected self-checks and initial Stage 3 fixtures in one PR so each merge compiles and replay passes. The domain issues own only their classes and checks. Diagrams (#20) follow the brief. No task-specific instructions or duplicate handoff documents are added here.
+Issue #19 coordinates Host/enums, controller/state/snapshot/setup, the Waiter pricing call, parser/UI, affected self-checks and initial Stage 3 fixtures in one PR so each merge compiles and replay passes. The domain issues own only their classes and checks. Diagrams (#20) follow the brief.

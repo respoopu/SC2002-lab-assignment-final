@@ -39,4 +39,4 @@ Keep this brief. Record only principles and trade-offs that the code actually de
 - [ ] Invalid choices leave game state and staff capacity unchanged, if this PR handles choices.
 - [ ] Build and checks were run from the documented commands, or the reason they could not run is stated above.
 - [ ] Fixtures under `fixtures/` and documentation were updated where this PR changes observable behavior, and any regenerated `.expected` file was reviewed.
-- [ ] I reviewed and understand the submitted changes, including any AI-assisted work, and can explain them in the group report or video.
+- [ ] I reviewed and understand the submitted changes and can explain them in the group report or video.
