@@ -4,7 +4,7 @@ Repository: https://github.com/respoopu/SC2002-lab-assignment-final
 
 Java command-line restaurant management game for the SC2002 group assignment.
 
-The [assignment brief](SC2002_Restaurant_Rush_Group_Assignment.docx.pdf) is the source of truth for the game rules and submission requirements.
+The assignment brief is the source of truth for the game rules and submission requirements.
 
 The [component contract](docs/component-contract.md) records the team's agreed rules, responsibilities, turn timing, implementation decisions, and the shared Java API that every workstream issue builds against.
 
