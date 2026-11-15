@@ -4,13 +4,9 @@ Repository: https://github.com/respoopu/SC2002-lab-assignment-final
 
 Java command-line restaurant management game for the SC2002 group assignment.
 
-The [assignment brief](SC2002_Restaurant_Rush_Group_Assignment.docx.pdf) is the source of truth for the game rules and submission requirements.
-
-The [component contract](docs/component-contract.md) records the team's agreed rules, responsibilities, turn timing, implementation decisions, and the shared Java API that every workstream issue builds against.
-
 ## Project status
 
-Stage 3 is the final playable stage. It adds the Host, the Salad + Pasta combo, and Happy Hour to the Stage 2 game and has reproducible victory and defeat runs. Stage 1 and Stage 2 are preserved at the `stage-1` and `stage-2` tags. The final UML class and sequence diagrams are in [`docs/diagrams`](docs/diagrams). The `stage-3` tag is created after the [Stage 3 gate](#stage-3-gate) passes. The report, video, declarations, and submission package are separate from the stage tags.
+Stage 3 is the final playable stage. It adds the Host, the Salad + Pasta combo, and Happy Hour to the Stage 2 game and has reproducible victory and defeat runs. Stage 1 and Stage 2 are preserved at the `stage-1` and `stage-2` tags. The final UML class and sequence diagrams are in [`docs/diagrams`](docs/diagrams). The published `stage-3` tag identifies `90a2d3b`, the tested Stage 3 gate commit. The current source also includes the later console display update merged as `812c2a2`. The report, video, declarations, and submission package are separate from the stage tags.
 
 ## Stages
 
@@ -20,7 +16,7 @@ Stage 3 is the final playable stage. It adds the Host, the Salad + Pasta combo, 
 | `stage-2` | Add VIP and Critic customer behavior |
 | `stage-3` | Add Host, ComboMeal, and Happy Hour |
 
-Each tag identifies a tested, runnable commit. `stage-1` and `stage-2` are fixed now that later-stage work has merged, and `stage-3` was moved once, to the merge commit of the console display change [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41), as contract Stage gate step 6 allows while no later stage exists (see [Stage 3 gate](#stage-3-gate)). The Stage 1 section below has the build, run, and replay commands; the contract has the full rules (Sections 5 and 6). The [Stage 1 to Stage 2](#stage-1-to-stage-2) and [Stage 2 to Stage 3](#stage-2-to-stage-3) comparisons list every changed path. Video timestamps are added at submission.
+Each tag identifies a tested, runnable commit. `stage-1` and `stage-2` are fixed now that later-stage work has merged. The remote `stage-3` tag remains at `90a2d3b`; the console display update in [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) is included in the current source at `812c2a2`. The Stage 1 section below has the build, run, and replay commands; the contract has the full rules (Sections 5 and 6). The [Stage 1 to Stage 2](#stage-1-to-stage-2) and [Stage 2 to Stage 3](#stage-2-to-stage-3) comparisons describe the changes, and the [video timestamps](#video-timestamps) locate the required demonstration segments.
 
 ## Stage 1
 
@@ -252,11 +248,11 @@ The satisfaction sum is 419, so the average is 83.8. C6 arrives on turn 16 and i
 
 ### Stage 2 to Stage 3
 
-The table lists the complete transition from `stage-2` to `stage-3`, including this README, and matches `git diff --name-status stage-2 stage-3` row for row. There are no deleted paths. Before the tag exists, compare with `git diff --name-status stage-2 HEAD`.
+The table lists the changed paths from `stage-2` through the integrated Stage 3 source at `812c2a2`, including the console display update and its documentation. Compare with `git diff --name-status stage-2 812c2a2`. The published `stage-3` tag identifies the earlier gate commit `90a2d3b`; its comparison excludes the subsequent console display update. There are no deleted paths.
 
 | Path | Status | Reason | PR |
 | --- | --- | --- | --- |
-| `README.md` | Modified | Describe the Stage 3 rules, runs, comparison, and gate, and point the Stage 2 run and replay instructions at the `stage-2` tag; describe the console display and record the `stage-3` tag move. | [#39](https://github.com/respoopu/SC2002-lab-assignment-final/pull/39), [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) |
+| `README.md` | Modified | Describe the Stage 3 rules, runs, comparison, and gate, and point the Stage 2 run and replay instructions at the `stage-2` tag; describe the console display and record the published `stage-3` tag placement. | [#39](https://github.com/respoopu/SC2002-lab-assignment-final/pull/39), [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) |
 | `docs/component-contract.md` | Modified | Specify the Stage 3 shared Java API and issue waves (Sections 7.10 to 7.12), and let the README/stage-gate PR use `Refs` so its issue stays open until the tag is pushed (Section 5, Stage gate step 1); specify the console display and event wording (Sections 7.4, 7.6, 7.8, 7.10). | [#24](https://github.com/respoopu/SC2002-lab-assignment-final/pull/24), [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) |
 | `docs/diagrams/class-control.puml` | Added | Class diagram source: CLI boundary, `TurnController`, and staff, with associations and multiplicities. | [#38](https://github.com/respoopu/SC2002-lab-assignment-final/pull/38) |
 | `docs/diagrams/class-domain.puml` | Added | Class diagram source: customers, menu items, `ComboMeal`, and orders, with inheritance and aggregation. | [#38](https://github.com/respoopu/SC2002-lab-assignment-final/pull/38) |
@@ -309,7 +305,7 @@ The table lists the complete transition from `stage-2` to `stage-3`, including t
 | `src/restaurantrush/staff/Seating.java` | Modified | Name the customer and table in the seating event. | [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) |
 | `src/restaurantrush/staff/Waiter.java` | Modified | Pass whether Happy Hour is active when taking an order, so the bill is locked at the right price; name the customer and order in the order and serving events. | [#37](https://github.com/respoopu/SC2002-lab-assignment-final/pull/37), [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) |
 
-[Compare Stage 2 to Stage 3](https://github.com/respoopu/SC2002-lab-assignment-final/compare/stage-2...stage-3). The link resolves once the `stage-3` tag is pushed.
+[Compare Stage 2 to the published Stage 3 tag](https://github.com/respoopu/SC2002-lab-assignment-final/compare/stage-2...stage-3), or [compare Stage 2 to the source including the console display update](https://github.com/respoopu/SC2002-lab-assignment-final/compare/stage-2...812c2a2).
 
 **Why earlier classes changed (brief Section 4.4).** Every Stage 1 or 2 game class that changed is planned in contract Sections 7.8 and 7.10, and the self-check additions in Section 7.12. Each change is the smallest one that gives the new behaviour to the class that owns the state. `Phase` and `StaffRole` gain the Host, `GameState` and `Snapshot` gain the Happy Hour fields, and `TurnController` gains the Host phase and the turn-start activation and recovery. `Customer` and `RegularCustomer` gain recovery and the combo choice, and `Order` and `Waiter` lock the Happy Hour price at order time. `GameSetup` registers the Host and the combo, and `CommandParser` and `ConsoleUI` add the two prompts. After the gate, [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) changed only output: `ConsoleUI` lays out the display in sections, and the staff and controller events name the customer, order, and table. No Stage 1 or 2 game rule was rewritten. Two methods were restructured without changing their output: `ConsoleUI.run` now asks whichever role the controller names instead of looping over a fixed Waiter and Chef list, and `TurnController` hands each action to its role's staff member with the same rejection messages. Every other change adds an overload or a branch beside the old behaviour: the old `TurnController`, `Order`, and `Snapshot` constructors and `beginTurn()` still work and give the Stage 1/2 flow with no Host and no Happy Hour.
 
@@ -325,7 +321,19 @@ Before this README merged, `scripts/replay.sh` passed from a fresh clone of `mai
 
 The post-merge gate is recorded on [#21](https://github.com/respoopu/SC2002-lab-assignment-final/issues/21): the fresh-clone replay on the merge commit and at both earlier tags, a teammate's manual 18-turn play-through against the brief with its date and any deviations, a check that the diagrams match the final source, and the `stage-3` tag. The team tags the tested commit `stage-3`, pushes the tag, and checks that `git rev-parse stage-3` is that commit and that the comparison link above resolves. Any deviation becomes a fix issue; its PR updates the comparison above, and the gate is repeated before tagging. The `stage-1` and `stage-2` tags do not move. #21 is closed by hand after this evidence and the pushed tag are recorded.
 
-**Tag move for the console display.** After the gate, [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) ([#40](https://github.com/respoopu/SC2002-lab-assignment-final/issues/40)) made the output readable without changing any rule: the same events in the same order, the same end-of-turn figures, and the same result in both Stage 3 transcripts. Because no later stage exists, contract Stage gate step 6 lets `stage-3` move: it was first placed at `90a2d3b` (the #39 merge) and moves to the merge commit of [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) once `scripts/replay.sh` passes from a fresh clone there. Refresh a clone with `git fetch --tags --force`.
+**Published tag and console display update.** The remote `stage-3` tag was checked on 15 November 2026 and resolves to `90a2d3b`, the #39 merge. The later [#41](https://github.com/respoopu/SC2002-lab-assignment-final/pull/41) ([#40](https://github.com/respoopu/SC2002-lab-assignment-final/issues/40)) merged as `812c2a2` and improved the console output with the same event order, end-of-turn figures and results. The tag has not been moved to that commit. On 15 November 2026, a clean source archive of `812c2a2` passed all five self-checks and both Stage 3 fixtures through `scripts/replay.sh`.
+
+## Video timestamps
+
+The timestamps below locate the required segments in `SC2002_Demo_Vid_Final.mp4`.
+
+- 1 - The game launching from the submitted project - Block 1 (Rayden) - 0:00
+- 2 - Meaningful manager choices, including a decision where staff are constrained - Block 1 (Rayden) - 1:05
+- 3 - A dish going READY → SERVED → payment - Block 2 (Isaac) - 2:38
+- 4 - A VIP or Critic behaviour - Block 3 (Advay) - 4:52
+- 5 - A Stage 3 feature - Block 4 (Zachary) - 6:40
+- 6 - One victory and one defeat - Block 4 (Zachary) - 8:03
+- 7 - The stage tag comparisons and the diagrams - Block 5 (Jethro) - 9:02
 
 ## Team workflow
 
